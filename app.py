@@ -2,38 +2,43 @@ import os
 import streamlit as st
 import snowflake.connector
 
-# ✅ First, check for Render environment variables (cloud)
-SNOWFLAKE_USER = os.getenv("SNOWFLAKE_USER", st.secrets.get("SNOWFLAKE_USER"))
-SNOWFLAKE_PASSWORD = os.getenv("SNOWFLAKE_PASSWORD", st.secrets.get("SNOWFLAKE_PASSWORD"))
-SNOWFLAKE_ACCOUNT = os.getenv("SNOWFLAKE_ACCOUNT", st.secrets.get("SNOWFLAKE_ACCOUNT"))
-SNOWFLAKE_WAREHOUSE = os.getenv("SNOWFLAKE_WAREHOUSE", st.secrets.get("SNOWFLAKE_WAREHOUSE"))
-SNOWFLAKE_DATABASE = os.getenv("SNOWFLAKE_DATABASE", st.secrets.get("SNOWFLAKE_DATABASE"))
-SNOWFLAKE_SCHEMA = os.getenv("SNOWFLAKE_SCHEMA", st.secrets.get("SNOWFLAKE_SCHEMA"))
-SNOWFLAKE_ROLE = os.getenv("SNOWFLAKE_ROLE", st.secrets.get("SNOWFLAKE_ROLE"))
+# ✅ Get Snowflake credentials from Render Environment Variables
+SNOWFLAKE_USER = os.getenv("SNOWFLAKE_USER")
+SNOWFLAKE_PASSWORD = os.getenv("SNOWFLAKE_PASSWORD")
+SNOWFLAKE_ACCOUNT = os.getenv("SNOWFLAKE_ACCOUNT")
+SNOWFLAKE_WAREHOUSE = os.getenv("SNOWFLAKE_WAREHOUSE")
+SNOWFLAKE_DATABASE = os.getenv("SNOWFLAKE_DATABASE")
+SNOWFLAKE_SCHEMA = os.getenv("SNOWFLAKE_SCHEMA")
+SNOWFLAKE_ROLE = os.getenv("SNOWFLAKE_ROLE")
 
-# ✅ Snowflake connection
-conn = snowflake.connector.connect(
-    user=SNOWFLAKE_USER,
-    password=SNOWFLAKE_PASSWORD,
-    account=SNOWFLAKE_ACCOUNT,
-    warehouse=SNOWFLAKE_WAREHOUSE,
-    database=SNOWFLAKE_DATABASE,
-    schema=SNOWFLAKE_SCHEMA,
-    role=SNOWFLAKE_ROLE
-)
+# ✅ Streamlit page setup
+st.title("🚀 AutoApplyApp - Snowflake Connection Test")
+st.write("This app is connected to *Snowflake* via Render environment variables.")
 
-# ✅ Streamlit App Layout
-st.title("🚀 Makwande Careers – AutoApply Dashboard")
+try:
+    # ✅ Connect to Snowflake
+    conn = snowflake.connector.connect(
+        user=SNOWFLAKE_USER,
+        password=SNOWFLAKE_PASSWORD,
+        account=SNOWFLAKE_ACCOUNT,
+        warehouse=SNOWFLAKE_WAREHOUSE,
+        database=SNOWFLAKE_DATABASE,
+        schema=SNOWFLAKE_SCHEMA,
+        role=SNOWFLAKE_ROLE
+    )
 
-query = "SELECT industry, job_title, location FROM MATCHED_JOBS LIMIT 20"
-cursor = conn.cursor()
-cursor.execute(query)
-rows = cursor.fetchall()
-cursor.close()
+    st.success("✅ Connected successfully to Snowflake!")
 
-st.subheader("Top Jobs from Snowflake")
-for row in rows:
-    st.write(f"**Industry:** {row[0]} | **Job Title:** {row[1]} | **Location:** {row[2]}")
+    # ✅ Test query
+    cur = conn.cursor()
+    cur.execute("SELECT CURRENT_VERSION()")
+    version = cur.fetchone()
+
+    st.info(f"Snowflake version: {version[0]}")
+
+except Exception as e:
+    st.error("❌ Could not connect to Snowflake.")
+    st.write(e)
 
 
 

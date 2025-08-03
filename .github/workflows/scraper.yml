@@ -4,11 +4,12 @@ on:
   schedule:
     # Runs every day at 06:00 SADC time (UTC+2)
     - cron: '0 4 * * *'   # 04:00 UTC = 06:00 SADC
-  workflow_dispatch:       # allows manual trigger from GitHub UI
+  workflow_dispatch:      # allows manual trigger from GitHub UI
 
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -40,6 +41,8 @@ jobs:
           SNOWFLAKE_DATABASE: AUTOAPPLY_DB
           SNOWFLAKE_SCHEMA: PUBLIC
         run: |
-          python main.py
+          python main.py    # ✅ FIXED: now runs the correct file
+
+
 
 

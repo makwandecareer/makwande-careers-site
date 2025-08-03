@@ -1,92 +1,57 @@
 import os
-import sys
-import traceback
-import pandas as pd
 import snowflake.connector
+from fastapi import FastAPI
 
-# ✅ Import your scraping function from scrape_jobs.py
-from scrape_jobs import scrape_jobs
+app = FastAPI()
 
+# ✅ Connect to Snowflake function
+def get_snowflake_connection():
+    return snowflake.connector.connect(
+        user=os.getenv("SNOWFLAKE_USER"),
+        password=os.getenv("SNOWFLAKE_PASSWORD"),
+        account=os.getenv("SNOWFLAKE_ACCOUNT"),
+        warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
+        database=os.getenv("SNOWFLAKE_DATABASE"),
+        schema=os.getenv("SNOWFLAKE_SCHEMA")
+    )
 
-def main():
-    try:
-        print("🚀 Starting job scraper...")
+# ✅ Fetch jobs from Snowflake
+@app.get("/jobs")
+def get_jobs(country: str = None, limit: int = 50, page: int = 1):
+    conn = get_snowflake_connection()
+    cur = conn.cursor()
 
-        # ✅ 1. SCRAPE JOBS
-        jobs_df = scrape_jobs()  
-        print(f"✅ Scraped {len(jobs_df)} jobs")
+    offset = (page - 1) * limit
 
-        # ✅ Ensure DataFrame column names are uppercase to match Snowflake table
-        jobs_df.columns = [col.upper() for col in jobs_df.columns]
-        print("🔍 DEBUG: DataFrame Columns:", jobs_df.columns.tolist())
+    query = "SELECT TITLE, COMPANY, LOCATION, COUNTRY, INDUSTRY, JOB_LEVEL, POST_DATE, CLOSING_DATE FROM MATCHED_JOBS"
+    params = []
 
-        # ✅ 2. CONNECT TO SNOWFLAKE
-        print("⛓ Connecting to Snowflake...")
-        conn = snowflake.connector.connect(
-            user=os.getenv("SNOWFLAKE_USER"),
-            password=os.getenv("SNOWFLAKE_PASSWORD"),
-            account=os.getenv("SNOWFLAKE_ACCOUNT"),
-            role=os.getenv("SNOWFLAKE_ROLE", "ACCOUNTADMIN"),
-            warehouse=os.getenv("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH"),
-            database=os.getenv("SNOWFLAKE_DATABASE", "AUTOAPPLY_DB"),
-            schema=os.getenv("SNOWFLAKE_SCHEMA", "PUBLIC")
-        )
-        cur = conn.cursor()
-        print("✅ Connected to Snowflake")
+    if country:
+        query += " WHERE COUNTRY = %s"
+        params.append(country)
 
-        # ✅ 3. ENSURE TABLE EXISTS
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS MATCHED_JOBS (
-                TITLE STRING,
-                COMPANY STRING,
-                LOCATION STRING,
-                COUNTRY STRING,
-                INDUSTRY STRING,
-                JOB_LEVEL STRING,
-                POST_DATE STRING,
-                CLOSING_DATE STRING
-            )
-        """)
-        print("✅ MATCHED_JOBS table is ready")
+    query += " ORDER BY POST_DATE DESC LIMIT %s OFFSET %s"
+    params.extend([limit, offset])
 
-        # ✅ 4. INSERT SCRAPED JOBS INTO SNOWFLAKE
-        for _, row in jobs_df.iterrows():
-            try:
-                cur.execute("""
-                    INSERT INTO MATCHED_JOBS (TITLE, COMPANY, LOCATION, COUNTRY, INDUSTRY, JOB_LEVEL, POST_DATE, CLOSING_DATE)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                """, (
-                    row.get("TITLE"),
-                    row.get("COMPANY"),
-                    row.get("LOCATION"),
-                    row.get("COUNTRY"),
-                    row.get("INDUSTRY"),
-                    row.get("JOB_LEVEL"),
-                    row.get("POST_DATE"),
-                    row.get("CLOSING_DATE")
-                ))
-            except Exception as e:
-                print(f"⚠️ Failed to insert row: {row.to_dict()} - Error: {e}")
+    cur.execute(query, params)
+    rows = cur.fetchall()
 
-        conn.commit()
-        print("🎉 All jobs successfully loaded into Snowflake!")
+    cur.close()
+    conn.close()
 
-    except Exception as e:
-        print("❌ ERROR:", e)
-        traceback.print_exc()
-        sys.exit(1)
+    return {"jobs": [
+        {
+            "title": row[0],
+            "company": row[1],
+            "location": row[2],
+            "country": row[3],
+            "industry": row[4],
+            "job_level": row[5],
+            "post_date": row[6],
+            "closing_date": row[7]
+        } for row in rows
+    ]}
 
-    finally:
-        try:
-            cur.close()
-            conn.close()
-            print("✅ Snowflake connection closed")
-        except:
-            pass
-
-
-if __name__ == "__main__":
-    main()
 
 
 

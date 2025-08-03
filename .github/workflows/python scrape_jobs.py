@@ -40,6 +40,6 @@ jobs:
           SNOWFLAKE_DATABASE: AUTOAPPLY_DB
           SNOWFLAKE_SCHEMA: PUBLIC
         run: |
-          python scraper.py
+          python main.py
 
 

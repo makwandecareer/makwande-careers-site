@@ -1,20 +1,27 @@
-from scrape_jobs import scrape_jobs
 import os
 import sys
 import traceback
-import snowflake.connector
 import pandas as pd
+import snowflake.connector
+
+# ✅ Import your scraping function from scrape_jobs.py
+from scrape_jobs import scrape_jobs
+
 
 def main():
     try:
         print("🚀 Starting job scraper...")
 
         # ✅ 1. SCRAPE JOBS
-        jobs_df = scrape_jobs()
+        jobs_df = scrape_jobs()  
         print(f"✅ Scraped {len(jobs_df)} jobs")
 
+        # ✅ Ensure DataFrame column names are uppercase to match Snowflake table
+        jobs_df.columns = [col.upper() for col in jobs_df.columns]
+        print("🔍 DEBUG: DataFrame Columns:", jobs_df.columns.tolist())
+
         # ✅ 2. CONNECT TO SNOWFLAKE
-        print("🔗 Connecting to Snowflake...")
+        print("⛓ Connecting to Snowflake...")
         conn = snowflake.connector.connect(
             user=os.getenv("SNOWFLAKE_USER"),
             password=os.getenv("SNOWFLAKE_PASSWORD"),
@@ -36,38 +43,36 @@ def main():
                 COUNTRY STRING,
                 INDUSTRY STRING,
                 JOB_LEVEL STRING,
-                POST_DATE DATE,
-                CLOSING_DATE DATE
+                POST_DATE STRING,
+                CLOSING_DATE STRING
             )
         """)
-        print("✅ Ensured MATCHED_JOBS table exists")
+        print("✅ MATCHED_JOBS table is ready")
 
-        # ✅ 4. CLEAR OLD DATA (optional, remove if you want to append instead of overwrite)
-        cur.execute("TRUNCATE TABLE MATCHED_JOBS")
-        print("✅ Old data cleared")
-
-        # ✅ 5. UPLOAD NEW JOBS
-        print("⬆️ Uploading jobs to Snowflake...")
+        # ✅ 4. INSERT SCRAPED JOBS INTO SNOWFLAKE
         for _, row in jobs_df.iterrows():
-            cur.execute("""
-                INSERT INTO MATCHED_JOBS (TITLE, COMPANY, LOCATION, COUNTRY, INDUSTRY, JOB_LEVEL, POST_DATE, CLOSING_DATE)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (
-                row.get("TITLE"),
-                row.get("COMPANY"),
-                row.get("LOCATION"),
-                row.get("COUNTRY"),
-                row.get("INDUSTRY"),
-                row.get("JOB_LEVEL"),
-                row.get("POST_DATE"),
-                row.get("CLOSING_DATE")
-            ))
+            try:
+                cur.execute("""
+                    INSERT INTO MATCHED_JOBS (TITLE, COMPANY, LOCATION, COUNTRY, INDUSTRY, JOB_LEVEL, POST_DATE, CLOSING_DATE)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """, (
+                    row.get("TITLE"),
+                    row.get("COMPANY"),
+                    row.get("LOCATION"),
+                    row.get("COUNTRY"),
+                    row.get("INDUSTRY"),
+                    row.get("JOB_LEVEL"),
+                    row.get("POST_DATE"),
+                    row.get("CLOSING_DATE")
+                ))
+            except Exception as e:
+                print(f"⚠️ Failed to insert row: {row.to_dict()} - Error: {e}")
 
         conn.commit()
-        print(f"✅ Successfully uploaded {len(jobs_df)} jobs to Snowflake")
+        print("🎉 All jobs successfully loaded into Snowflake!")
 
     except Exception as e:
-        print("❌ ERROR during execution")
+        print("❌ ERROR:", e)
         traceback.print_exc()
         sys.exit(1)
 
@@ -75,11 +80,14 @@ def main():
         try:
             cur.close()
             conn.close()
+            print("✅ Snowflake connection closed")
         except:
             pass
 
+
 if __name__ == "__main__":
     main()
+
 
 
 

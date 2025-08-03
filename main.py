@@ -5,10 +5,6 @@ import traceback
 import snowflake.connector
 import pandas as pd
 
-# ✅ Import your scraper functions (adjust to your actual scraper file name)
-# If you have scraping logic in another file like auto_apply.py or scrape_jobs.py:
-from auto_apply import scrape_jobs   # change 'auto_apply' and 'scrape_jobs' to match your actual file and function
-
 def main():
     try:
         print("🚀 Starting job scraper...")
@@ -46,7 +42,7 @@ def main():
         """)
         print("✅ Ensured MATCHED_JOBS table exists")
 
-        # ✅ 4. CLEAR OLD DATA (OPTIONAL)
+        # ✅ 4. CLEAR OLD DATA (optional, remove if you want to append instead of overwrite)
         cur.execute("TRUNCATE TABLE MATCHED_JOBS")
         print("✅ Old data cleared")
 

@@ -25,10 +25,10 @@ SADC_COUNTRIES = [
     "Malawi"
 ]
 
-# Initialize FastAPI
-app = FastAPI(title="Auto Apply API", version="1.2.0")
+# ✅ Initialize FastAPI
+app = FastAPI(title="Auto Apply API", version="1.3.0")
 
-# Job Model
+# ✅ Job Model
 class Job(BaseModel):
     id: int
     title: str
@@ -37,7 +37,7 @@ class Job(BaseModel):
     post_date: str
     closing_date: str
 
-# Snowflake Connection Function
+# ✅ Snowflake Connection Function
 def get_snowflake_connection():
     return snowflake.connector.connect(
         user=USER,
@@ -50,9 +50,9 @@ def get_snowflake_connection():
 
 @app.get("/jobs", response_model=List[Job])
 def get_jobs(
-    country: Optional[str] = Query(
-        None,
-        description="Filter by country",
+    country: str = Query(
+        "South Africa",  # ✅ Default value
+        description="Filter by country (default = South Africa)",
         enum=SADC_COUNTRIES  # ✅ Dropdown on Swagger UI
     ),
     location: Optional[str] = Query(None, description="Filter by location (ILIKE search)"),
@@ -74,15 +74,11 @@ def get_jobs(
     """
 
     # ✅ Filters
-    filters = []
-    if country:
-        filters.append(f"COUNTRY = '{country}'")
+    filters = [f"COUNTRY = '{country}'"]
     if location:
         filters.append(f"LOCATION ILIKE '%{location}%'")
 
-    if filters:
-        query += " WHERE " + " AND ".join(filters)
-
+    query += " WHERE " + " AND ".join(filters)
     query += f" ORDER BY POST_DATE {sort_order} LIMIT {limit} OFFSET {offset}"
 
     # ✅ Connect to Snowflake and run query
@@ -110,7 +106,8 @@ def get_jobs(
 
 @app.get("/")
 def read_root():
-    return {"message": "✅ Auto Apply API - Jobs across 10 SADC countries with pagination, sorting & filters"}
+    return {"message": "✅ Auto Apply API - Default country set to South Africa, jobs across 10 SADC countries"}
+
 
 
 

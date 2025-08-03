@@ -2,11 +2,10 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
 import snowflake.connector
-import os
 
 app = FastAPI()
 
-# ✅ Snowflake connection details (you already have these)
+# ✅ Snowflake connection details
 SNOWFLAKE_ACCOUNT = "hpfcrwb-oh67940"
 SNOWFLAKE_USER = "MAKWANDECAREERS"
 SNOWFLAKE_PASSWORD = "Makwande@202530"
@@ -14,7 +13,7 @@ SNOWFLAKE_WAREHOUSE = "COMPUTE_WH"
 SNOWFLAKE_DATABASE = "AUTOAPPLY_DB"
 SNOWFLAKE_SCHEMA = "PUBLIC"
 
-# ✅ Job model for FastAPI
+# ✅ Job model
 class Job(BaseModel):
     id: int
     title: str
@@ -23,7 +22,7 @@ class Job(BaseModel):
     post_date: str
     closing_date: str
 
-# ✅ Connect to Snowflake function
+# ✅ Function to connect to Snowflake
 def get_snowflake_connection():
     return snowflake.connector.connect(
         user=SNOWFLAKE_USER,
@@ -39,17 +38,19 @@ def get_jobs():
     try:
         conn = get_snowflake_connection()
         cur = conn.cursor()
-        # ✅ Change columns to match your MATCHED_JOBS table
+
+        # ✅ Fetch jobs from Snowflake (adjust column names if needed)
         cur.execute("""
             SELECT ID, TITLE, COMPANY, LOCATION, POST_ADVERTISED_DATE, CLOSING_DATE 
             FROM MATCHED_JOBS
             LIMIT 20
         """)
+
         rows = cur.fetchall()
         cur.close()
         conn.close()
 
-        # ✅ Convert query results into JSON for FastAPI
+        # ✅ Convert to JSON response
         jobs = []
         for row in rows:
             jobs.append({
@@ -60,10 +61,12 @@ def get_jobs():
                 "post_date": str(row[4]),
                 "closing_date": str(row[5])
             })
+
         return jobs
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching jobs: {e}")
+
 
 
 

@@ -1,0 +1,7 @@
+job_title,company,location,job_url,match_score,description
+Data Scientist,OpenAI,Remote,https://careers.openai.com/job1,0.92,"Use AI models to improve decision-making."
+Software Engineer,Google,California,https://careers.google.com/job2,0.89,"Develop scalable backend services."
+Machine Learning Engineer,Amazon,Remote,https://amazon.jobs/job3,0.88,"Build ML pipelines for recommender systems."
+Frontend Developer,Meta,New York,https://meta.com/careers/job4,0.85,"Design modern, responsive UIs in React."
+DevOps Engineer,Netflix,Los Angeles,https://jobs.netflix.com/job5,0.84,"Automate cloud infrastructure and CI/CD."
+

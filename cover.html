@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Cover Letter | Auto Apply App</title>
+</head>
+<body>
+  <h1>Generate AI Cover Letter</h1>
+  <form id="coverForm">
+    <label for="cvText">Paste Your CV:</label><br/>
+    <textarea id="cvText" rows="10" cols="50" required></textarea><br/><br/>
+
+    <label for="jobText">Paste Job Description:</label><br/>
+    <textarea id="jobText" rows="10" cols="50" required></textarea><br/><br/>
+
+    <button type="submit">Generate Cover Letter</button>
+  </form>
+  <div id="coverResult"></div>
+
+  <script>
+    document.getElementById('coverForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const res = await fetch('/api/generate_cover_letter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cv_text: document.getElementById('cvText').value,
+          job_description: document.getElementById('jobText').value
+        })
+      });
+
+      const result = await res.json();
+      document.getElementById('coverResult').innerText = result.cover_letter || 'Cover letter generated.';
+    });
+  </script>
+</body>
+</html>

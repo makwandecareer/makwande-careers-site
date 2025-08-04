@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Matched Jobs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f7;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #1f2937;
+    }
+    #job-list {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .job-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .job-card h3 {
+      margin: 0 0 10px;
+      color: #1f2937;
+    }
+    .job-card p {
+      margin: 5px 0;
+      color: #4b5563;
+    }
+    .btn-apply {
+      margin-top: 10px;
+      background: #1f2937;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Top Matched Jobs</h1>
+  <div id="job-list">
+    <!-- Populated by JS -->
+  </div>
+
+  <script>
+    fetch("https://autoapplyapp.onrender.com/api/matched_jobs")
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("job-list");
+        container.innerHTML = "";
+        data.forEach(job => {
+          const div = document.createElement("div");
+          div.className = "job-card";
+          div.innerHTML = `
+            <h3>${job.title}</h3>
+            <p><strong>Company:</strong> ${job.company}</p>
+            <p><strong>Location:</strong> ${job.location}</p>
+            <p><strong>Closing Date:</strong> ${job.closing_date}</p>
+            <button class="btn-apply" onclick="applyJob('${job.id}')">Auto Apply</button>
+          `;
+          container.appendChild(div);
+        });
+      });
+
+    function applyJob(jobId) {
+      fetch("https://autoapplyapp.onrender.com/api/apply_job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ job_id: jobId, email: "admin@makwandecareer.co.za" }) // Dynamic email later
+      }).then(res => {
+        if (res.ok) {
+          alert("Job application sent!");
+        } else {
+          alert("Application failed.");
+        }
+      });
+    }
+  </script>
+</body>
+</html>

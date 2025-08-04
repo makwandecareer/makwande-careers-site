@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subscription Plans - Auto Apply App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      text-align: center;
+    }
+    h1 {
+      color: #1f2937;
+      margin-bottom: 20px;
+    }
+    .plans {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+    .plan {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 260px;
+      transition: 0.3s ease;
+    }
+    .plan:hover {
+      transform: translateY(-5px);
+    }
+    .plan h2 {
+      color: #1f2937;
+    }
+    .price {
+      font-size: 2em;
+      color: #10b981;
+      margin: 10px 0;
+    }
+    .plan ul {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0;
+      color: #4b5563;
+    }
+    .plan ul li {
+      margin: 8px 0;
+    }
+    .btn {
+      background: #1f2937;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      display: inline-block;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Choose a Subscription Plan</h1>
+    <div class="plans">
+      <div class="plan">
+        <h2>Starter</h2>
+        <div class="price">R0</div>
+        <ul>
+          <li>3 Auto Applications</li>
+          <li>CV Scan Report</li>
+          <li>Email Support</li>
+        </ul>
+        <a href="/signup.html" class="btn">Start Free</a>
+      </div>
+      <div class="plan">
+        <h2>Pro</h2>
+        <div class="price">R300/month</div>
+        <ul>
+          <li>Unlimited Applications</li>
+          <li>CV + Cover Letter Revamp</li>
+          <li>Dedicated Support</li>
+        </ul>
+        <a href="/pay.html" class="btn">Subscribe Now</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

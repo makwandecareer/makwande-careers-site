@@ -1,0 +1,44 @@
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+  const paymentForm = document.getElementById('payment-form');
+  paymentForm.addEventListener('submit', payWithPaystack, false);
+
+  function payWithPaystack(e) {
+    e.preventDefault();
+    let handler = PaystackPop.setup({
+      key: 'pk_test_ba1a77xxxxxxxxxxxxxxxxxxxxxxx',  // Your test public key
+      email: document.getElementById('email').value,
+      amount: 30000, // 300 ZAR in Kobo
+      currency: 'ZAR',
+      ref: 'AUTOAPP_' + Math.floor((Math.random() * 1000000000) + 1),
+      callback: function(response) {
+        alert('Success. Transaction ref is ' + response.reference);
+        // Send reference + email to backend for verification
+      },
+      onClose: function() {
+        alert('Window closed.');
+      }
+    });
+    handler.openIframe();
+  }
+</script>
+<!-- Candidate Protection & POPIA Compliance Notice -->
+<div id="privacyNotice" style="background: #f0f0f0; padding: 20px; margin: 20px 0; border-radius: 10px; border: 1px solid #ccc;">
+  <h3>🔒 Candidate Protection and POPIA Compliance</h3>
+  <ul>
+    <li>✅ <strong>Current Employer Protection:</strong> We never send applications to your current employer. You can list companies to avoid in your dashboard.</li>
+    <li>✅ <strong>Scam Job Filtering:</strong> All jobs are verified through AI and real-time domain and keyword scans. Suspicious jobs are flagged and skipped.</li>
+    <li>✅ <strong>POPIA Compliant:</strong> All data is encrypted and not shared with third parties. You may delete your data at any time.</li>
+    <li>✅ <strong>Manual Controls:</strong> You control where and how your CV is submitted. Auto Apply respects your opt-out preferences 100%.</li>
+  </ul>
+  <p style="font-size: 0.9em; color: gray;">
+    By using this platform, you consent to our responsible use of your information to apply for jobs only on your behalf and with your best interest.
+  </p>
+</div>
+<!-- Exclude specific companies from job applications -->
+<div style="margin-top: 20px;">
+  <label for="exclude_companies"><strong>Companies to exclude (comma-separated):</strong></label><br>
+  <input type="text" id="exclude_companies" name="exclude_companies" placeholder="e.g. mycompany.com, abc.co.za">
+  <button onclick="saveExclusions()">Save Exclusions</button>
+</div>
+

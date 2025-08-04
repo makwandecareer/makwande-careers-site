@@ -1,56 +1,63 @@
-import os
-import snowflake.connector
-from fastapi import FastAPI
+# FastAPI route to save employer exclusions per user
+from fastapi import FastAPI, Request
+from pydantic import BaseModel
+from typing import Optional
 
 app = FastAPI()
 
-# ✅ Connect to Snowflake function
-def get_snowflake_connection():
-    return snowflake.connector.connect(
-        user=os.getenv("SNOWFLAKE_USER"),
-        password=os.getenv("SNOWFLAKE_PASSWORD"),
-        account=os.getenv("SNOWFLAKE_ACCOUNT"),
-        warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
-        database=os.getenv("SNOWFLAKE_DATABASE"),
-        schema=os.getenv("SNOWFLAKE_SCHEMA")
-    )
+# Simulated database (replace with Snowflake or real DB later)
+user_exclusions = {}
+user_profiles = {}
+posted_jobs = []
+applied_jobs = []
 
-# ✅ Fetch jobs from Snowflake
-@app.get("/jobs")
-def get_jobs(country: str = None, limit: int = 50, page: int = 1):
-    conn = get_snowflake_connection()
-    cur = conn.cursor()
+class ExclusionRequest(BaseModel):
+    exclusions: str
+    user_email: Optional[str] = "anonymous"
 
-    offset = (page - 1) * limit
+class JobApplication(BaseModel):
+    job_id: str
+    company: str
+    user_email: Optional[str] = "anonymous"
 
-    query = "SELECT TITLE, COMPANY, LOCATION, COUNTRY, INDUSTRY, JOB_LEVEL, POST_DATE, CLOSING_DATE FROM MATCHED_JOBS"
-    params = []
+class JobPost(BaseModel):
+    title: str
+    description: str
+    location: str
+    posted_by: str
 
-    if country:
-        query += " WHERE COUNTRY = %s"
-        params.append(country)
+class EmployerRegistration(BaseModel):
+    company: str
+    email: str
+    password: str
 
-    query += " ORDER BY POST_DATE DESC LIMIT %s OFFSET %s"
-    params.extend([limit, offset])
+@app.post("/api/set_exclusions")
+async def set_exclusions(data: ExclusionRequest):
+    user_exclusions[data.user_email] = [x.strip().lower() for x in data.exclusions.split(",") if x.strip()]
+    return {"message": "Exclusions updated.", "exclusions": user_exclusions[data.user_email]}
 
-    cur.execute(query, params)
-    rows = cur.fetchall()
+@app.get("/api/get_exclusions")
+async def get_exclusions(user_email: str = "anonymous"):
+    return {"exclusions": user_exclusions.get(user_email, [])}
 
-    cur.close()
-    conn.close()
+@app.post("/api/apply_job")
+async def apply_job(data: JobApplication):
+    excluded_list = user_exclusions.get(data.user_email, [])
+    for company in excluded_list:
+        if company in data.company.lower():
+            return {"message": f"Application skipped — {data.company} is in the exclusion list."}
+    applied_jobs.append({"job_id": data.job_id, "company": data.company, "user": data.user_email})
+    return {"message": "Application submitted successfully.", "job": data.job_id}
 
-    return {"jobs": [
-        {
-            "title": row[0],
-            "company": row[1],
-            "location": row[2],
-            "country": row[3],
-            "industry": row[4],
-            "job_level": row[5],
-            "post_date": row[6],
-            "closing_date": row[7]
-        } for row in rows
-    ]}
+@app.post("/api/post_job")
+async def post_job(job: JobPost):
+    posted_jobs.append(job.dict())
+    return {"message": "Job posted successfully.", "job": job.title}
+
+@app.post("/api/register_employer")
+async def register_employer(reg: EmployerRegistration):
+    user_profiles[reg.email] = {"company": reg.company, "password": reg.password}
+    return {"message": f"Employer account created for {reg.company}"}
 
 
 

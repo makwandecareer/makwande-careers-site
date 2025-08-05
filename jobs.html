@@ -3,101 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Top Matched Jobs</title>
-  <link rel="manifest" href="/manifest.json" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f7f7f7;
-    }
-
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-    }
-
-    #jobs-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-      margin-top: 30px;
-    }
-
-    .job-card {
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      padding: 20px;
-      transition: 0.3s;
-    }
-
-    .job-card:hover {
-      transform: scale(1.03);
-    }
-
-    .job-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #34495e;
-    }
-
-    .job-company, .job-location, .job-score {
-      font-size: 14px;
-      color: #555;
-      margin-top: 5px;
-    }
-
-    .error-message {
-      text-align: center;
-      color: red;
-      font-weight: bold;
-    }
-  </style>
+  <title>Auto Apply App - Top Jobs</title>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
   <h1>Top Matched Jobs</h1>
-  <div id="jobs-container">
-    <!-- Jobs will be loaded here -->
-  </div>
-  <div class="error-message" id="error-message"></div>
+  <div id="job-list">Loading jobs...</div>
 
   <script>
-    fetch("https://autoapply-api.onrender.com/api/matched_jobs")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const jobsContainer = document.getElementById("jobs-container");
+    async function fetchJobs() {
+      const endpoint = 'https://autoapply-api.onrender.com/api/matched_jobs'; // ← ✅ Use full Render URL
+      try {
+        const response = await fetch(endpoint);
+        if (!response.ok) throw new Error("Failed to fetch jobs.");
+        const jobs = await response.json();
 
-        if (data.jobs.length === 0) {
-          document.getElementById("error-message").innerText = "No jobs found.";
-        }
+        const jobList = document.getElementById("job-list");
+        jobList.innerHTML = "";
 
-        data.jobs.forEach((job) => {
+        jobs.forEach(job => {
           const card = document.createElement("div");
           card.className = "job-card";
-
           card.innerHTML = `
-            <div class="job-title">${job.title}</div>
-            <div class="job-company">Company: ${job.company}</div>
-            <div class="job-location">Location: ${job.location}</div>
-            <div class="job-score">Match Score: ${job.match_score}%</div>
+            <h3>${job.title}</h3>
+            <p><strong>Company:</strong> ${job.company}</p>
+            <p><strong>Location:</strong> ${job.location}</p>
+            <p><strong>Match:</strong> ${job.match_score}%</p>
           `;
-
-          jobsContainer.appendChild(card);
+          jobList.appendChild(card);
         });
-      })
-      .catch((error) => {
-        document.getElementById("error-message").innerText = "Error loading jobs.";
-        console.error("Error fetching jobs:", error);
-      });
+      } catch (error) {
+        document.getElementById("job-list").textContent = "Error loading jobs.";
+        console.error(error);
+      }
+    }
+
+    fetchJobs();
   </script>
 </body>
 </html>
+
 
 
 

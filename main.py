@@ -1,3 +1,6 @@
+from subscription import router as subscription_router
+app.include_router(subscription_router)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

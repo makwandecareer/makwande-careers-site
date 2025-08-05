@@ -1,31 +1,33 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from routes.jobs import router as jobs_router
-from routes.subscription import router as subscription_router
+// ==============================
+// 🚧 TEMPORARY: Job Board Offline
+// ==============================
 
-app = FastAPI()
+// fetch('https://your-backend.onrender.com/api/jobs')
+//   .then(response => response.json())
+//   .then(data => {
+//     // Job rendering logic (to be restored)
+//   })
+//   .catch(error => {
+//     console.error('Error loading jobs:', error);
+//   });
 
-# Allow access from your frontend domain (e.g. Vercel)
-origins = [
-    "https://your-frontend.vercel.app",  # replace with your actual frontend domain
-    "http://localhost:3000",  # for local testing
-]
+document.getElementById("job-list").innerHTML = `
+  <div style="text-align:center; padding: 20px; font-size: 18px;">
+    🛠️ <strong>Job board temporarily unavailable</strong><br>
+    We're integrating real-time job feeds from top job boards.<br><br>
+    ✅ But everything else is LIVE & WORKING:
+    <ul style="list-style: none; padding: 0; font-size: 16px;">
+      <li>📄 AI CV Revamp</li>
+      <li>✍️ Cover Letter Generator</li>
+      <li>📬 Auto Application Tracker</li>
+      <li>💳 Subscription System</li>
+    </ul>
+    <br>
+    🔔 Please check back soon. Job listings will appear here once live.
+  </div>
+`;
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-# Include routers
-app.include_router(jobs_router, prefix="/api/jobs", tags=["Jobs"])
-app.include_router(subscription_router, prefix="/api/subscription", tags=["Subscription"])
-
-@app.get("/")
-def read_root():
-    return {"message": "Auto Apply API is live."}
 
 
 

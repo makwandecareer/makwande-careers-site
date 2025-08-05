@@ -1,44 +1,31 @@
-// main.js
+// ==============================
+// 🚧 TEMPORARY: Job Board Offline
+// ==============================
 
-// ✅ Updated API URL to point to your Render backend
-const API_URL = 'https://autoapply-api.onrender.com/api/jobs';
+// fetch('https://your-backend.onrender.com/api/jobs')
+//   .then(response => response.json())
+//   .then(data => {
+//     // Job rendering logic (to be restored)
+//   })
+//   .catch(error => {
+//     console.error('Error loading jobs:', error);
+//   });
 
-// Fetch job data from the backend API
-async function fetchJobs() {
-    try {
-        const response = await fetch(API_URL);
-        const jobs = await response.json();
-        displayJobs(jobs);
-    } catch (error) {
-        console.error('Error fetching jobs:', error);
-        const jobList = document.getElementById('job-list');
-        jobList.innerHTML = '<p style="color:red;">Error loading jobs. Please try again later.</p>';
-    }
-}
-
-// Render job cards to the page
-function displayJobs(jobs) {
-    const jobList = document.getElementById('job-list');
-    jobList.innerHTML = ''; // Clear previous content
-
-    jobs.forEach(job => {
-        const jobCard = document.createElement('div');
-        jobCard.className = 'job-card';
-
-        jobCard.innerHTML = `
-            <h3>${job.title}</h3>
-            <p><strong>Company:</strong> ${job.company}</p>
-            <p><strong>Location:</strong> ${job.location}</p>
-            <p><strong>Score:</strong> ${job.match_score}%</p>
-            <p>${job.description}</p>
-        `;
-
-        jobList.appendChild(jobCard);
-    });
-}
-
-// Call the function on page load
-fetchJobs();
+document.getElementById("job-list").innerHTML = `
+  <div style="text-align:center; padding: 20px; font-size: 18px;">
+    🛠️ <strong>Job board temporarily unavailable</strong><br>
+    We're integrating real-time job feeds from top job boards.<br><br>
+    ✅ But everything else is LIVE & WORKING:
+    <ul style="list-style: none; padding: 0; font-size: 16px;">
+      <li>📄 AI CV Revamp</li>
+      <li>✍️ Cover Letter Generator</li>
+      <li>📬 Auto Application Tracker</li>
+      <li>💳 Subscription System</li>
+    </ul>
+    <br>
+    🔔 Please check back soon. Job listings will appear here once live.
+  </div>
+`;
 
 
 

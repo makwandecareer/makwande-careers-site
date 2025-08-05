@@ -1,32 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Subscribe - AutoApplyApp</title>
+  <meta charset="UTF-8">
+  <title>Subscribe - Auto Apply App</title>
   <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 <body>
   <h2>Subscribe for R300/month</h2>
-  <button onclick="payWithPaystack()">Subscribe Now</button>
+  <form id="payment-form">
+    <input type="email" id="email" placeholder="Enter your email" required><br><br>
+    <button type="submit">Pay Now</button>
+  </form>
 
   <script>
-    function payWithPaystack() {
-      var handler = PaystackPop.setup({
-        key: 'pk_test_xxxxxxxxxxxxxxxxxxxx',  // Replace with your public key
-        email: 'user@example.com',            // Replace with the user's email dynamically
-        plan: 'PLN_dkjwpstwj5i6ncc',          // Your subscription plan code
+    document.getElementById("payment-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      let email = document.getElementById("email").value;
+
+      let handler = PaystackPop.setup({
+        key: 'pk_test_0f3a538d88cf6f0591be1d19f5b1fbe29cba2f3e', // Test public key
+        email: email,
+        amount: 30000, // R300 = 30000 kobo
+        currency: "ZAR",
         callback: function(response) {
-          alert('Payment successful! Reference: ' + response.reference);
-          // Optional: send response.reference to your backend for verification
-          window.location.href = "/dashboard.html";
+          alert("Payment successful! Ref: " + response.reference);
+
+          // ✅ Send ref to your backend for verification
+          fetch("https://your-backend.onrender.com/api/verify_payment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              reference: response.reference,
+              email: email
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === "success") {
+              alert("Subscription activated!");
+              window.location.href = "/dashboard.html";
+            } else {
+              alert("Payment verification failed. Contact support.");
+            }
+          });
         },
         onClose: function() {
-          alert('Payment window closed.');
+          alert("Payment window closed.");
         }
       });
+
       handler.openIframe();
-    }
+    });
   </script>
 </body>
 </html>
+
 
 

@@ -6,7 +6,7 @@
  */
 
 // === API & Backend ===
-export const backend_url = "https://autoapplyapp.onrender.com"; // Backend API base
+export const backend_url = "https://autoapply-api.onrender.com/api/jobs"; // Backend API base
 
 // === Payment Gateway Keys (used in payment UI integration) ===
 export const stripe_public_key = "pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxx";

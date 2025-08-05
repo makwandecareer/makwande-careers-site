@@ -1,5 +1,5 @@
 // main.js
-const API_URL = 'https://autoapplyapp.onrender.com/api/jobs';
+const API_URL = 'https://autoapply-api.onrender.com/api/jobs';
 
 async function fetchJobs() {
     const response = await fetch(API_URL);

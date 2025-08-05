@@ -1,6 +1,6 @@
 // pay.js
 const PAYSTACK_PUBLIC_KEY = 'pk_test_xxxxxxxxxxxxxxxx';  // Replace with your real public key
-const BACKEND_URL = 'https://autoapplyapp.onrender.com';
+const BACKEND_URL = 'https://autoapply-api.onrender.com/api/jobs';
 
 function payWithPaystack() {
     const email = document.getElementById('email').value;

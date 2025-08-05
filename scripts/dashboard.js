@@ -1,5 +1,5 @@
 // dashboard.js
-const API_URL = 'https://autoapplyapp.onrender.com/api/dashboard';
+const API_URL = 'https://autoapply-api.onrender.com/api/jobs';
 
 async function loadDashboard() {
     const response = await fetch(API_URL);

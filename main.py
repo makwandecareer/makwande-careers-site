@@ -36,11 +36,8 @@ app.include_router(cover_router)
 app.include_router(match_router)
 app.include_router(tracking_router)
 app.include_router(scraper_router)
-<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
-  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
-  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
-</footer>
 
+  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
 
 
 

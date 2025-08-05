@@ -1,44 +1,109 @@
-<script src="https://js.paystack.co/v1/inline.js"></script>
-<script>
-  const paymentForm = document.getElementById('payment-form');
-  paymentForm.addEventListener('submit', payWithPaystack, false);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Application Dashboard | AutoApply</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #003366;
+    }
+    #apps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .status {
+      font-weight: bold;
+      color: green;
+    }
+    .rejected { color: red; }
+    .applied { color: orange; }
+    .shortlisted { color: #0077cc; }
+    .interview { color: #9933cc; }
+  </style>
+</head>
+<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
+  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
+  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
+</footer>
 
-  function payWithPaystack(e) {
-    e.preventDefault();
-    let handler = PaystackPop.setup({
-      key: 'pk_test_ba1a77xxxxxxxxxxxxxxxxxxxxxxx',  // Your test public key
-      email: document.getElementById('email').value,
-      amount: 30000, // 300 ZAR in Kobo
-      currency: 'ZAR',
-      ref: 'AUTOAPP_' + Math.floor((Math.random() * 1000000000) + 1),
-      callback: function(response) {
-        alert('Success. Transaction ref is ' + response.reference);
-        // Send reference + email to backend for verification
-      },
-      onClose: function() {
-        alert('Window closed.');
+<body>
+  <nav style="background:#003366; padding:1rem;">
+    <a href="index.html" style="color:white; margin-right:20px; text-decoration:none;">🏠 Home</a>
+    <a href="dashboard.html" style="color:white; margin-right:20px; text-decoration:none;">📊 My Dashboard</a>
+    <a href="revamp.html" style="color:white; margin-right:20px; text-decoration:none;">🧠 CV Revamp</a>
+    <a href="cover.html" style="color:white; margin-right:20px; text-decoration:none;">📝 Cover Letter</a>
+    <a href="strategy.html" style="color:white; margin-right:20px; text-decoration:none;">🎯 Job Strategy</a>
+    <a href="recruiter.html" style="color:white; margin-right:20px; text-decoration:none;">🏢 Recruiter Portal</a>
+    <a href="employer_signup.html" style="color:white; text-decoration:none;">🧾 Employer Signup</a>
+  </nav>
+  
+  <h1>My Applications</h1>
+  <input type="email" id="email" placeholder="Enter your email" />
+  <button onclick="loadApps()">Load My Applications</button>
+
+  <div id="apps"></div>
+
+  <script>
+    async function loadApps() {
+      const email = document.getElementById("email").value;
+      const res = await fetch(`https://autoapply-backend.onrender.com/api/get_applications/${email}`);
+      const data = await res.json();
+
+      const container = document.getElementById("apps");
+      container.innerHTML = "";
+
+      if (data.length === 0) {
+        container.innerHTML = "<p>No applications found.</p>";
+        return;
       }
-    });
-    handler.openIframe();
-  }
-</script>
-<!-- Candidate Protection & POPIA Compliance Notice -->
-<div id="privacyNotice" style="background: #f0f0f0; padding: 20px; margin: 20px 0; border-radius: 10px; border: 1px solid #ccc;">
-  <h3>🔒 Candidate Protection and POPIA Compliance</h3>
-  <ul>
-    <li>✅ <strong>Current Employer Protection:</strong> We never send applications to your current employer. You can list companies to avoid in your dashboard.</li>
-    <li>✅ <strong>Scam Job Filtering:</strong> All jobs are verified through AI and real-time domain and keyword scans. Suspicious jobs are flagged and skipped.</li>
-    <li>✅ <strong>POPIA Compliant:</strong> All data is encrypted and not shared with third parties. You may delete your data at any time.</li>
-    <li>✅ <strong>Manual Controls:</strong> You control where and how your CV is submitted. Auto Apply respects your opt-out preferences 100%.</li>
-  </ul>
-  <p style="font-size: 0.9em; color: gray;">
-    By using this platform, you consent to our responsible use of your information to apply for jobs only on your behalf and with your best interest.
-  </p>
-</div>
-<!-- Exclude specific companies from job applications -->
-<div style="margin-top: 20px;">
-  <label for="exclude_companies"><strong>Companies to exclude (comma-separated):</strong></label><br>
-  <input type="text" id="exclude_companies" name="exclude_companies" placeholder="e.g. mycompany.com, abc.co.za">
-  <button onclick="saveExclusions()">Save Exclusions</button>
-</div>
+
+      data.forEach(app => {
+        const colorClass = app.status.toLowerCase().replace(" ", "");
+        container.innerHTML += `
+          <div class="card">
+            <h3>${app.job_title}</h3>
+            <p><strong>Company:</strong> ${app.company}</p>
+            <p><strong>Location:</strong> ${app.location}</p>
+            <p><strong>Applied on:</strong> ${app.applied_on}</p>
+            <p class="status ${colorClass}">Status: ${app.status}</p>
+          </div>
+        `;
+      });
+    }
+  </script>
+<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
+  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
+  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
+</footer>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Auto Apply App helps you get hired faster with AI CV revamps, automatic job applications, and cover letters." />
+<meta name="author" content="Makwande Careers" />
+<meta name="robots" content="index, follow" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Auto Apply App – Get Hired Smarter" />
+<meta property="og:description" content="Automate your job applications with AI-powered CVs and cover letters." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://autoapplyapp.vercel.app" />
+<meta property="og:image" content="https://autoapplyapp.vercel.app/logo.png" />
+</body>
+
+</html>
+
 

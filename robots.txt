@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://autoapplyapp.vercel.app/sitemap.xml

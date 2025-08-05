@@ -1,47 +1,72 @@
-import pandas as pd
-from datetime import date
+import requests
+from bs4 import BeautifulSoup
+from fastapi import APIRouter, Query
+from typing import List, Dict
 
-def scrape_jobs():
-    """
-    Scrapes job listings and returns a Pandas DataFrame
-    with the required columns for Snowflake upload.
-    """
+scrape_router = APIRouter()
 
-    print("🔍 Starting dummy job scraping...")
+supported_countries = {
+    "south_africa": {
+        "pnet": "https://www.pnet.co.za/jobs?q={query}",
+        "career24": "https://www.career24.com/jobs/lc-south-africa/kw-{query}/"
+    },
+    # Add more countries with their URLs later
+}
 
-    # ✅ EXAMPLE JOB DATA — replace this with your real scraping logic later
-    job_data = [
-        {
-            "TITLE": "Software Engineer",
-            "COMPANY": "Tech Solutions Ltd",
-            "LOCATION": "Johannesburg",
-            "COUNTRY": "South Africa",
-            "INDUSTRY": "Technology",
-            "JOB_LEVEL": "Mid-Level",
-            "POST_DATE": date.today(),
-            "CLOSING_DATE": date.today()
-        },
-        {
-            "TITLE": "Data Analyst",
-            "COMPANY": "DataWorks",
-            "LOCATION": "Cape Town",
-            "COUNTRY": "South Africa",
-            "INDUSTRY": "Analytics",
-            "JOB_LEVEL": "Entry-Level",
-            "POST_DATE": date.today(),
-            "CLOSING_DATE": date.today()
-        }
-    ]
+def scrape_pnet(query: str, country: str):
+    url = supported_countries[country]["pnet"].format(query=query)
+    headers = {"User-Agent": "Mozilla/5.0"}
+    r = requests.get(url, headers=headers)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    
+    jobs = []
+    for job in soup.select('.job-item'):
+        title = job.select_one('h3').text.strip() if job.select_one('h3') else "No title"
+        company = job.select_one('.company-name').text.strip() if job.select_one('.company-name') else "No company"
+        location = job.select_one('.location').text.strip() if job.select_one('.location') else "No location"
+        link = "https://www.pnet.co.za" + job.select_one('a')['href'] if job.select_one('a') else ""
+        jobs.append({
+            "source": "PNet",
+            "title": title,
+            "company": company,
+            "location": location,
+            "link": link
+        })
+    return jobs
 
-    # ✅ Convert list to Pandas DataFrame
-    df = pd.DataFrame(job_data)
+def scrape_career24(query: str, country: str):
+    url = supported_countries[country]["career24"].format(query=query)
+    headers = {"User-Agent": "Mozilla/5.0"}
+    r = requests.get(url, headers=headers)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    
+    jobs = []
+    for job in soup.select('.job-card'):
+        title = job.select_one('h2').text.strip() if job.select_one('h2') else "No title"
+        company = job.select_one('.job-company').text.strip() if job.select_one('.job-company') else "No company"
+        location = job.select_one('.job-location').text.strip() if job.select_one('.job-location') else "No location"
+        link = job.select_one('a')['href'] if job.select_one('a') else ""
+        jobs.append({
+            "source": "Career24",
+            "title": title,
+            "company": company,
+            "location": location,
+            "link": link
+        })
+    return jobs
 
-    print(f"✅ Scraped {len(df)} jobs successfully.")
-    return df
+@scrape_router.get("/api/scrape_jobs")
+def scrape_jobs(
+    query: str = Query(..., description="Search keyword"),
+    country: str = Query("south_africa", description="Supported country code")
+) -> List[Dict]:
+    if country not in supported_countries:
+        return [{"error": "Country not supported"}]
 
-# ✅ Allow the script to run standalone for testing
-if __name__ == "__main__":
-    scraped = scrape_jobs()
-    print(scraped)
+    pnet_jobs = scrape_pnet(query, country)
+    career24_jobs = scrape_career24(query, country)
+
+    return pnet_jobs + career24_jobs
+
 
 

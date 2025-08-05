@@ -2,74 +2,78 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Generate Cover Letter | AutoApply</title>
+  <title>Match Jobs to CV | AutoApply</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f9f9f9;
       padding: 2rem;
-      background: #f4f4f4;
     }
-    h1 {
-      text-align: center;
-    }
-    input, textarea {
+    textarea {
       width: 100%;
       padding: 1rem;
-      margin: 1rem 0;
+      margin-bottom: 1rem;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
     button {
+      padding: 0.7rem 1.5rem;
       background: #003366;
       color: white;
       border: none;
-      padding: 0.7rem 1.5rem;
       border-radius: 6px;
       cursor: pointer;
     }
-    #output {
+    .match {
       background: white;
       padding: 1rem;
-      border-radius: 8px;
-      margin-top: 2rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
   </style>
 </head>
-<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
-  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
-  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
-</footer>
-
 <body>
-  
-  <h1>Generate AI-Powered Cover Letter</h1>
 
-  <input type="text" id="jobTitle" placeholder="Job Title" />
-  <input type="text" id="companyName" placeholder="Company Name" />
-  <textarea id="cvText" rows="6" placeholder="Paste your CV text here..."></textarea>
+  <h1>Match Jobs to Your CV</h1>
+  <textarea id="cvText" rows="8" placeholder="Paste your CV here..."></textarea>
+  <textarea id="jobsInput" rows="8" placeholder="Paste job descriptions, one per section..."></textarea>
+  <button onclick="matchJobs()">Match Jobs</button>
 
-  <button onclick="generateCover()">Generate Cover Letter</button>
-
-  <div id="output"></div>
+  <div id="results"></div>
 
   <script>
-    async function generateCover() {
-      const jobTitle = document.getElementById("jobTitle").value;
-      const companyName = document.getElementById("companyName").value;
+    async function matchJobs() {
       const cvText = document.getElementById("cvText").value;
+      const jobDescriptions = document.getElementById("jobsInput").value.trim().split("\n\n");
 
-      const res = await fetch("https://autoapply-backend.onrender.com/api/generate_cover_letter", {
+      const jobList = jobDescriptions.map(desc => ({
+        job_title: desc.slice(0, 40) + "...",
+        company: "Unknown",
+        location: "N/A",
+        description: desc
+      }));
+
+      const res = await fetch("https://autoapply-backend.onrender.com/api/match_jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ job_title: jobTitle, company_name: companyName, cv_text: cvText })
+        body: JSON.stringify({ user_cv: cvText, job_list: jobList })
       });
 
       const data = await res.json();
-      document.getElementById("output").innerHTML = `
-        <h3>Your Cover Letter:</h3>
-        <pre>${data.cover_letter}</pre>
-      `;
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "<h3>Matches Found:</h3>";
+
+      data.matches.forEach(match => {
+        resultsDiv.innerHTML += `
+          <div class="match">
+            <strong>${match.job_title}</strong><br/>
+            Match Score: ${match.match_score}%<br/>
+            Reason: ${match.reasoning}
+          </div>
+        `;
+      });
     }
   </script>
 <footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
@@ -89,7 +93,4 @@
 <meta property="og:url" content="https://autoapplyapp.vercel.app" />
 <meta property="og:image" content="https://autoapplyapp.vercel.app/logo.png" />
 </body>
-
 </html>
-
-

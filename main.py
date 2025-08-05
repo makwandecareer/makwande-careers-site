@@ -1,63 +1,51 @@
-# FastAPI route to save employer exclusions per user
-from fastapi import FastAPI, Request
-from pydantic import BaseModel
-from typing import Optional
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from revamp_cv import revamp_router
+from cover_letter import cover_router
+from job_matcher import match_router
+from tracking import tracking_router
+from scrape_jobs import scraper_router
 
 app = FastAPI()
 
-# Simulated database (replace with Snowflake or real DB later)
-user_exclusions = {}
-user_profiles = {}
-posted_jobs = []
-applied_jobs = []
+# CORS for frontend connection
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "https://autoapply.vercel.app",  # update this to your final domain
+    "https://autoapply.makwandecareers.co.za"
+]
 
-class ExclusionRequest(BaseModel):
-    exclusions: str
-    user_email: Optional[str] = "anonymous"
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-class JobApplication(BaseModel):
-    job_id: str
-    company: str
-    user_email: Optional[str] = "anonymous"
+# API health check
+@app.get("/")
+def read_root():
+    return {"message": "AutoApply API is running 🚀"}
 
-class JobPost(BaseModel):
-    title: str
-    description: str
-    location: str
-    posted_by: str
+# Include all routers
+app.include_router(revamp_router)
+app.include_router(cover_router)
+app.include_router(match_router)
+app.include_router(tracking_router)
+app.include_router(scraper_router)
+<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
+  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
+  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
+</footer>
 
-class EmployerRegistration(BaseModel):
-    company: str
-    email: str
-    password: str
 
-@app.post("/api/set_exclusions")
-async def set_exclusions(data: ExclusionRequest):
-    user_exclusions[data.user_email] = [x.strip().lower() for x in data.exclusions.split(",") if x.strip()]
-    return {"message": "Exclusions updated.", "exclusions": user_exclusions[data.user_email]}
 
-@app.get("/api/get_exclusions")
-async def get_exclusions(user_email: str = "anonymous"):
-    return {"exclusions": user_exclusions.get(user_email, [])}
 
-@app.post("/api/apply_job")
-async def apply_job(data: JobApplication):
-    excluded_list = user_exclusions.get(data.user_email, [])
-    for company in excluded_list:
-        if company in data.company.lower():
-            return {"message": f"Application skipped — {data.company} is in the exclusion list."}
-    applied_jobs.append({"job_id": data.job_id, "company": data.company, "user": data.user_email})
-    return {"message": "Application submitted successfully.", "job": data.job_id}
 
-@app.post("/api/post_job")
-async def post_job(job: JobPost):
-    posted_jobs.append(job.dict())
-    return {"message": "Job posted successfully.", "job": job.title}
 
-@app.post("/api/register_employer")
-async def register_employer(reg: EmployerRegistration):
-    user_profiles[reg.email] = {"company": reg.company, "password": reg.password}
-    return {"message": f"Employer account created for {reg.company}"}
 
 
 

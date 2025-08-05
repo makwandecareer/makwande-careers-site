@@ -1,92 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Subscribe with Paystack - Auto Apply App</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 500px;
-      margin: 60px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-      text-align: center;
-    }
-    h2 {
-      color: #1f2937;
-      margin-bottom: 10px;
-    }
-    p {
-      color: #4b5563;
-      margin-bottom: 20px;
-    }
-    input[type="email"], input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-    }
-    button {
-      background: #1f2937;
-      color: white;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 20px;
-      width: 100%;
-    }
-    button:hover {
-      background: #111827;
-    }
-  </style>
+  <title>Subscribe - AutoApplyApp</title>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h2>Subscribe for R300/month</h2>
-    <p>Unlock unlimited job applications, CV revamp, and automated tracking.</p>
+  <h2>Subscribe for R300/month</h2>
+  <button onclick="payWithPaystack()">Subscribe Now</button>
 
-    <form id="payment-form">
-      <input type="email" id="email" placeholder="Enter your email" required />
-      <input type="text" id="name" placeholder="Full name" required />
-      <button type="submit">Pay with Paystack</button>
-    </form>
-  </div>
-
-  <!-- Later: Paystack script -->
   <script>
-    document.getElementById('payment-form').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const name = document.getElementById('name').value;
-
-      alert(`Simulated payment for ${name} (${email})`);
-
-      // Placeholder for Paystack integration
-      // PaystackPop.setup({
-      //   key: 'pk_test_xxxxxxx',
-      //   email: email,
-      //   amount: 30000,
-      //   currency: 'ZAR',
-      //   callback: function(response) {
-      //     alert('Payment successful! Ref: ' + response.reference);
-      //   },
-      //   onClose: function() {
-      //     alert('Payment closed.');
-      //   }
-      // }).openIframe();
-    });
+    function payWithPaystack() {
+      var handler = PaystackPop.setup({
+        key: 'pk_test_xxxxxxxxxxxxxxxxxxxx',  // Replace with your public key
+        email: 'user@example.com',            // Replace with the user's email dynamically
+        plan: 'PLN_dkjwpstwj5i6ncc',          // Your subscription plan code
+        callback: function(response) {
+          alert('Payment successful! Reference: ' + response.reference);
+          // Optional: send response.reference to your backend for verification
+          window.location.href = "/dashboard.html";
+        },
+        onClose: function() {
+          alert('Payment window closed.');
+        }
+      });
+      handler.openIframe();
+    }
   </script>
 </body>
 </html>
+
 

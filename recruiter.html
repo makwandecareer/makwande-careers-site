@@ -2,37 +2,128 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Recruiter Panel | Auto Apply App</title>
+  <title>Recruiter Portal | AutoApply</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      padding: 2rem;
+    }
+    h1, h2 {
+      color: #003366;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 0.7rem 1.5rem;
+      background: #003366;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .card {
+      background: white;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+  </style>
 </head>
 <body>
-  <h1>Post a Job</h1>
-  <form id="jobPostForm">
-    <input type="text" id="title" placeholder="Job Title" required /><br/><br/>
-    <textarea id="description" placeholder="Job Description" rows="6" cols="50" required></textarea><br/><br/>
-    <input type="text" id="location" placeholder="Location" required /><br/><br/>
-    <button type="submit">Post Job</button>
-  </form>
+  <nav style="background:#003366; padding:1rem;">
+    <a href="index.html" style="color:white; margin-right:20px; text-decoration:none;">🏠 Home</a>
+    <a href="dashboard.html" style="color:white; margin-right:20px; text-decoration:none;">📊 My Dashboard</a>
+    <a href="revamp.html" style="color:white; margin-right:20px; text-decoration:none;">🧠 CV Revamp</a>
+    <a href="cover.html" style="color:white; margin-right:20px; text-decoration:none;">📝 Cover Letter</a>
+    <a href="strategy.html" style="color:white; margin-right:20px; text-decoration:none;">🎯 Job Strategy</a>
+    <a href="recruiter.html" style="color:white; margin-right:20px; text-decoration:none;">🏢 Recruiter Portal</a>
+    <a href="employer_signup.html" style="color:white; text-decoration:none;">🧾 Employer Signup</a>
+  </nav>
+  
+  <h1>Recruiter Portal</h1>
+  <input type="email" id="employerEmail" placeholder="Enter your recruiter email" />
 
-  <h2>My Job Postings</h2>
-  <div id="postedJobs"></div>
+  <h2>Post a Job</h2>
+  <input type="text" id="jobTitle" placeholder="Job Title" />
+  <input type="text" id="company" placeholder="Company Name" />
+  <input type="text" id="location" placeholder="Job Location" />
+  <textarea id="description" placeholder="Job Description" rows="6"></textarea>
+  <button onclick="postJob()">Post Job</button>
+
+  <h2>Applicants</h2>
+  <button onclick="loadApplicants()">Load Applicants</button>
+  <div id="applicants"></div>
 
   <script>
-    document.getElementById('jobPostForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const res = await fetch('/api/post_job', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: document.getElementById('title').value,
-          description: document.getElementById('description').value,
-          location: document.getElementById('location').value
-        })
+    async function postJob() {
+      const payload = {
+        employer_email: document.getElementById("employerEmail").value,
+        job_title: document.getElementById("jobTitle").value,
+        company: document.getElementById("company").value,
+        location: document.getElementById("location").value,
+        description: document.getElementById("description").value
+      };
+
+      const res = await fetch("https://autoapply-backend.onrender.com/api/post_job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       });
 
-      const result = await res.json();
-      alert(result.message || 'Job posted.');
-    });
+      const data = await res.json();
+      alert(data.message);
+    }
+
+    async function loadApplicants() {
+      const email = document.getElementById("employerEmail").value;
+      const res = await fetch(`https://autoapply-backend.onrender.com/api/list_applicants/${email}`);
+      const data = await res.json();
+
+      const container = document.getElementById("applicants");
+      container.innerHTML = "";
+
+      if (data.length === 0) {
+        container.innerHTML = "<p>No applicants yet.</p>";
+        return;
+      }
+
+      data.forEach(app => {
+        container.innerHTML += `
+          <div class="card">
+            <strong>${app.job_title}</strong><br/>
+            ${app.company} – ${app.location}<br/>
+            Applicant: ${app.user_email}<br/>
+            Status: ${app.status}<br/>
+            Applied on: ${app.applied_on}
+          </div>
+        `;
+      });
+    }
   </script>
+<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
+  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
+  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
+</footer>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Auto Apply App helps you get hired faster with AI CV revamps, automatic job applications, and cover letters." />
+<meta name="author" content="Makwande Careers" />
+<meta name="robots" content="index, follow" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Auto Apply App – Get Hired Smarter" />
+<meta property="og:description" content="Automate your job applications with AI-powered CVs and cover letters." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://autoapplyapp.vercel.app" />
+<meta property="og:image" content="https://autoapplyapp.vercel.app/logo.png" />
 </body>
 </html>
+

@@ -2,37 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Revamp My CV | AutoApply</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI CV Revamp | Auto Apply App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 2rem;
+    }
+    h1, h3 {
+      text-align: center;
+    }
+    #jobSpec, textarea {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
+    input[type="file"] {
+      margin-bottom: 1rem;
+    }
+    button {
+      background: #003366;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: block;
+      margin: 1rem auto;
+    }
+    button:hover {
+      background: #0055aa;
+    }
+    #result {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+  </style>
 </head>
 <body>
-  <h1>AI CV Revamp Tool</h1>
-  <form id="revampForm" enctype="multipart/form-data">
-    <label for="cvFile">Upload CV (PDF or DOCX):</label>
-    <input type="file" name="cv_file" id="cvFile" required /><br/><br/>
-    
-    <label for="jobSpec">Upload Job Description:</label>
-    <input type="file" name="job_spec_file" id="jobSpec" required /><br/><br/>
-    
-    <button type="submit">Revamp My CV</button>
-  </form>
-  <div id="revampResult"></div>
+
+  <h1>Revamp My CV</h1>
+  <h3>Match your CV with a job for better results</h3>
+
+  <div>
+    <label><strong>Job Spec (from selected job):</strong></label>
+    <textarea id="jobSpec" rows="6" readonly></textarea>
+
+    <label><strong>Upload Your CV (.txt only for now):</strong></label>
+    <input type="file" id="cvFile" accept=".txt" />
+
+    <button onclick="revampCV()">Revamp My CV</button>
+  </div>
+
+  <div id="result"></div>
 
   <script>
-    document.getElementById('revampForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData();
-      formData.append('cv_file', document.getElementById('cvFile').files[0]);
-      formData.append('job_spec_file', document.getElementById('jobSpec').files[0]);
+    // Load job from localStorage
+    const selectedJob = JSON.parse(localStorage.getItem("selectedJob"));
+    if (selectedJob && selectedJob.description) {
+      document.getElementById("jobSpec").value = selectedJob.description;
+    } else {
+      document.getElementById("jobSpec").value = "No job selected. Go back to select a job.";
+    }
 
-      const res = await fetch('/api/revamp_cv', {
-        method: 'POST',
-        body: formData,
+    async function revampCV() {
+      const fileInput = document.getElementById("cvFile");
+      const jobSpec = document.getElementById("jobSpec").value;
+
+      if (!fileInput.files.length) {
+        alert("Please upload a CV.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const text = await file.text();
+
+      const payload = {
+        cv_text: text,
+        job_spec: jobSpec
+      };
+
+      const res = await fetch("https://autoapply-backend.onrender.com/api/revamp_cv", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
       });
 
-      const result = await res.json();
-      document.getElementById('revampResult').innerText = result.message || 'Revamp complete.';
-    });
+      const data = await res.json();
+      document.getElementById("result").innerHTML = `
+        <h3>Results:</h3>
+        <pre>${data.revamped_cv}</pre>
+      `;
+    }
   </script>
+<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
+  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
+  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
+</footer>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Auto Apply App helps you get hired faster with AI CV revamps, automatic job applications, and cover letters." />
+<meta name="author" content="Makwande Careers" />
+<meta name="robots" content="index, follow" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Auto Apply App – Get Hired Smarter" />
+<meta property="og:description" content="Automate your job applications with AI-powered CVs and cover letters." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://autoapplyapp.vercel.app" />
+<meta property="og:image" content="https://autoapplyapp.vercel.app/logo.png" />
 </body>
 </html>
+
+

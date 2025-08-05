@@ -1,23 +1,17 @@
 {
-    "name": "Auto Apply App",
-    "short_name": "AutoApply",
-    "start_url": "index.html",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#1f2937",
-    "orientation": "portrait",
-    "icons": [
-      {
-        "src": "icon.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      },
-      {
-        "src": "icon.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      }
-    ]
-  }
-  
-  
+  "name": "Auto Apply App",
+  "short_name": "AutoApply",
+  "description": "Automatically apply for jobs using AI - Makwande Careers",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}
+

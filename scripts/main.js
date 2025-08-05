@@ -1,51 +1,30 @@
 // main.js
+const API_URL = 'https://autoapplyapp.onrender.com/api/jobs';
 
-// Load exclusions from localStorage
-function getExclusions() {
-  return (localStorage.getItem("excluded_companies") || "").toLowerCase().split(",");
+async function fetchJobs() {
+    const response = await fetch(API_URL);
+    const jobs = await response.json();
+    displayJobs(jobs);
 }
 
-// Save exclusions to localStorage and backend
-function saveExclusions() {
-  const exclusions = document.getElementById("exclude_companies").value;
-  localStorage.setItem("excluded_companies", exclusions);
-  fetch("https://your-backend-url.onrender.com/api/set_exclusions", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ exclusions: exclusions, user_email: localStorage.getItem("email") || "anonymous" })
-  })
-    .then(res => res.json())
-    .then(data => alert("Exclusions saved successfully!"))
-    .catch(err => console.error("Failed to save exclusions:", err));
+function displayJobs(jobs) {
+    const jobList = document.getElementById('job-list');
+    jobList.innerHTML = '';
+
+    jobs.forEach(job => {
+        const jobCard = document.createElement('div');
+        jobCard.className = 'job-card';
+        jobCard.innerHTML = `
+            <h3>${job.title}</h3>
+            <p><strong>Company:</strong> ${job.company}</p>
+            <p><strong>Location:</strong> ${job.location}</p>
+            <p><strong>Score:</strong> ${job.match_score}%</p>
+            <p>${job.description}</p>
+        `;
+        jobList.appendChild(jobCard);
+    });
 }
 
-// Function to apply for a job if it's not excluded
-async function applyToJob(job) {
-  const excluded = getExclusions();
-  if (excluded.some(ex => job.company.toLowerCase().includes(ex.trim()))) {
-    console.log(`❌ Skipping job at ${job.company} due to exclusion.`);
-    return;
-  }
+document.addEventListener('DOMContentLoaded', fetchJobs);
 
-  const response = await fetch("https://your-backend-url.onrender.com/api/apply_job", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      job_id: job.id,
-      company: job.company,
-      user_email: localStorage.getItem("email") || "anonymous"
-    })
-  });
-
-  const result = await response.json();
-  console.log(result.message);
-}
-
-// Navigation utilities
-function goTo(page) {
-  window.location.href = page;
-}
-
-// Example job structure to test logic
-// applyToJob({ id: "123", company: "mycurrentcompany.com" });
 

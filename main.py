@@ -1,24 +1,17 @@
-from subscription import router as subscription_router
-app.include_router(subscription_router)
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes.subscription import router as subscription_router
 
-from revamp_cv import revamp_router
-from cover_letter import cover_router
-from job_matcher import match_router
-from tracking import tracking_router
-from scrape_jobs import scraper_router
-from subscription import router as subscription_router  # Paystack verification route
+app = FastAPI(
+    title="AutoApplyApp API",
+    description="Backend API for AutoApplyApp - AI-powered job application system",
+    version="1.0.0"
+)
 
-app = FastAPI()
-
-# CORS for frontend connection
+# Allow CORS from frontend
 origins = [
-    "http://localhost",
     "http://localhost:3000",
-    "https://autoapplyapp.vercel.app",
-    "https://autoapply.makwandecareers.co.za"  # optional future custom domain
+    "https://autoapplyapp.vercel.app"
 ]
 
 app.add_middleware(
@@ -29,18 +22,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API health check
 @app.get("/")
-def read_root():
-    return {"message": "AutoApply API is running"}
+def root():
+    return {"message": "Welcome to AutoApplyApp API!"}
 
-# Include all routers
-app.include_router(revamp_router)
-app.include_router(cover_router)
-app.include_router(match_router)
-app.include_router(tracking_router)
-app.include_router(scraper_router)
-app.include_router(subscription_router)
+# Register all routers
+app.include_router(subscription_router, prefix="/api", tags=["Subscription"])
 
 
 

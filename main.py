@@ -1,25 +1,26 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import jobs  # make sure you have __init__.py in routes folder
 
 app = FastAPI()
 
-# CORS setup to allow frontend access
+# Allow frontend to fetch
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or restrict to your frontend domain
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Root route
-@app.get("/")
-def read_root():
-    return {"message": "AutoApply API is live"}
+@app.get("/api/matched_jobs")
+def matched_jobs():
+    # Replace this with your Snowflake fetching logic if needed
+    return {
+        "jobs": [
+            {"title": "Software Engineer", "company": "Tech Inc", "location": "Cape Town", "match_score": 93},
+            {"title": "Data Analyst", "company": "DataWorks", "location": "Johannesburg", "match_score": 88}
+        ]
+    }
 
-# Register routes
-app.include_router(jobs.router, prefix="/api")
 
 
 

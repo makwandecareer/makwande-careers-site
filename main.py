@@ -2,30 +2,31 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import jobs
+from routes import jobs  # Import your route module
 
 app = FastAPI(
-    title="AutoApplyApp API",
-    version="1.0.0",
-    description="API for fetching matched jobs and automating applications."
+    title="AutoApply API",
+    description="Backend API for job matching and automation",
+    version="1.0.0"
 )
 
-# CORS setup — allow all origins for now
+# Enable CORS for frontend connection
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Or set to your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Root route
-@app.get("/", tags=["Root"])
+# Home route
+@app.get("/")
 def read_root():
-    return {"message": "AutoApplyApp Backend is Live!"}
+    return {"message": "Welcome to the AutoApply API 🚀"}
 
-# Register the job routes
-app.include_router(jobs.router, prefix="/api")
+# Include jobs route
+app.include_router(jobs.router, prefix="/api/jobs", tags=["Jobs"])
+
 
 
 

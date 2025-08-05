@@ -1,46 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Top Matched Jobs</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <title>Top Matched Jobs - Auto Apply App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    #filters {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .job-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin: 15px auto;
+      max-width: 600px;
+      padding: 20px;
+      transition: 0.3s ease;
+    }
+
+    .job-card:hover {
+      transform: scale(1.02);
+    }
+
+    .job-card h3 {
+      margin-top: 0;
+    }
+
+    .error {
+      text-align: center;
+      color: red;
+    }
+  </style>
 </head>
 <body>
   <h1>Top Matched Jobs</h1>
-  <div id="job-container">Loading jobs...</div>
+
+  <div id="filters">
+    <select id="locationFilter">
+      <option value="">All Locations</option>
+    </select>
+    <select id="companyFilter">
+      <option value="">All Companies</option>
+    </select>
+    <select id="scoreFilter">
+      <option value="">All Scores</option>
+      <option value="90">90+</option>
+      <option value="80">80+</option>
+      <option value="70">70+</option>
+    </select>
+  </div>
+
+  <div id="jobs-list">
+    <p>Loading jobs...</p>
+  </div>
 
   <script>
-    const jobContainer = document.getElementById('job-container');
+    let jobsData = [];
+
+    function renderJobs(data) {
+      const jobsList = document.getElementById("jobs-list");
+      jobsList.innerHTML = "";
+
+      if (data.length === 0) {
+        jobsList.innerHTML = "<p class='error'>No jobs match your filter criteria.</p>";
+        return;
+      }
+
+      data.forEach(job => {
+        const card = document.createElement("div");
+        card.className = "job-card";
+        card.innerHTML = `
+          <h3>${job.title}</h3>
+          <p><strong>Company:</strong> ${job.company}</p>
+          <p><strong>Location:</strong> ${job.location}</p>
+          <p><strong>Score:</strong> ${job.match_score}</p>
+        `;
+        jobsList.appendChild(card);
+      });
+    }
+
+    function applyFilters() {
+      const location = document.getElementById("locationFilter").value.toLowerCase();
+      const company = document.getElementById("companyFilter").value.toLowerCase();
+      const score = document.getElementById("scoreFilter").value;
+
+      const filtered = jobsData.filter(job => {
+        return (
+          (!location || job.location.toLowerCase().includes(location)) &&
+          (!company || job.company.toLowerCase().includes(company)) &&
+          (!score || parseInt(job.match_score) >= parseInt(score))
+        );
+      });
+
+      renderJobs(filtered);
+    }
 
     fetch('https://autoapply-api.onrender.com/api/jobs')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not OK');
-        }
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
-        jobContainer.innerHTML = '';
-        data.jobs.forEach(job => {
-          const jobCard = document.createElement('div');
-          jobCard.className = 'job-card';
-          jobCard.innerHTML = `
-            <h3>${job.job_title}</h3>
-            <p><strong>Company:</strong> ${job.company_name}</p>
-            <p><strong>Location:</strong> ${job.location}</p>
-            <p><strong>Match Score:</strong> ${job.match_score}%</p>
-          `;
-          jobContainer.appendChild(jobCard);
+        jobsData = data.jobs || [];
+        renderJobs(jobsData);
+
+        // Populate filters
+        const locations = new Set();
+        const companies = new Set();
+        jobsData.forEach(job => {
+          if (job.location) locations.add(job.location);
+          if (job.company) companies.add(job.company);
+        });
+
+        const locationFilter = document.getElementById("locationFilter");
+        locations.forEach(loc => {
+          const opt = document.createElement("option");
+          opt.value = loc;
+          opt.textContent = loc;
+          locationFilter.appendChild(opt);
+        });
+
+        const companyFilter = document.getElementById("companyFilter");
+        companies.forEach(comp => {
+          const opt = document.createElement("option");
+          opt.value = comp;
+          opt.textContent = comp;
+          companyFilter.appendChild(opt);
         });
       })
-      .catch(error => {
-        jobContainer.innerHTML = `<p style="color:red;">Error fetching jobs: ${error.message}</p>`;
+      .catch(err => {
+        document.getElementById("jobs-list").innerHTML = `<p class='error'>Error fetching jobs: ${err.message}</p>`;
       });
+
+    document.getElementById("locationFilter").addEventListener("change", applyFilters);
+    document.getElementById("companyFilter").addEventListener("change", applyFilters);
+    document.getElementById("scoreFilter").addEventListener("change", applyFilters);
   </script>
 </body>
 </html>
->
+
 
 
 

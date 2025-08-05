@@ -1,47 +1,67 @@
+# main.py
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import snowflake.connector
-import os
+from pydantic import BaseModel
+from typing import List
+import uvicorn
 
 app = FastAPI()
 
-# Allow frontend access (CORS)
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace with frontend URL in production
+    allow_origins=["*"],  # Allow all origins (use specific domain in production)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Connect to Snowflake using environment variables
-def connect_to_snowflake():
-    return snowflake.connector.connect(
-        user=os.getenv("SNOWFLAKE_USER"),
-        password=os.getenv("SNOWFLAKE_PASSWORD"),
-        account=os.getenv("SNOWFLAKE_ACCOUNT"),
-        warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
-        database=os.getenv("SNOWFLAKE_DATABASE"),
-        schema=os.getenv("SNOWFLAKE_SCHEMA"),
-        role=os.getenv("SNOWFLAKE_ROLE")
-    )
+# Sample Job Model
+class Job(BaseModel):
+    title: str
+    company: str
+    location: str
+    match_score: float
+    description: str
+
+# Dummy job data
+jobs_data = [
+    {
+        "title": "Data Analyst",
+        "company": "Mak Tech",
+        "location": "Cape Town",
+        "match_score": 92.5,
+        "description": "Analyze data trends and build dashboards."
+    },
+    {
+        "title": "Software Engineer",
+        "company": "Code Base Ltd",
+        "location": "Johannesburg",
+        "match_score": 89.1,
+        "description": "Build scalable backend services in Python."
+    },
+    {
+        "title": "Digital Marketing Manager",
+        "company": "Adzone",
+        "location": "Durban",
+        "match_score": 85.7,
+        "description": "Develop SEO/SEM marketing strategies."
+    }
+]
 
 @app.get("/")
-def root():
-    return {"message": "Auto Apply API is running!"}
+def read_root():
+    return {"message": "Welcome to AutoApply API"}
 
-@app.get("/api/test-connection")
-def test_connection():
-    try:
-        conn = connect_to_snowflake()
-        cursor = conn.cursor()
-        cursor.execute("SELECT CURRENT_VERSION()")
-        result = cursor.fetchone()
-        return {"status": "connected", "version": result[0]}
-    except Exception as e:
-        return {"status": "error", "detail": str(e)}
+@app.get("/api/jobs", response_model=List[Job])
+def get_jobs():
+    return jobs_data
 
-# Add more endpoints here: /api/jobs, /api/revamp, etc.
+# Run locally for testing
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+
 
 
 

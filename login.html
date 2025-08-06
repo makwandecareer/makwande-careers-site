@@ -1,102 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Auto Apply App</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .form-box {
-      background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      width: 350px;
-    }
-    h2 {
-      margin-bottom: 20px;
-      color: #1f2937;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    button {
-      background: #1f2937;
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-    }
-    .form-footer {
-      margin-top: 10px;
-      text-align: center;
-    }
-    .form-footer a {
-      color: #1f2937;
-      text-decoration: none;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - AutoApply</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <div class="form-box">
-    <h2>Login</h2>
-    <form method="POST" action="/api/login_user">
-      <input type="email" name="email" placeholder="Email" required />
-      <input type="password" name="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-    <div class="form-footer">
-      <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">AutoApply</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="signup.html">Signup</a></li>
+          <li class="nav-item"><a class="nav-link" href="pay.html">Subscribe</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Login Form -->
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-body">
+            <h3 class="card-title text-center mb-4">Login to Your Account</h3>
+            <form action="/login" method="post">
+              <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Login</button>
+              </div>
+              <div class="text-center mt-3">
+                <small>Don't have an account? <a href="signup.html">Sign up</a></small>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
-    <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
-    <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
+
+  <!-- Footer -->
+  <footer class="footer bg-light text-center mt-5 py-3">
+    <div class="container">
+      <span class="text-muted">&copy; 2025 AutoApply App. All rights reserved.</span>
+    </div>
   </footer>
-  <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Auto Apply App helps you get hired faster with AI CV revamps, automatic job applications, and cover letters." />
-<meta name="author" content="Makwande Careers" />
-<meta name="robots" content="index, follow" />
 
-<!-- Open Graph -->
-<meta property="og:title" content="Auto Apply App – Get Hired Smarter" />
-<meta property="og:description" content="Automate your job applications with AI-powered CVs and cover letters." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://autoapplyapp.vercel.app" />
-<meta property="og:image" content="https://autoapplyapp.vercel.app/logo.png" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-<meta name="description" content="Auto Apply App by Makwande Careers helps jobseekers automatically apply for jobs with AI-powered CV revamps and cover letters.">
-<meta name="keywords" content="Auto Apply, CV Revamp, Job Applications, AI Jobs, Cover Letters, Makwande Careers, Job Search Africa">
-<meta name="author" content="Makwande Careers">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="canonical" href="https://your-vercel-url.vercel.app/">
-
-<form action="https://formsubmit.co/admin@makwandecareer.co.za" method="POST">
-  <input type="hidden" name="_captcha" value="false">
-  <input type="text" name="name" placeholder="Your name" required><br><br>
-  <input type="email" name="email" placeholder="Your email" required><br><br>
-  <textarea name="message" rows="4" placeholder="Your feedback..." required></textarea><br><br>
-  <button type="submit">Send Feedback</button>
 </html>
+

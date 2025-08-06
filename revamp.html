@@ -1,153 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Revamp My CV | AutoApply</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      padding: 2rem;
-    }
-    h1, h3 {
-      text-align: center;
-    }
-    #jobSpec, textarea {
-      width: 100%;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-family: inherit;
-    }
-    input[type="file"] {
-      margin-bottom: 1rem;
-    }
-    button {
-      background: #003366;
-      color: white;
-      border: none;
-      padding: 0.7rem 1.5rem;
-      border-radius: 6px;
-      cursor: pointer;
-      display: block;
-      margin: 1rem auto;
-    }
-    button:hover {
-      background: #0055aa;
-    }
-    #result {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-top: 2rem;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jobs - AutoApply</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">AutoApply</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="revamp.html">Revamp CV</a></li>
+          <li class="nav-item"><a class="nav-link" href="pay.html">Subscribe</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-  <h1>Revamp My CV</h1>
-  <h3>Match your CV with a job for better results</h3>
+  <!-- Jobs List -->
+  <div class="container py-5">
+    <h2 class="mb-4">Matched Jobs</h2>
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Filter by Location">
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Filter by Company">
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Filter by Match Score">
+      </div>
+    </div>
 
-  <div>
-    <label><strong>Job Spec (from selected job):</strong></label>
-    <textarea id="jobSpec" rows="6" readonly></textarea>
-
-    <label><strong>Upload Your CV (.txt only for now):</strong></label>
-    <input type="file" id="cvFile" accept=".txt" />
-
-    <button onclick="revampCV()">Revamp My CV</button>
+    <div class="list-group">
+      <a href="#" class="list-group-item list-group-item-action">
+        <h5 class="mb-1">Software Engineer</h5>
+        <p class="mb-1">TechCorp - Cape Town</p>
+        <small>Match Score: 92%</small>
+      </a>
+      <a href="#" class="list-group-item list-group-item-action">
+        <h5 class="mb-1">Data Analyst</h5>
+        <p class="mb-1">DataWorks - Johannesburg</p>
+        <small>Match Score: 87%</small>
+      </a>
+      <a href="#" class="list-group-item list-group-item-action">
+        <h5 class="mb-1">Project Manager</h5>
+        <p class="mb-1">BizManage - Durban</p>
+        <small>Match Score: 85%</small>
+      </a>
+    </div>
   </div>
 
-  <div id="result"></div>
+  <!-- Footer -->
+  <footer class="footer bg-light text-center mt-5 py-3">
+    <div class="container">
+      <span class="text-muted">&copy; 2025 AutoApply App. All rights reserved.</span>
+    </div>
+  </footer>
 
-  <script>
-    // Load job from localStorage
-    const selectedJob = JSON.parse(localStorage.getItem("selectedJob"));
-    if (selectedJob && selectedJob.description) {
-      document.getElementById("jobSpec").value = selectedJob.description;
-    } else {
-      document.getElementById("jobSpec").value = "No job selected. Go back to select a job.";
-    }
-
-    async function revampCV() {
-      const fileInput = document.getElementById("cvFile");
-      const jobSpec = document.getElementById("jobSpec").value;
-
-      if (!fileInput.files.length) {
-        alert("Please upload a CV.");
-        return;
-      }
-
-      const file = fileInput.files[0];
-      const text = await file.text();
-
-      const payload = {
-        cv_text: text,
-        job_spec: jobSpec
-      };
-
-      const res = await fetch("https://autoapply-backend.onrender.com/api/revamp_cv", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await res.json();
-      document.getElementById("result").innerHTML = `
-        <h3>Results:</h3>
-        <pre>${data.revamped_cv}</pre>
-      `;
-    }
-  </script>
-<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
-  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
-  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
-</footer>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Auto Apply App helps you get hired faster with AI CV revamps, automatic job applications, and cover letters." />
-<meta name="author" content="Makwande Careers" />
-<meta name="robots" content="index, follow" />
-
-<!-- Open Graph -->
-<meta property="og:title" content="Auto Apply App – Get Hired Smarter" />
-<meta property="og:description" content="Automate your job applications with AI-powered CVs and cover letters." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://autoapplyapp.vercel.app" />
-<meta property="og:image" content="https://autoapplyapp.vercel.app/logo.png" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-<meta name="description" content="Auto Apply App by Makwande Careers helps jobseekers automatically apply for jobs with AI-powered CV revamps and cover letters.">
-<meta name="keywords" content="Auto Apply, CV Revamp, Job Applications, AI Jobs, Cover Letters, Makwande Careers, Job Search Africa">
-<meta name="author" content="Makwande Careers">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="canonical" href="https://your-vercel-url.vercel.app/">
-
-<form action="https://formsubmit.co/admin@makwandecareer.co.za" method="POST">
-  <input type="hidden" name="_captcha" value="false">
-  <input type="text" name="name" placeholder="Your name" required><br><br>
-  <input type="email" name="email" placeholder="Your email" required><br><br>
-  <textarea name="message" rows="4" placeholder="Your feedback..." required></textarea><br><br>
-  <button type="submit">Send Feedback</button>
 </html>
+
 
 

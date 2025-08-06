@@ -2,60 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Subscribe - Auto Apply App</title>
-  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subscribe - AutoApply</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .test-mode-banner {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      border-bottom: 1px solid #ffeeba;
+    }
+  </style>
 </head>
 <body>
-  <h2>Subscribe for R300/month</h2>
-  <form id="payment-form">
-    <input type="email" id="email" placeholder="Enter your email" required><br><br>
-    <button type="submit">Pay Now</button>
-  </form>
+  <!-- Test Mode Banner -->
+  <div class="test-mode-banner">
+    ⚠️ Test Mode Active — Payments are in sandbox mode and will not charge real money.
+  </div>
 
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">AutoApply</a>
+    </div>
+  </nav>
+
+  <!-- Payment Section -->
+  <div class="container py-5">
+    <h2 class="mb-4">Subscribe to AutoApply</h2>
+    <p>Use the Paystack test card details below to simulate a payment in Test Mode:</p>
+    <ul>
+      <li><strong>Card Number:</strong> 4084 0840 8408 4081</li>
+      <li><strong>Expiry Date:</strong> Any future date</li>
+      <li><strong>CVV:</strong> 408</li>
+      <li><strong>PIN:</strong> 1234</li>
+      <li><strong>OTP:</strong> 123456</li>
+    </ul>
+    <button id="payButton" class="btn btn-success btn-lg mt-3">Pay R300 (Demo Mode)</button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-light text-center mt-5 py-3">
+    <div class="container">
+      <span class="text-muted">&copy; 2025 AutoApply App. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <!-- Paystack Script -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
   <script>
-    document.getElementById("payment-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      let email = document.getElementById("email").value;
-
-      let handler = PaystackPop.setup({
-        key: 'pk_test_0f3a538d88cf6f0591be1d19f5b1fbe29cba2f3e', // Test public key
-        email: email,
-        amount: 30000, // R300 = 30000 kobo
-        currency: "ZAR",
-        callback: function(response) {
-          alert("Payment successful! Ref: " + response.reference);
-
-          // ✅ Send ref to your backend for verification
-          fetch("https://your-backend.onrender.com/api/verify_payment", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              reference: response.reference,
-              email: email
-            })
+    document.getElementById('payButton').onclick = function () {
+      var handler = PaystackPop.setup({
+        key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxx', // Replace with your Paystack Test Public Key
+        email: 'customer@example.com',
+        amount: 30000, // Amount in kobo (R300)
+        currency: 'ZAR',
+        ref: 'TEST_' + Math.floor((Math.random() * 1000000000) + 1),
+        callback: function(response){
+          alert('Payment complete! Verifying...');
+          fetch('/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reference: response.reference })
           })
           .then(res => res.json())
           .then(data => {
             if (data.status === "success") {
-              alert("Subscription activated!");
-              window.location.href = "/dashboard.html";
+              alert("✅ Payment Verified! Subscription Activated for " + data.customer_email);
             } else {
-              alert("Payment verification failed. Contact support.");
+              alert("❌ Verification Failed: " + data.message);
             }
+          })
+          .catch(err => {
+            alert("Error verifying payment.");
+            console.error(err);
           });
         },
-        onClose: function() {
-          alert("Payment window closed.");
+        onClose: function(){
+          alert('Transaction cancelled.');
         }
       });
-
       handler.openIframe();
-    });
+    }
   </script>
 </body>
 </html>
+
+
+
+
 
 
 

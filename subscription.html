@@ -1,133 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Subscription Plans - Auto Apply App</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9fafb;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      text-align: center;
-    }
-    h1 {
-      color: #1f2937;
-      margin-bottom: 20px;
-    }
-    .plans {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 30px;
-    }
-    .plan {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      width: 260px;
-      transition: 0.3s ease;
-    }
-    .plan:hover {
-      transform: translateY(-5px);
-    }
-    .plan h2 {
-      color: #1f2937;
-    }
-    .price {
-      font-size: 2em;
-      color: #10b981;
-      margin: 10px 0;
-    }
-    .plan ul {
-      list-style: none;
-      padding: 0;
-      margin: 15px 0;
-      color: #4b5563;
-    }
-    .plan ul li {
-      margin: 8px 0;
-    }
-    .btn {
-      background: #1f2937;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-      display: inline-block;
-      text-decoration: none;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subscription Status - AutoApply</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1>Choose a Subscription Plan</h1>
-    <div class="plans">
-      <div class="plan">
-        <h2>Starter</h2>
-        <div class="price">R0</div>
-        <ul>
-          <li>3 Auto Applications</li>
-          <li>CV Scan Report</li>
-          <li>Email Support</li>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">AutoApply</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
+          <li class="nav-item"><a class="nav-link" href="pay.html">Subscribe</a></li>
         </ul>
-        <a href="/signup.html" class="btn">Start Free</a>
       </div>
-      <div class="plan">
-        <h2>Pro</h2>
-        <div class="price">R300/month</div>
-        <ul>
-          <li>Unlimited Applications</li>
-          <li>CV + Cover Letter Revamp</li>
-          <li>Dedicated Support</li>
-        </ul>
-        <a href="/pay.html" class="btn">Subscribe Now</a>
+    </div>
+  </nav>
+
+  <!-- Subscription Status -->
+  <div class="container py-5">
+    <h2 class="mb-4">Your Subscription Status</h2>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Current Plan: <span class="text-success">Active</span></h5>
+        <p class="card-text">You are subscribed to the <strong>R300/month</strong> plan.</p>
+        <p class="card-text">Next billing date: <strong>15 Aug 2025</strong></p>
+        <a href="pay.html" class="btn btn-outline-primary">Renew Subscription</a>
       </div>
     </div>
   </div>
-  <footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
-    <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
-    <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
+
+  <!-- Footer -->
+  <footer class="footer bg-light text-center mt-5 py-3">
+    <div class="container">
+      <span class="text-muted">&copy; 2025 AutoApply App. All rights reserved.</span>
+    </div>
   </footer>
-  <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Auto Apply App helps you get hired faster with AI CV revamps, automatic job applications, and cover letters." />
-<meta name="author" content="Makwande Careers" />
-<meta name="robots" content="index, follow" />
 
-<!-- Open Graph -->
-<meta property="og:title" content="Auto Apply App – Get Hired Smarter" />
-<meta property="og:description" content="Automate your job applications with AI-powered CVs and cover letters." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://autoapplyapp.vercel.app" />
-<meta property="og:image" content="https://autoapplyapp.vercel.app/logo.png" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-<meta name="description" content="Auto Apply App by Makwande Careers helps jobseekers automatically apply for jobs with AI-powered CV revamps and cover letters.">
-<meta name="keywords" content="Auto Apply, CV Revamp, Job Applications, AI Jobs, Cover Letters, Makwande Careers, Job Search Africa">
-<meta name="author" content="Makwande Careers">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="canonical" href="https://your-vercel-url.vercel.app/">
-
-<form action="https://formsubmit.co/admin@makwandecareer.co.za" method="POST">
-  <input type="hidden" name="_captcha" value="false">
-  <input type="text" name="name" placeholder="Your name" required><br><br>
-  <input type="email" name="email" placeholder="Your email" required><br><br>
-  <textarea name="message" rows="4" placeholder="Your feedback..." required></textarea><br><br>
-  <button type="submit">Send Feedback</button>
 </html>
+

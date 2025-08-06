@@ -1,117 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Generate Cover Letter | AutoApply</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      background: #f4f4f4;
-    }
-    h1 {
-      text-align: center;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #003366;
-      color: white;
-      border: none;
-      padding: 0.7rem 1.5rem;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #output {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-top: 2rem;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cover Letter Generator - AutoApply</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
-  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
-  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
-</footer>
-
 <body>
-  
-  <h1>Generate AI-Powered Cover Letter</h1>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">AutoApply</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
+          <li class="nav-item"><a class="nav-link" href="revamp.html">Revamp CV</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-  <input type="text" id="jobTitle" placeholder="Job Title" />
-  <input type="text" id="companyName" placeholder="Company Name" />
-  <textarea id="cvText" rows="6" placeholder="Paste your CV text here..."></textarea>
+  <!-- Cover Letter Form -->
+  <div class="container py-5">
+    <h2 class="mb-4">AI-Powered Cover Letter Generator</h2>
+    <form action="/generate-cover" method="post">
+      <div class="mb-3">
+        <label for="jobTitle" class="form-label">Job Title</label>
+        <input type="text" class="form-control" id="jobTitle" name="jobTitle" placeholder="e.g., Software Engineer" required>
+      </div>
+      <div class="mb-3">
+        <label for="companyName" class="form-label">Company Name</label>
+        <input type="text" class="form-control" id="companyName" name="companyName" placeholder="e.g., TechCorp" required>
+      </div>
+      <div class="mb-3">
+        <label for="jobDescription" class="form-label">Job Description / Key Points</label>
+        <textarea class="form-control" id="jobDescription" name="jobDescription" rows="4" placeholder="Paste the main points from the job ad here..." required></textarea>
+      </div>
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Generate Cover Letter</button>
+      </div>
+    </form>
+  </div>
 
-  <button onclick="generateCover()">Generate Cover Letter</button>
-
-  <div id="output"></div>
-
-  <script>
-    async function generateCover() {
-      const jobTitle = document.getElementById("jobTitle").value;
-      const companyName = document.getElementById("companyName").value;
-      const cvText = document.getElementById("cvText").value;
-
-      const res = await fetch("https://autoapply-backend.onrender.com/api/generate_cover_letter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ job_title: jobTitle, company_name: companyName, cv_text: cvText })
-      });
-
-      const data = await res.json();
-      document.getElementById("output").innerHTML = `
-        <h3>Your Cover Letter:</h3>
-        <pre>${data.cover_letter}</pre>
-      `;
-    }
-  </script>
-<footer style="margin-top:3rem; padding:1rem; background:#003366; color:white; text-align:center;">
-  <p>&copy; 2025 AutoApply by Makwande Careers | <a href="mailto:admin@makwandecareer.co.za" style="color:#FFD700;">Contact Us</a></p>
-  <p>📍 Powered by AI | Protected under POPIA | No data shared with current employers</p>
-</footer>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Auto Apply App helps you get hired faster with AI CV revamps, automatic job applications, and cover letters." />
-<meta name="author" content="Makwande Careers" />
-<meta name="robots" content="index, follow" />
-
-<!-- Open Graph -->
-<meta property="og:title" content="Auto Apply App – Get Hired Smarter" />
-<meta property="og:description" content="Automate your job applications with AI-powered CVs and cover letters." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://autoapplyapp.vercel.app" />
-<meta property="og:image" content="https://autoapplyapp.vercel.app/logo.png" />
-</body>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-<meta name="description" content="Auto Apply App by Makwande Careers helps jobseekers automatically apply for jobs with AI-powered CV revamps and cover letters.">
-<meta name="keywords" content="Auto Apply, CV Revamp, Job Applications, AI Jobs, Cover Letters, Makwande Careers, Job Search Africa">
-<meta name="author" content="Makwande Careers">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="canonical" href="https://your-vercel-url.vercel.app/">
-
-<h3>💬 We’d love your feedback!</h3>
-<form action="https://formsubmit.co/admin@makwandecareer.co.za" method="POST">
-  <input type="hidden" name="_captcha" value="false">
-  <input type="text" name="name" placeholder="Your name" required><br><br>
-  <input type="email" name="email" placeholder="Your email" required><br><br>
-  <textarea name="message" rows="4" placeholder="Your feedback..." required></textarea><br><br>
-  <button type="submit">Send Feedback</button>
-</form>
-
-</html>
+  <!-- Footer -->
+  <footer class="footer bg-light text-center mt-5 py-3">
+    <div class="container">
+      <span class="text-muted">&copy; 2025 AutoApply App. All rights reserved
 
 

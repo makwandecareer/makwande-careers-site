@@ -1,32 +1,60 @@
-<div id="status-banner" style="
-  background: #fef3c7;
-  color: #92400e;
-  text-align: center;
-  padding: 10px;
-  font-weight: bold;
-  font-size: 16px;
-  border-bottom: 1px solid #facc15;
-">
-  🚀 We’re live! Core services are running. Job board launching shortly. Stay tuned!
-</div>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-<meta name="description" content="Auto Apply App by Makwande Careers helps jobseekers automatically apply for jobs with AI-powered CV revamps and cover letters.">
-<meta name="keywords" content="Auto Apply, CV Revamp, Job Applications, AI Jobs, Cover Letters, Makwande Careers, Job Search Africa">
-<meta name="author" content="Makwande Careers">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="canonical" href="https://your-vercel-url.vercel.app/">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard - AutoApply</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">AutoApply</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
+          <li class="nav-item"><a class="nav-link" href="revamp.html">Revamp CV</a></li>
+          <li class="nav-item"><a class="nav-link" href="pay.html">Subscribe</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-<form action="https://formsubmit.co/admin@makwandecareer.co.za" method="POST">
-  <input type="hidden" name="_captcha" value="false">
-  <input type="text" name="name" placeholder="Your name" required><br><br>
-  <input type="email" name="email" placeholder="Your email" required><br><br>
-  <textarea name="message" rows="4" placeholder="Your feedback..." required></textarea><br><br>
-  <button type="submit">Send Feedback</button>
+  <!-- Dashboard Content -->
+  <div class="container py-5">
+    <h2 class="mb-4">Your Dashboard</h2>
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card shadow">
+          <div class="card-body">
+            <h5 class="card-title">Application Stats</h5>
+            <p class="card-text">You have applied to <strong>15 jobs</strong> this week.</p>
+            <p class="card-text">Pending interviews: <strong>3</strong></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card shadow">
+          <div class="card-body">
+            <h5 class="card-title">Subscription Status</h5>
+            <p class="card-text">Your subscription is <span class="text-success">Active</span>.</p>
+            <a href="subscription.html" class="btn btn-outline-primary btn-sm">View Subscription</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-light text-center mt-5 py-3">
+    <div class="container">
+      <span class="text-muted">&copy; 2025 AutoApply App. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
 

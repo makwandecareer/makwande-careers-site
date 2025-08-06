@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>View Applicants - AutoApply</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">AutoApply</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="recruiter.html">Recruiter Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="post_job.html">Post Job</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Applicants List -->
+  <div class="container py-5">
+    <h2 class="mb-4">Applicants for Your Jobs</h2>
+    <div class="list-group">
+      <div class="list-group-item">
+        <h5 class="mb-1">John D.</h5>
+        <p class="mb-1"><strong>Email:</strong> [Hidden until approved]</p>
+        <p class="mb-1"><strong>Phone:</strong> [Hidden until approved]</p>
+        <p class="mb-1"><strong>Skills:</strong> Python, Data Analysis, SQL</p>
+        <button class="btn btn-sm btn-outline-primary" onclick="requestDetails('123', '456')">Request Full Details</button>
+      </div>
+      <div class="list-group-item">
+        <h5 class="mb-1">Jane S.</h5>
+        <p class="mb-1"><strong>Email:</strong> [Hidden until approved]</p>
+        <p class="mb-1"><strong>Phone:</strong> [Hidden until approved]</p>
+        <p class="mb-1"><strong>Skills:</strong> Project Management, Agile, Jira</p>
+        <button class="btn btn-sm btn-outline-primary" onclick="requestDetails('124', '456')">Request Full Details</button>
+      </div>
+      <div class="list-group-item">
+        <h5 class="mb-1">Michael B.</h5>
+        <p class="mb-1"><strong>Email:</strong> [Hidden until approved]</p>
+        <p class="mb-1"><strong>Phone:</strong> [Hidden until approved]</p>
+        <p class="mb-1"><strong>Skills:</strong> Business Analysis, SQL, Excel</p>
+        <button class="btn btn-sm btn-outline-primary" onclick="requestDetails('125', '456')">Request Full Details</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-light text-center mt-5 py-3">
+    <div class="container">
+      <span class="text-muted">&copy; 2025 AutoApply App. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script>
+  function requestDetails(candidateId, recruiterId) {
+      fetch('/request-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ candidate_id: candidateId, recruiter_id: recruiterId })
+      })
+      .then(res => res.json())
+      .then(data => {
+          alert(data.message);
+      })
+      .catch(err => {
+          console.error(err);
+          alert("Error sending request.");
+      });
+  }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

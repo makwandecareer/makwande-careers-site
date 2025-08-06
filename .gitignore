@@ -16,9 +16,6 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Ignore bootstrap dist if re-downloaded
-bootstrap-5.0.2-dist/
-
 # Ignore temporary or backup files
 *.log
 *.tmp

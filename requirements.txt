@@ -11,3 +11,5 @@ requests
 sqlalchemy
 # uncomment the following line if you want to use the Snowflake SQLALchemy connector
 # snowflake-sqlalchemy
+sqlalchemy
+python-multipart

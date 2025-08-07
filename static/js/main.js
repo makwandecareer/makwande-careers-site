@@ -1,32 +1,31 @@
 // ==============================
-// 🚧 TEMPORARY: Job Board Offline
+// ✅ LIVE: Job Board Connected
 // ==============================
-
-// fetch('https://your-backend.onrender.com/api/jobs')
-//   .then(response => response.json())
-//   .then(data => {
-//     // Job rendering logic (to be restored)
-//   })
-//   .catch(error => {
-//     console.error('Error loading jobs:', error);
-//   });
-
-document.getElementById("job-list").innerHTML = `
-  <div style="text-align:center; padding: 20px; font-size: 18px;">
-    🛠️ <strong>Job board temporarily unavailable</strong><br>
-    We're integrating real-time job feeds from top job boards.<br><br>
-    ✅ But everything else is LIVE & WORKING:
-    <ul style="list-style: none; padding: 0; font-size: 16px;">
-      <li>📄 AI CV Revamp</li>
-      <li>✍️ Cover Letter Generator</li>
-      <li>📬 Auto Application Tracker</li>
-      <li>💳 Subscription System</li>
-    </ul>
-    <br>
-    🔔 Please check back soon. Job listings will appear here once live.
-  </div>
-`;
-
+fetch('https://autoapply-api.onrender.com/api/jobs')
+  .then(response => response.json())
+  .then(data => {
+    let jobsHtml = '';
+    data.forEach(job => {
+      jobsHtml += `
+        <div class="job-card">
+          <h3>${job.title}</h3>
+          <p><strong>Company:</strong> ${job.company}</p>
+          <p><strong>Location:</strong> ${job.location}</p>
+          <p><strong>Score:</strong> ${job.match_score}%</p>
+          <a href="${job.link}" target="_blank">View Job</a>
+        </div>
+        <hr/>
+      `;
+    });
+    document.getElementById("job-list").innerHTML = jobsHtml;
+  })
+  .catch(error => {
+    console.error('Error loading jobs:', error);
+    document.getElementById("job-list").innerHTML = `
+      <p style="text-align:center; color: red;">
+        🚫 Unable to load jobs at this moment. Please try again later.
+      </p>`;
+  }); n n 
 
 
 

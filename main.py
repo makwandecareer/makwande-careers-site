@@ -1,63 +1,77 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, EmailStr
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
-import bcrypt
+from dotenv import load_dotenv
+import os
+import openai
 
+# Load environment variables
+load_dotenv()
+MONGODB_URI = os.getenv("MONGODB_URI")
+DB_NAME = os.getenv("DB_NAME")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# MongoDB Setup
+client = MongoClient(MONGODB_URI)
+db = client[DB_NAME]
+users_collection = db["users"]
+
+# OpenAI Setup
+openai.api_key = OPENAI_API_KEY
+
+# FastAPI App
 app = FastAPI()
 
-# Allow frontend from Netlify
-origins = [
-    "https://autoapplyapp.netlify.app",  # Replace with actual Netlify domain
-    "http://localhost:3000"
-]
+# CORS Config
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-client = MongoClient("mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority")
-db = client["autoapply"]
-users = db["users"]
-
-class User(BaseModel):
-    full_name: str
-    email: EmailStr
-    password: str
-
-class LoginData(BaseModel):
-    email: EmailStr
-    password: str
+@app.get("/")
+def read_root():
+    return {"message": "Auto Apply API is running!"}
 
 @app.post("/signup")
-def signup(user: User):
-    if users.find_one({"email": user.email}):
-        raise HTTPException(status_code=400, detail="Email already exists")
-
-    hashed_pw = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
-    users.insert_one({
-        "full_name": user.full_name,
-        "email": user.email,
-        "password": hashed_pw
-    })
-    return {"message": "Account created successfully!"}
+async def signup(user: dict):
+    if users_collection.find_one({"email": user["email"]}):
+        raise HTTPException(status_code=400, detail="User already exists.")
+    users_collection.insert_one(user)
+    return {"message": "User registered successfully"}
 
 @app.post("/login")
-def login(data: LoginData):
-    user = users.find_one({"email": data.email})
-    if not user or not bcrypt.checkpw(data.password.encode('utf-8'), user["password"]):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+async def login(user: dict):
+    db_user = users_collection.find_one({"email": user["email"], "password": user["password"]})
+    if not db_user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {"message": "Login successful"}
 
-    return {
-        "message": "Login successful",
-        "user": {
-            "full_name": user["full_name"],
-            "email": user["email"]
-        }
-    }
+@app.post("/revamp-cv")
+async def revamp_cv(request: Request):
+    body = await request.json()
+    cv_text = body.get("cv_text")
+    if not cv_text:
+        raise HTTPException(status_code=400, detail="CV text is required.")
+
+    prompt = f"Revamp this CV for ATS compliance and improve structure:\n\n{cv_text}"
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a professional CV revamper."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        revamped_cv = response["choices"][0]["message"]["content"]
+        return {"revamped_cv": revamped_cv}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 
 

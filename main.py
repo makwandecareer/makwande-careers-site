@@ -1,54 +1,63 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, EmailStr
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from pymongo import MongoClient
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+import bcrypt
 
 app = FastAPI()
 
-# CORS middleware (allow frontend)
+# Allow frontend from Netlify
+origins = [
+    "https://autoapplyapp.netlify.app",  # Replace with actual Netlify domain
+    "http://localhost:3000"
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with Netlify domain
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# MongoDB connection
-client = MongoClient(os.getenv("MONGO_URL"))
+client = MongoClient("mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority")
 db = client["autoapply"]
-users_collection = db["users"]
+users = db["users"]
 
-# Request body models
 class User(BaseModel):
     full_name: str
-    email: str
+    email: EmailStr
     password: str
 
-class LoginRequest(BaseModel):
-    email: str
+class LoginData(BaseModel):
+    email: EmailStr
     password: str
 
 @app.post("/signup")
-async def signup(user: User):
-    existing_user = users_collection.find_one({"email": user.email})
-    if existing_user:
-        raise HTTPException(status_code=400, detail="User already exists")
-    
-    users_collection.insert_one(user.dict())
+def signup(user: User):
+    if users.find_one({"email": user.email}):
+        raise HTTPException(status_code=400, detail="Email already exists")
+
+    hashed_pw = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
+    users.insert_one({
+        "full_name": user.full_name,
+        "email": user.email,
+        "password": hashed_pw
+    })
     return {"message": "Account created successfully!"}
 
 @app.post("/login")
-async def login(login: LoginRequest):
-    user = users_collection.find_one({"email": login.email})
-    if not user or user["password"] != login.password:
+def login(data: LoginData):
+    user = users.find_one({"email": data.email})
+    if not user or not bcrypt.checkpw(data.password.encode('utf-8'), user["password"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    
-    return {"message": "Login successful!"}
+
+    return {
+        "message": "Login successful",
+        "user": {
+            "full_name": user["full_name"],
+            "email": user["email"]
+        }
+    }
 
 
 

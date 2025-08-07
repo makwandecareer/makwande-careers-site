@@ -17,3 +17,5 @@ email-validator
 pydantic[email]
 jinja2
 pymongo
+bcrypt
+python-dotenv

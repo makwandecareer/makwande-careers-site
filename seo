@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoApplyApp Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #064e3b; /* Deep emerald green */
+            color: #ffffff;
+        }
+        .navbar {
+            background-color: #047857; /* Stronger green for navbar */
+        }
+        .card {
+            background-color: #065f46;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #059669;
+            border-color: #047857;
+        }
+        .btn-primary:hover {
+            background-color: #10b981;
+        }
+    </style>
+    <script>
+        // Check user session
+        window.onload = function () {
+            const user = localStorage.getItem('user');
+            if (!user) {
+                window.location.href = '/login.html';
+            }
+        };
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">AutoApplyApp</a>
+            <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="card text-white">
+            <div class="card-body">
+                <h2 class="card-title">Welcome to Your Dashboard</h2>
+                <p class="card-text">Manage your job applications, subscriptions, and more here.</p>
+                <a href="/jobs.html" class="btn btn-primary">View Job Matches</a>
+                <a href="/subscription.html" class="btn btn-primary">Manage Subscription</a>
+                <a href="/revamp.html" class="btn btn-primary">Revamp CV</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,36 +1,54 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
+from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
-# Allow CORS for frontend (you can restrict this to your Netlify domain)
+# CORS middleware (allow frontend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Use ["https://your-netlify-site.netlify.app"] in production
+    allow_origins=["*"],  # In production, replace with Netlify domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# In-memory user store (replace with DB later)
-users_db = {}
+# MongoDB connection
+client = MongoClient(os.getenv("MONGO_URL"))
+db = client["autoapply"]
+users_collection = db["users"]
 
-class SignupRequest(BaseModel):
-    name: str
-    email: EmailStr
+# Request body models
+class User(BaseModel):
+    full_name: str
+    email: str
     password: str
 
-@app.post("/api/signup")
-async def signup(request: SignupRequest):
-    if request.email in users_db:
-        raise HTTPException(status_code=400, detail="Email already exists")
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+@app.post("/signup")
+async def signup(user: User):
+    existing_user = users_collection.find_one({"email": user.email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
     
-    users_db[request.email] = {
-        "name": request.name,
-        "password": request.password  # In production, hash this!
-    }
-    return {"message": "User registered successfully"}
+    users_collection.insert_one(user.dict())
+    return {"message": "Account created successfully!"}
+
+@app.post("/login")
+async def login(login: LoginRequest):
+    user = users_collection.find_one({"email": login.email})
+    if not user or user["password"] != login.password:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    return {"message": "Login successful!"}
 
 
 

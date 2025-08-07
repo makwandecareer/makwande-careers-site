@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jobs - AutoApply</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .verified-badge {
+      background-color: #28a745;
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+    .scam-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      border: 1px solid #ffeeba;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">AutoApply</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="revamp.html">Revamp CV</a></li>
+          <li class="nav-item"><a class="nav-link" href="pay.html">Subscribe</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Scam Warning Banner -->
+  <div class="container mt-4">
+    <div class="scam-warning">
+      ⚠️ AutoApply will never ask jobseekers to pay for job opportunities. Report suspicious listings immediately using the "Report Job" button.
+    </div>
+  </div>
+
+  <!-- Jobs List -->
+  <div class="container py-4">
+    <h2 class="mb-4">Matched Jobs</h2>
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Filter by Location">
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Filter by Company">
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Filter by Match Score">
+      </div>
+    </div>
+
+    <div class="list-group">
+      <div class="list-group-item">
+        <h5 class="mb-1">Software Engineer <span class="verified-badge">Verified</span></h5>
+        <p class="mb-1">TechCorp - Cape Town</p>
+        <small>Match Score: 92%</small>
+        <div class="mt-2">
+          <a href="#" class="btn btn-sm btn-primary">Apply</a>
+          <a href="report_job.html" class="btn btn-sm btn-danger">Report Job</a>
+        </div>
+      </div>
+      <div class="list-group-item">
+        <h5 class="mb-1">Data Analyst</h5>
+        <p class="mb-1">DataWorks - Johannesburg</p>
+        <small>Match Score: 87%</small>
+        <div class="mt-2">
+          <a href="#" class="btn btn-sm btn-primary">Apply</a>
+          <a href="report_job.html" class="btn btn-sm btn-danger">Report Job</a>
+        </div>
+      </div>
+      <div class="list-group-item">
+        <h5 class="mb-1">Project Manager <span class="verified-badge">Verified</span></h5>
+        <p class="mb-1">BizManage - Durban</p>
+        <small>Match Score: 85%</small>
+        <div class="mt-2">
+          <a href="#" class="btn btn-sm btn-primary">Apply</a>
+          <a href="report_job.html" class="btn btn-sm btn-danger">Report Job</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-light text-center mt-5 py-3">
+    <div class="container">
+      <span class="text-muted">&copy; 2025 AutoApply App. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+<!-- header.html -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Makwande Careers App - Auto Apply for Jobs</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Makwande Careers App helps job seekers automatically apply for jobs, revamp CVs, and create tailored cover letters. Serving 10 SADC countries.">
+  <meta name="keywords" content="Makwande Careers, Auto Apply, Job Application Automation, CV Revamp, Cover Letter Generator, SADC Jobs">
+  <meta name="author" content="Makwande Careers">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph (Facebook, LinkedIn) -->
+  <meta property="og:title" content="Makwande Careers App - Auto Apply for Jobs">
+  <meta property="og:description" content="Automate your job applications, revamp your CV, and generate cover letters instantly.">
+  <meta property="og:image" content="https://yourdomain.com/static/logo.png">
+  <meta property="og:url" content="https://yourdomain.com">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap JavaScript Bundle (with Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX'); // Replace with your GA ID
+  </script>
+
+  <!-- Optional Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

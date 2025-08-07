@@ -1,0 +1,90 @@
+/* Global body styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Navbar */
+  .navbar {
+    background-color: #004085;
+  }
+  
+  .navbar-brand, .navbar-nav .nav-link {
+    color: #ffffff !important;
+    font-weight: 500;
+  }
+  
+  .navbar-brand:hover, .navbar-nav .nav-link:hover {
+    color: #d4d4d4 !important;
+  }
+  
+  /* Hero Section */
+  .hero {
+    padding: 50px 20px;
+    text-align: center;
+    background-color: #e9f5ff;
+    color: #004085;
+  }
+  
+  /* Buttons */
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Cards */
+  .card {
+    border: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Tables */
+  .table th {
+    background-color: #004085;
+    color: white;
+  }
+  
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f2f2;
+  }
+  
+  /* Footer */
+  .footer {
+    padding: 20px;
+    background-color: #004085;
+    color: white;
+    text-align: center;
+  }
+  
+  /* Alerts */
+  .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  /* Forms */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+  }
+  
+  /* Custom heading style */
+  h1, h2, h3 {
+    color: #004085;
+  }

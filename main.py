@@ -1,44 +1,34 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Dict
-import hashlib
+from pydantic import BaseModel, EmailStr
 
 app = FastAPI()
 
-# CORS config (allow frontend to connect)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Or set your Vercel frontend URL
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Simulated DB (Replace with real DB in production)
+users_db = {}
 
-# In-memory DB (use SQLite/PostgreSQL in production)
-users_db: Dict[str, str] = {}
-
-class User(BaseModel):
-    email: str
+class SignupRequest(BaseModel):
+    name: str
+    email: EmailStr
     password: str
 
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
 @app.post("/signup")
-def signup(user: User):
+def signup(user: SignupRequest):
     if user.email in users_db:
-        raise HTTPException(status_code=400, detail="Email already registered.")
-    users_db[user.email] = hash_password(user.password)
+        raise HTTPException(status_code=400, detail="User already exists")
+    users_db[user.email] = {"name": user.name, "password": user.password}
     return {"message": "User created successfully"}
 
 @app.post("/login")
-def login(user: User):
-    if user.email not in users_db:
+def login(credentials: LoginRequest):
+    user = users_db.get(credentials.email)
+    if not user or user["password"] != credentials.password:
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    if users_db[user.email] != hash_password(user.password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    return {"message": "Login successful"}
+    return {"message": f"Welcome back, {user['name']}!"}
+
 
 
 

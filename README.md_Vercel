@@ -1,0 +1,21 @@
+# Auto Apply App (Vercel Version)
+
+This is the **Vercel-hosted frontend** version of the Auto Apply App — an AI-powered job application automation platform built by [Makwande Careers](https://makwandecareers.com).
+
+🚀 **Live URL**: https://autoapply-vercel.vercel.app  
+🌐 **Backend API**: Hosted on Render at https://autoapply-api.onrender.com
+
+---
+
+## 🧠 Features
+
+- AI-powered CV revamp
+- Smart job matching based on job specs
+- Cover letter generation
+- Subscription and billing via Paystack
+- Dashboard to track job applications
+
+---
+
+## 📁 Project Structure
+

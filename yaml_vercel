@@ -1,0 +1,19 @@
+
+---
+
+## ⚙️ Environment Variables
+
+Before running locally or deploying, create a `.env` file and configure the following:
+
+```env
+# .env
+API_BASE_URL=https://autoapply-api.onrender.com
+PAYSTACK_PUBLIC_KEY=your_paystack_public_key
+
+
+Before running locally or deploying, create a `.env` file and configure the following:
+
+```env
+# .env
+API_BASE_URL=https://autoapply-api.onrender.com
+PAYSTACK_PUBLIC_KEY=your_paystack_public_key

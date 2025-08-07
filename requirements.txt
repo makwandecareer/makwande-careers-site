@@ -13,3 +13,6 @@ sqlalchemy
 # snowflake-sqlalchemy
 sqlalchemy
 python-multipart
+email-validator
+pydantic[email]
+jinja2

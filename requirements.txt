@@ -1,14 +1,15 @@
 fastapi==0.111.0
-uvicorn[standard]==0.30.0
+uvicorn==0.30.0
 sqlalchemy==2.0.36
-psycopg[binary,pool]==3.2.1
-pydantic[email]
-email-validator
+psycopg2-binary==2.9.9
+python-dotenv==1.1.1
+email-validator==2.2.0
 python-multipart==0.0.9
 passlib[bcrypt]==1.7.4
-python-dotenv
-jinja2
-requests
+PyJWT==2.10.1
+requests==2.32.4
+jinja2==3.1.6
+
 
 
 

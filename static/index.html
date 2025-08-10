@@ -1,99 +1,87 @@
-<!DOCTYPE html>
+index.html
+
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1"
-  />
-  <title>AutoApply – Jobs</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoApply — Sign in</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <header class="topbar">
-    <div class="brand">AutoApply</div>
-    <nav id="authedNav" class="hidden">
-      <button id="navJobs" class="link">Jobs</button>
-      <button id="btnLogout" class="btn danger">Logout</button>
-    </nav>
-  </header>
+<body class="container center">
+  <div class="card">
+    <h1>AutoApply</h1>
+    <p class="muted">Sign in to continue</p>
 
-  <main class="container">
-    <!-- AUTH VIEW -->
-    <section id="authView" class="card">
-      <div class="tabs">
-        <button class="tab active" data-tab="login">Login</button>
-        <button class="tab" data-tab="signup">Sign up</button>
-      </div>
+    <form id="loginForm" class="stack">
+      <label>Email
+        <input type="email" id="loginEmail" required />
+      </label>
+      <label>Password
+        <input type="password" id="loginPassword" required />
+      </label>
+      <button type="submit" class="btn primary">Sign in</button>
+      <p id="loginMsg" class="msg"></p>
+    </form>
 
-      <div class="tab-panels">
-        <!-- LOGIN -->
-        <form id="loginForm" class="panel active">
-          <div class="field">
-            <label>Email</label>
-            <input type="email" name="email" placeholder="you@example.com" required />
-          </div>
-          <div class="field">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="••••••••" required />
-          </div>
-          <button class="btn primary" type="submit">Login</button>
-          <p id="loginMsg" class="msg"></p>
-        </form>
+    <hr/>
 
-        <!-- SIGNUP -->
-        <form id="signupForm" class="panel">
-          <div class="field">
-            <label>Full name</label>
-            <input type="text" name="full_name" placeholder="Jane Doe" required />
-          </div>
-          <div class="field">
-            <label>Email</label>
-            <input type="email" name="email" placeholder="you@example.com" required />
-          </div>
-          <div class="field">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="Min 8 characters" required />
-          </div>
-          <button class="btn primary" type="submit">Create account</button>
-          <p id="signupMsg" class="msg"></p>
-        </form>
-      </div>
-    </section>
+    <p class="muted">New here? Create an account</p>
+    <form id="signupForm" class="stack">
+      <label>Full name
+        <input type="text" id="signupName" required />
+      </label>
+      <label>Email
+        <input type="email" id="signupEmail" required />
+      </label>
+      <label>Password
+        <input type="password" id="signupPassword" minlength="6" required />
+      </label>
+      <button type="submit" class="btn">Sign up</button>
+      <p id="signupMsg" class="msg"></p>
+    </form>
+  </div>
 
-    <!-- JOBS VIEW -->
-    <section id="jobsView" class="hidden">
-      <div class="card">
-        <div class="row gap">
-          <input id="searchInput" class="input" placeholder="Search job title, company, or keyword…" />
-          <select id="locationSelect" class="input">
-            <option value="">All locations</option>
-            <option value="Remote">Remote</option>
-            <option value="USA">USA</option>
-            <option value="Europe">Europe</option>
-            <option value="Africa">Africa</option>
-          </select>
-          <button id="btnSearch" class="btn">Search</button>
-        </div>
-      </div>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    // If already logged in, go straight to dashboard
+    if (getToken()) window.location.href = "dashboard.html";
 
-      <div id="jobsList" class="grid"></div>
+    // Handle login
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
 
-      <div class="pager">
-        <button id="prevPage" class="btn" disabled>Prev</button>
-        <span id="pageInfo">Page 1</span>
-        <button id="nextPage" class="btn" disabled>Next</button>
-      </div>
-    </section>
-  </main>
+      setMsg("loginMsg", "Signing in…");
+      const { ok, message } = await login(email, password);
+      if (ok) {
+        window.location.href = "dashboard.html";
+      } else {
+        setMsg("loginMsg", message || "Login failed", true);
+      }
+    });
 
-  <footer class="footer">
-    <span>© <span id="year"></span> AutoApply</span>
-  </footer>
+    // Handle sign-up
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("signupName").value.trim();
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
 
-  <script type="module" src="./app.js"></script>
+      setMsg("signupMsg", "Creating account…");
+      const { ok, message } = await signup({ name, email, password });
+      if (ok) {
+        setMsg("signupMsg", "Account created — you can sign in now.");
+      } else {
+        setMsg("signupMsg", message || "Sign-up failed", true);
+      }
+    });
+  </script>
 </body>
 </html>
+
 
 
 

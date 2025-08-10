@@ -1,37 +1,81 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Dashboard - View your job application status and manage your account.">
-  <title>Dashboard - AutoApply App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoApply — Jobs</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body style="background-color: #014421; color: white;">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <span class="navbar-brand">AutoApply Dashboard</span>
-      <button class="btn btn-outline-light ms-auto" onclick="logout()">Logout</button>
+<body class="container">
+  <header class="bar">
+    <h1>Jobs</h1>
+    <div class="right">
+      <button id="logoutBtn" class="btn danger">Logout</button>
     </div>
-  </nav>
+  </header>
 
-  <div class="container mt-5">
-    <h2>Welcome to your dashboard!</h2>
-    <p>Your personalized job application tracking starts here.</p>
-    <!-- Add dashboard content here -->
-  </div>
+  <section class="card">
+    <form id="searchForm" class="row">
+      <input type="text" id="q" placeholder="Search title / company / location…" />
+      <button class="btn primary">Search</button>
+    </form>
 
+    <div id="jobsList" class="list"></div>
+    <p id="jobsMsg" class="msg"></p>
+  </section>
+
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="jobs.js"></script>
   <script>
-    // Session check
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "login.html";
+    // Require login to view this page
+    requireAuth();
+
+    document.getElementById("logoutBtn").onclick = () => {
+      logout();
+      window.location.href = "index.html";
+    };
+
+    const jobsList = document.getElementById("jobsList");
+    const jobsMsg  = document.getElementById("jobsMsg");
+
+    async function runSearch(q = "") {
+      setMsgEl(jobsMsg, "Loading jobs…");
+      const { ok, data, message } = await fetchJobs(q);
+      if (!ok) return setMsgEl(jobsMsg, message || "Failed to load jobs", true);
+      if (!data || data.length === 0) return setMsgEl(jobsMsg, "No jobs found.");
+
+      jobsList.innerHTML = data.map(renderJob).join("");
+      setMsgEl(jobsMsg, "");
     }
 
-    function logout() {
-      localStorage.removeItem("token");
-      window.location.href = "login.html";
+    function renderJob(job) {
+      const when = job.posted_at ? new Date(job.posted_at).toLocaleDateString() : "";
+      return `
+        <article class="item">
+          <div class="item-main">
+            <h3>${escapeHtml(job.title || "Untitled")}</h3>
+            <p class="muted">
+              ${escapeHtml(job.company || "Unknown")} — ${escapeHtml(job.location || "")}
+            </p>
+            <p>${escapeHtml(job.description || "").slice(0, 240)}…</p>
+            ${job.url ? <p><a class="link" href="${job.url}" target="_blank" rel="noopener">View / Apply</a></p> : ""}
+          </div>
+          <div class="item-side">
+            <span class="tag">${escapeHtml(job.source || "Job board")}</span>
+            <span class="muted small">${when}</span>
+          </div>
+        </article>
+      `;
     }
+
+    document.getElementById("searchForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      runSearch(document.getElementById("q").value.trim());
+    });
+
+    // initial load
+    runSearch();
   </script>
 </body>
 </html>

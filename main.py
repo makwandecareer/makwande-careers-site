@@ -1,157 +1,157 @@
 # main.py
 import os
-from typing import List, Optional
+from typing import List, Optional, Dict
+from datetime import datetime, timedelta
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # App metadata
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 APP_NAME = "AutoApply API"
 APP_VERSION = os.getenv("APP_VERSION", "1.0.0")
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Allowed CORS origins
-# - Set env var ALLOWED_ORIGINS to a comma-separated list of URLs.
-# - We also provide safe defaults that match your static site(s)/domain(s).
-# -----------------------------------------------------------------------------
-_default_origins = [
-    "https://autoapplyapp-mobile.onrender.com",  # your Render static site
-    "https://autoapplyapp.onrender.com",         # if you keep a second static site
+#   - You can override with env var ALLOWED_ORIGINS (comma-separated)
+# ------------------------------------------------------------------------------
+_default_origins: List[str] = [
+    "https://autoapplyapp-mobile.onrender.com",  # your static site on Render
+    "https://autoapply-api.onrender.com",        # this API's Render URL
     "https://makwandecareer.co.za",              # your custom domain (if used)
 ]
 
-_allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
-if _allowed_origins_env.strip():
-    ALLOWED_ORIGINS: List[str] = [
-        o.strip() for o in _allowed_origins_env.split(",") if o.strip()
-    ]
+_allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "").strip()
+if _allowed_origins_env:
+    ALLOWED_ORIGINS: List[str] = [o.strip() for o in _allowed_origins_env.split(",") if o.strip()]
 else:
     ALLOWED_ORIGINS = _default_origins
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # FastAPI app
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 app = FastAPI(
     title=APP_NAME,
     version=APP_VERSION,
-    docs_url="/docs",        # Swagger
-    redoc_url="/redoc",      # ReDoc
-    openapi_url="/openapi.json",
+    description="Backend API for AutoApply (signup, login, jobs).",
 )
 
-# -----------------------------------------------------------------------------
-# CORS (this is the bit that fixes your front-end requests)
-# -----------------------------------------------------------------------------
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,   # *critical*
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# -----------------------------------------------------------------------------
-# Health & meta endpoints
-# -----------------------------------------------------------------------------
-class HealthResponse(BaseModel):
-    status: str
-    version: str
-    origins: List[str]
+# ------------------------------------------------------------------------------
+# In-memory "db" (demo only). Replace with a real DB in production.
+# ------------------------------------------------------------------------------
+_users_by_email: Dict[str, Dict] = {}
+_fake_jobs: List[Dict] = [
+    {
+        "id": "job-001",
+        "title": "Junior Software Engineer",
+        "company": "Makwandé Careers",
+        "location": "Remote",
+        "posted_at": datetime.utcnow().isoformat() + "Z",
+        "apply_url": "https://makwandecareer.co.za/jobs/junior-software-engineer",
+    },
+    {
+        "id": "job-002",
+        "title": "Data Analyst Intern",
+        "company": "Makwandé Careers",
+        "location": "Frankfurt, DE (Hybrid)",
+        "posted_at": (datetime.utcnow() - timedelta(days=1)).isoformat() + "Z",
+        "apply_url": "https://makwandecareer.co.za/jobs/data-analyst-intern",
+    },
+]
 
-@app.get("/", tags=["meta"])
-def root():
-    return {"name": APP_NAME, "version": APP_VERSION, "docs": "/docs"}
+# ------------------------------------------------------------------------------
+# Schemas
+# ------------------------------------------------------------------------------
+class SignupRequest(BaseModel):
+    full_name: str = Field(..., min_length=2, max_length=80)
+    email: EmailStr
+    password: str = Field(..., min_length=6, max_length=128)
 
-@app.get("/health", response_model=HealthResponse, tags=["meta"])
+class AuthResponse(BaseModel):
+    message: str
+    token: Optional[str] = None
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+class Job(BaseModel):
+    id: str
+    title: str
+    company: str
+    location: str
+    posted_at: str
+    apply_url: str
+
+# ------------------------------------------------------------------------------
+# Routes
+# ------------------------------------------------------------------------------
+@app.get("/", summary="Health check")
 def health():
-    return HealthResponse(status="ok", version=APP_VERSION, origins=ALLOWED_ORIGINS)
+    return {
+        "name": APP_NAME,
+        "version": APP_VERSION,
+        "status": "ok",
+        "time": datetime.utcnow().isoformat() + "Z",
+    }
 
-@app.get("/api/version", tags=["meta"])
-def version():
-    return {"version": APP_VERSION}
+@app.post("/api/signup", response_model=AuthResponse, summary="Create a new account")
+def signup(payload: SignupRequest):
+    email_key = payload.email.lower()
+    if email_key in _users_by_email:
+        raise HTTPException(status_code=409, detail="An account with that email already exists.")
+    # Store user (hashing omitted for demo)
+    _users_by_email[email_key] = {
+        "full_name": payload.full_name,
+        "email": email_key,
+        "password": payload.password,  # NEVER store plain text in production
+        "created_at": datetime.utcnow().isoformat() + "Z",
+    }
+    # Return a fake token (replace with real JWT in production)
+    token = f"fake-jwt-token-for:{email_key}"
+    return AuthResponse(message="Signup successful.", token=token)
 
-# -----------------------------------------------------------------------------
-# Try to include your existing routers (preferred if you already have them)
-#   - routes/auth.py   -> router with /signup, /login under /auth
-#   - routes/jobs.py   -> router with /jobs under /api
-# If they don't exist, we provide minimal fallbacks so the API still runs.
-# -----------------------------------------------------------------------------
-# AUTH ROUTES
-_auth_router_included = False
-try:
-    from routes.auth import router as auth_router  # type: ignore
-    app.include_router(auth_router, prefix="/auth", tags=["auth"])
-    _auth_router_included = True
-except Exception:
-    # Minimal fallbacks (you can remove these if you have real routes)
-    class SignupIn(BaseModel):
-        email: str
-        password: str
-        name: Optional[str] = None
+@app.post("/api/login", response_model=AuthResponse, summary="Login")
+def login(payload: LoginRequest):
+    email_key = payload.email.lower()
+    user = _users_by_email.get(email_key)
+    if not user or user["password"] != payload.password:
+        raise HTTPException(status_code=401, detail="Invalid email or password.")
+    token = f"fake-jwt-token-for:{email_key}"
+    return AuthResponse(message="Login successful.", token=token)
 
-    class LoginIn(BaseModel):
-        email: str
-        password: str
+@app.get("/api/jobs", response_model=List[Job], summary="List jobs")
+def list_jobs():
+    """
+    Returns a demo list of jobs. Replace with your real source:
+    - pull from a database
+    - or fetch from your external job source using requests/httpx
+    """
+    return _fake_jobs
 
-    class AuthOut(BaseModel):
-        message: str
+# Optional: catch-all for unknown API paths (keeps errors clean)
+@app.middleware("http")
+async def not_found_passthrough(request, call_next):
+    response = await call_next(request)
+    return response
 
-    @app.post("/auth/signup", response_model=AuthOut, tags=["auth"])
-    def fallback_signup(payload: SignupIn):
-        # Replace with your real DB logic
-        return AuthOut(message=f"Signup OK for {payload.email} (fallback)")
-
-    @app.post("/auth/login", response_model=AuthOut, tags=["auth"])
-    def fallback_login(payload: LoginIn):
-        # Replace with your real auth/JWT logic
-        return AuthOut(message=f"Login OK for {payload.email} (fallback)")
-
-# JOBS ROUTES
-_jobs_router_included = False
-try:
-    from routes.jobs import router as jobs_router  # type: ignore
-    app.include_router(jobs_router, prefix="/api", tags=["jobs"])
-    _jobs_router_included = True
-except Exception:
-    # Minimal fallback
-    class Job(BaseModel):
-        id: int
-        title: str
-        company: str
-        location: str
-
-    _SAMPLE_JOBS = [
-        Job(id=1, title="Software Engineer", company="Makwandecareer", location="Remote"),
-        Job(id=2, title="Data Analyst", company="AutoApply", location="Cape Town"),
-    ]
-
-    @app.get("/api/jobs", response_model=List[Job], tags=["jobs"])
-    def fallback_jobs():
-        return _SAMPLE_JOBS
-
-# -----------------------------------------------------------------------------
-# Optional: log which routers are active (handy in Render logs)
-# -----------------------------------------------------------------------------
-if not _auth_router_included:
-    print("[INFO] Using fallback /auth routes (routes/auth.py not found).")
-else:
-    print("[INFO] Included routes/auth.py router at /auth.")
-
-if not _jobs_router_included:
-    print("[INFO] Using fallback /api/jobs route (routes/jobs.py not found).")
-else:
-    print("[INFO] Included routes/jobs.py router at /api.")
-
-# -----------------------------------------------------------------------------
-# Local dev entry point (Render uses Gunicorn/Uvicorn worker; this is for local)
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Dev/local run (Render uses start command, but this is safe and correct)
+# ------------------------------------------------------------------------------
 if _name_ == "_main_":
     import uvicorn
-    # Bind to 0.0.0.0 so it behaves like Render dyno locally
-    uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)), reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
 
 
 

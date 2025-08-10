@@ -1,51 +1,31 @@
-# render.yaml — AutoApply (backend + frontend)
-
 services:
-  # =========
-  # BACKEND
-  # =========
   - type: web
     name: autoapply-api
     env: python
-    plan: free                 # change if you want a paid plan
-    region: frankfurt          # keep or change to your closest region
+    plan: free
     branch: main
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
-    healthCheckPath: "/"       # your "/" endpoint returns OK
-    autoDeploy: true
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
-      # --- Runtime version (works on Render)
       - key: PYTHON_VERSION
         value: 3.12.6
-
-      # --- Secrets: set these in Render after first sync (won't be stored in GitHub)
       - key: DATABASE_URL
-        sync: false
+        sync: false # Set in Render Dashboard → Environment tab
       - key: SECRET_KEY
-        sync: false
-
-      # --- Non-secret config (safe to commit)
+        sync: false # Set in Render Dashboard → Environment tab
       - key: CORS_ORIGINS
         value: "*"
       - key: API_BASE_URL
         value: https://autoapply-api.onrender.com
 
-  # =========
-  # FRONTEND
-  # =========
-  - type: static
-    name: autoapply-web
+  - type: web
+    name: autoapply-frontend
+    env: static
     plan: free
-    region: frankfurt
     branch: main
-
-    # If your built files are already committed (index.html etc.),
-    # the build step can be skipped.
-    buildCommand: ""
-    publishPath: frontend_build
-
-    # If you ever switch to a build step (e.g., Vite/Next), expose envs here:
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
     envVars:
-      - key: VITE_API_BASE_URL
+      - key: API_BASE_URL
         value: https://autoapply-api.onrender.com
+

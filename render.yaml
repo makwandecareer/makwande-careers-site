@@ -36,7 +36,7 @@ services:
   - type: web
     name: autoapply-api
     env: python
-    plan: starter            # or "standard"
+    plan: starter plus            # or "standard"
     branch: main
     autoDeploy: true
     envVarGroups:

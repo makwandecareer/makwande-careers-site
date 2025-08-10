@@ -1,41 +1,70 @@
-# render.yaml — AutoApplyApp
-# One blueprint that provisions:
-# 1) A Postgres database
-# 2) The FastAPI backend (Python)
-# 3) A static frontend (served from /frontend_build)
+# render.yaml — AutoApplyApp (Frontend + Backend, absolute URLs)
 
-databases:
-  - name: autoapply-db
-    plan: starter plus  # Updated from 'starter'
-    databaseName: autoapply
-    user: autoapply_user
-
-services:
-  - type: web
-    name: autoapply-backend
-    env: python
-    plan: starter
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port 8000
+envVarGroups:
+  - name: autoapply-env
     envVars:
+      # ===== Database =====
       - key: DATABASE_URL
-        fromDatabase:
-          name: autoapply-db
-          property: connectionString
+        value: "postgresql://USER:PASSWORD@HOST:5432/DBNAME"     # <-- change me
+
+      # ===== App Config =====
       - key: SECRET_KEY
-        generateValue: true
+        value: "paste-a-long-random-secret-here"                 # <-- change me
       - key: ALLOWED_HOSTS
         value: "*"
+      - key: DEBUG
+        value: "true"
 
+      # ===== Third-party API keys (optional) =====
+      - key: OPENAI_API_KEY
+        value: ""
+      - key: PAYSTACK_SECRET_KEY
+        value: ""
+      - key: PAYSTACK_PUBLIC_KEY
+        value: ""
+
+      # ===== Absolute URLs for live services =====
+      - key: FRONTEND_URL
+        value: "https://autoapply-frontend.onrender.com"         # <-- change after deploy
+      - key: BACKEND_URL
+        value: "https://autoapply-api.onrender.com"              # <-- change after deploy
+
+services:
+  # ---------------------------
+  # 1) FastAPI backend
+  # ---------------------------
+  - type: web
+    name: autoapply-api
+    env: python
+    plan: starter            # or "standard"
+    branch: main
+    autoDeploy: true
+    envVarGroups:
+      - autoapply-env
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+  # ---------------------------
+  # 2) Static frontend
+  # ---------------------------
   - type: static_site
     name: autoapply-frontend
-    env: static
-    plan: starter
-    buildCommand: npm install && npm run build
+    branch: main
+    autoDeploy: true
+
+    buildCommand: |
+      mkdir -p frontend_build
+      echo "window.__CONFIG__={API_BASE_URL:'$BACKEND_URL'};" > frontend_build/config.js
+      cp -r frontend_src/* frontend_build/  # <-- change to your actual source folder
+
     staticPublishPath: frontend_build
+
     envVars:
       - key: BACKEND_URL
-        value: https://autoapply-backend.onrender.com
+        fromGroup: autoapply-env
+
+
+
 
 
 

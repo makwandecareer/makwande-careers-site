@@ -1,21 +1,13 @@
-/**
- * Global configuration for the AutoApply frontend.
- * This file should be included BEFORE any other scripts
- * so that window.__CONFIG__ is available everywhere.
- */
+// ⚠️ Set this to your live API base URL (absolute, no trailing slash)
+const API_BASE = "https://autoapply-api.onrender.com"; // <-- change to YOUR API URL
 
-window.__CONFIG__ = {
-    // Absolute URL of your deployed FastAPI backend
-    // Replace this with your actual Render backend URL
-    API_BASE_URL: "https://autoapply-api.onrender.com",
-
-    // Optional: version or environment label for debugging
-    APP_VERSION: "1.0.0",
-    ENVIRONMENT: "production"
+// Endpoints used below (change only if your backend differs)
+const ENDPOINTS = {
+  signup: ${API_BASE}/auth/signup,
+  login: ${API_BASE}/auth/login,
+  me: ${API_BASE}/auth/me,
+  jobs: ${API_BASE}/api/jobs,
 };
 
-/**
- * Example usage in other JS files:
- * fetch(`${window.__CONFIG__.API_BASE_URL}/auth/login`, { ... })
- */
+export { API_BASE, ENDPOINTS };
 

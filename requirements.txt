@@ -9,7 +9,7 @@ passlib[bcrypt]==1.7.4
 PyJWT==2.10.1
 requests==2.32.4
 jinja2==3.1.6
-staelette
+starlette
 python-multipart
 passlib[bcrypt]
 asyncpg

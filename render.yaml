@@ -1,31 +1,95 @@
+# render.yaml — AutoApplyApp
+# One blueprint that provisions:
+# 1) A Postgres database
+# 2) The FastAPI backend (Python)
+# 3) A static frontend (served from /frontend_build)
+
+databases:
+  - name: autoapply-db
+    plan: starter              # use 'starter' (Render no longer accepts 'free')
+    databaseName: autoapply
+    user: autoapply
+
 services:
+  # -------------- API (FastAPI) -----------------
   - type: web
     name: autoapply-api
     env: python
-    plan: free
+    plan: starter              # 'starter' not 'free'
     branch: main
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true
+    healthCheckPath: /
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.12.6
+      # --- Database URL (from the managed DB above)
       - key: DATABASE_URL
-        sync: false # Set in Render Dashboard → Environment tab
-      - key: SECRET_KEY
-        sync: false # Set in Render Dashboard → Environment tab
-      - key: CORS_ORIGINS
-        value: "*"
-      - key: API_BASE_URL
-        value: https://autoapply-api.onrender.com
+        fromDatabase:
+          name: autoapply-db
+          property: connectionString
 
-  - type: web
-    name: autoapply-frontend
-    env: static
-    plan: free
+      # --- Security / JWT
+      - key: SECRET_KEY
+        value: abf6a2fefc49d3e904f5566ab6071458f1af048676a07631c7a885af7f95c
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+
+      # --- CORS (set to your frontend URL once it’s live)
+      - key: CORS_ALLOW_ORIGINS
+        value: https://autoapply-web.onrender.com,https://www.autoapply-web.onrender.com
+
+      # --- Optional App settings
+      - key: ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+
+      # --- (Optional) Snowflake, leave blank if unused
+      - key: SNOWFLAKE_ACCOUNT
+        value: ""
+      - key: SNOWFLAKE_USER
+        value: ""
+      - key: SNOWFLAKE_PASSWORD
+        value: ""
+      - key: SNOWFLAKE_WAREHOUSE
+        value: ""
+      - key: SNOWFLAKE_DATABASE
+        value: ""
+      - key: SNOWFLAKE_SCHEMA
+        value: ""
+      - key: SNOWFLAKE_ROLE
+        value: ""
+
+      # --- (Optional) Email/SMTP, leave blank if unused
+      - key: SMTP_HOST
+        value: ""
+      - key: SMTP_PORT
+        value: ""
+      - key: SMTP_USER
+        value: ""
+      - key: SMTP_PASSWORD
+        value: ""
+      - key: EMAIL_FROM
+        value: ""
+
+  # -------------- Frontend (Static) --------------
+  - type: static
+    name: autoapply-web
+    plan: starter
     branch: main
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
+    buildCommand: "echo 'no build step' "
+    staticPublishPath: frontend_build
+    # If your frontend reads an API base URL from JS,
+    # you can inject it as a file or use a simple config.js.
     envVars:
-      - key: API_BASE_URL
+      - key: VITE_API_BASE_URL
         value: https://autoapply-api.onrender.com
+    # Optional: basic cache headers
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+
 

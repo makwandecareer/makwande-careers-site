@@ -1,19 +1,8 @@
-// IMPORTANT: set this to your live API URL (no trailing slash)
-const API_BASE = "https://autoapply-api.onrender.com"; // <-- change to your API
+// config.js
+// ⛳️ CHANGE THIS to your live backend URL:
+const API_BASE_URL = "https://autoapply-api.onrender.com"; // example
+// If your backend URL is different, paste it here exactly (https://...)
 
-// Common helper
-function setMsg(id, text, isError = false) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = text || "";
-  el.classList.toggle("err", !!isError);
-}
-function setMsgEl(el, text, isError = false) {
-  if (!el) return;
-  el.textContent = text || "";
-  el.classList.toggle("err", !!isError);
-}
-function escapeHtml(s = "") {
-  return s.replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
-}
+// Small helper to export in plain <script> world
+window._CONFIG_ = { API_BASE_URL };
 

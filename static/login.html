@@ -1,52 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Login to your AutoApply App account and access smart job automation.">
-  <title>Login - AutoApply App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AutoApply — Log in</title>
+  <link rel="stylesheet" href="/styles/dashboard.css" />
+  <style>
+    /* small extras for the auth card */
+    .auth-wrap {
+      max-width: 420px;
+      margin: 6vh auto;
+      padding: 1rem;
+    }
+    .auth-card {
+      background:#fff;
+      border-radius:10px;
+      box-shadow:0 1px 3px rgba(0,0,0,.08);
+      padding:1.25rem 1.25rem 1rem;
+      border:1px solid #eee;
+    }
+    .auth-card h1 { font-size:1.25rem; margin:0 0 .5rem; }
+    .muted { color:#666; font-size:.95rem; margin-bottom:1rem; }
+    .field { display:flex; flex-direction:column; gap:.35rem; margin:.65rem 0; }
+    label { font-size:.9rem; color:#333; }
+    input[type="email"], input[type="password"] {
+      padding:.65rem .7rem; border:1px solid #ddd; border-radius:8px; font-size:1rem;
+      outline:none; background:#fafafa;
+    }
+    input:focus { border-color:#b4c7e7; background:#fff; }
+    .actions { display:flex; gap:.6rem; align-items:center; justify-content:space-between; margin-top:.8rem; }
+    .btn.wide { width:100%; }
+    #loginStatus { margin-top:.75rem; min-height:1.2em; color:#c0392b; }
+    .hint { font-size:.9rem; color:#666; margin-top:1rem; }
+  </style>
 </head>
-<body style="background-color: #014421;">
-  <div class="container mt-5">
-    <div class="card p-4 shadow-lg">
-      <h2 class="text-center text-success">Login - AutoApply App</h2>
-      <form id="loginForm">
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input type="text" class="form-control" id="username" required />
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" required />
-        </div>
-        <button type="submit" class="btn btn-success w-100">Login</button>
-        <p class="mt-3 text-center">No account? <a href="signup.html">Sign up here</a></p>
-      </form>
+<body>
+  <header>
+    <div class="row">
+      <div class="brand">AutoApply</div>
+      <div class="tag">Sign in</div>
     </div>
-  </div>
+    <div class="user">
+      <a class="btn" href="/dashboard.html">Dashboard</a>
+    </div>
+  </header>
 
-  <script>
-    document.getElementById("loginForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <h1>Welcome back</h1>
+      <p class="muted">Use your email and password to sign in.</p>
 
-      const response = await fetch("http://127.0.0.1:8000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
+      <form id="loginForm" autocomplete="on">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" placeholder="••••••••" required />
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn accent wide">Log in</button>
+        </div>
+        <p id="loginStatus"></p>
+      </form>
 
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "dashboard.html";
-      } else {
-        alert("Login failed: " + data.detail);
-      }
-    });
-  </script>
+      <p class="hint">
+        Don’t have an account? <a href="/signup.html">Create one</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="/scripts/config.js"></script>
+  <script src="/scripts/login.js"></script>
 </body>
 </html>
 

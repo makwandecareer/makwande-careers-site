@@ -146,12 +146,7 @@ async def not_found_passthrough(request, call_next):
     response = await call_next(request)
     return response
 
-# ------------------------------------------------------------------------------
-# Dev/local run (Render uses start command, but this is safe and correct)
-# ------------------------------------------------------------------------------
-if _name_ == "_main_":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+
 
 
 

@@ -1,59 +1,42 @@
 # render.yaml — AutoApplyApp
-# Provisions:
+# One blueprint that provisions:
 # 1) A Postgres database
 # 2) The FastAPI backend (Python)
-# 3) A static frontend
+# 3) A static frontend (served from /frontend_build)
 
 databases:
   - name: autoapply-db
-    plan: starter
+    plan: starter plus  # Updated from 'starter'
     databaseName: autoapply
-    user: autoapply
+    user: autoapply_user
 
 services:
-  # -------------- API (FastAPI) -----------------
   - type: web
-    name: autoapply-api
+    name: autoapply-backend
     env: python
     plan: starter
-    branch: main
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    autoDeploy: true
-    healthCheckPath: /
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 8000
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: autoapply-db
           property: connectionString
       - key: SECRET_KEY
-        value: abf6a2fefc49d3e904f5566ab6071458f1af048676a07631c7a885af7f95c
-      - key: ALGORITHM
-        value: HS256
-      - key: ACCESS_TOKEN_EXPIRE_MINUTES
-        value: "60"
-      - key: CORS_ALLOW_ORIGINS
-        value: https://autoapply-web.onrender.com,https://www.autoapply-web.onrender.com
-      - key: ENV
-        value: production
-      - key: LOG_LEVEL
-        value: info
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: "*"
 
-  # -------------- Frontend (Static) --------------
-  - type: web
-    name: autoapply-web
+  - type: static_site
+    name: autoapply-frontend
     env: static
     plan: starter
-    branch: main
-    buildCommand: "echo 'no build step'"
+    buildCommand: npm install && npm run build
     staticPublishPath: frontend_build
     envVars:
-      - key: VITE_API_BASE_URL
-        value: https://autoapply-api.onrender.com
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: public, max-age=3600
+      - key: BACKEND_URL
+        value: https://autoapply-backend.onrender.com
+
 
 
 

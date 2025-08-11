@@ -14,113 +14,22 @@
     #msg { margin-top: 14px; font-size: 0.95rem; }
     .ok { color: #059669; } .err { color: #dc2626; }
   </style>
-  <!-- If you created scripts/config.js with window._CONFIG_.API_BASE_URL, include it: -->
-  <script src="./scripts/config.js" defer></script>
+
+  <!-- absolute paths -->
+  <script src="/scripts/config.js" defer></script>
+  <script src="/scripts/login.js" defer></script>
 </head>
 <body>
+  <!-- (keep the same form markup you already have) -->
   <h1>Login</h1>
-
   <form id="loginForm" autocomplete="on">
     <input id="email" name="email" type="email" placeholder="you@example.com" required />
     <input id="password" name="password" type="password" placeholder="••••••••" required />
     <button id="loginBtn" type="submit">Login</button>
   </form>
-
   <div id="msg"></div>
-
-  <script>
-    // --- Resolve API base URL ---
-    const FALLBACK_API = "https://autoapply-api.onrender.com";
-    const API_BASE_URL =
-      (window._CONFIG_ && window._CONFIG.API_BASE_URL) ? window.CONFIG_.API_BASE_URL : FALLBACK_API;
-
-    const form = document.getElementById('loginForm');
-    const msg  = document.getElementById('msg');
-    const btn  = document.getElementById('loginBtn');
-
-    function show(statusClass, text) {
-      msg.className = statusClass;
-      msg.textContent = text;
-    }
-
-    async function login(email, password) {
-      const url = ${API_BASE_URL}/auth/login;
-      console.log("[login] POST", url);
-
-      // Some FastAPI apps require application/x-www-form-urlencoded; others accept JSON.
-      // We try JSON first; if a 415 is returned, we retry as form-encoded.
-      const jsonBody = JSON.stringify({ email, password });
-
-      let res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: jsonBody,
-        credentials: "omit",
-      });
-
-      // Retry with form encoding if unsupported media type
-      if (res.status === 415) {
-        const form = new URLSearchParams({ email, password });
-        res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: form.toString(),
-          credentials: "omit",
-        });
-      }
-
-      const contentType = res.headers.get("content-type") || "";
-      const data = contentType.includes("application/json") ? await res.json().catch(() => ({})) : await res.text();
-
-      console.log("[login] status:", res.status, data);
-
-      if (!res.ok) {
-        // Show backend message if available
-        const errText = (data && data.detail) ? data.detail : (typeof data === "string" ? data : "Login failed");
-        throw new Error(errText);
-      }
-
-      // Expect either {access_token: "..."} or {token: "..."} or {message:"Login successful"}
-      let token = "";
-      if (data && typeof data === "object") {
-        token = data.access_token || data.token || "";
-      }
-
-      // Persist token if present (dashboard can read it)
-      if (token) {
-        localStorage.setItem("aa_token", token);
-      }
-
-      return true;
-    }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      show("", "");
-      btn.disabled = true;
-
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-
-      try {
-        await login(email, password);
-        show("ok", "Login successful ✅");
-        // Give the message a tick, then go to dashboard
-        setTimeout(() => {
-          window.location.href = "./dashboard.html";
-        }, 400);
-      } catch (err) {
-        console.error(err);
-        show("err", Login failed: ${err.message || err});
-      } finally {
-        btn.disabled = false;
-      }
-    });
-
-    // Helpful debug in console:
-    console.log("[login.html] Using API_BASE_URL:", API_BASE_URL);
-  </script>
 </body>
 </html>
+
 
 

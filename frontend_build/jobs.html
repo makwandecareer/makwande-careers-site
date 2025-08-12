@@ -4,8 +4,49 @@
   <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Jobs • AutoApply</title>
   <meta name="description" content="Browse and apply to curated jobs."/>
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+    style-src  'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+    img-src    'self' data:;
+    font-src   'self' https://cdn.jsdelivr.net;
+    connect-src 'self';
+    frame-src  'self';
+    object-src 'none';
+    base-uri   'self';
+    frame-ancestors 'self';
+    upgrade-insecure-requests;
+  ">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <style>.badge-soft{background:#fff3cd;color:#664d03;border:1px solid #ffe69c;}.card-hover:hover{transform:translateY(-2px);transition:.15s;}</style>
+  <style>.badge-soft{background:#fff3cd;color:#664d03;border:1px solid #ffe69c}.card-hover:hover{transform:translateY(-2px);transition:.15s}</style>
+
+  <!-- Inline helpers -->
+  <script>
+  (function () {
+    if (!window.apiBase) window.apiBase = () => '/api';
+    if (!window.apiFetch) window.apiFetch = (p,o={})=>{
+      const t=localStorage.getItem("AA_TOKEN");
+      const h=Object.assign({}, o.headers||{}, t?{Authorization:`Bearer ${t}`}:{});
+      return fetch(window.apiBase() + (p.startsWith('/')?p:`/${p}`), Object.assign({}, o, {headers:h}));
+    };
+    if (!window.apiJSON) window.apiJSON = async (p,o={})=>{
+      const r=await window.apiFetch(p,o); const ct=(r.headers.get("content-type")||"").toLowerCase();
+      const b=ct.includes("application/json")?await r.json():{detail:await r.text()}; if(!r.ok) throw new Error(b?.detail||`HTTP ${r.status}`); return b;
+    };
+    Object.freeze(window.apiBase); Object.freeze(window.apiFetch); Object.freeze(window.apiJSON);
+    window.$=(s)=>document.querySelector(s);
+    window.setSignedInUI=function(){const si=!!localStorage.getItem("AA_TOKEN");const l=$("#btnLogin"),s=$("#btnSignup"),o=$("#btnLogout");
+      if(l&&s&&o){ if(si){l.classList.add("d-none");s.classList.add("d-none");o.classList.remove("d-none");}
+      else{l.classList.remove("d-none");s.classList.remove("d-none");o.classList.add("d-none");}
+      o.onclick=()=>{localStorage.clear();location.href="/login.html";}}};
+    window.showStatusBanner=async function(){const b=$("#statusBanner"), t=$("#statusText"); if(!b||!t) return;
+      try{const j=await apiJSON("/health"); t.textContent=`API connected • v${j.version}`;}catch{t.textContent="API not reachable";}
+      b.classList.remove("d-none");};
+    document.addEventListener("DOMContentLoaded",()=>{const y=$("#year"); if(y) y.textContent=new Date().getFullYear(); setSignedInUI(); showStatusBanner();});
+  })();
+  </script>
 </head>
 <body class="bg-light">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -40,22 +81,12 @@
             <label class="form-label">Location</label>
             <select id="filterLocation" class="form-select">
               <option value="">All</option>
-              <option>Gauteng</option>
-              <option>Western Cape</option>
-              <option>KwaZulu-Natal</option>
+              <option>Gauteng</option><option>Western Cape</option><option>KwaZulu-Natal</option>
             </select>
           </div>
-          <div class="col-md-3">
-            <label class="form-label">Company</label>
-            <input id="filterCompany" class="form-control" placeholder="e.g. ChemWorks SA"/>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label">Min Match Score</label>
-            <input id="filterScore" type="number" min="0" max="1" step="0.01" class="form-control" placeholder="0.75"/>
-          </div>
-          <div class="col-md-3 d-grid">
-            <button id="btnApplyFilters" class="btn btn-primary">Apply Filters</button>
-          </div>
+          <div class="col-md-3"><label class="form-label">Company</label><input id="filterCompany" class="form-control" placeholder="e.g. ChemWorks SA"/></div>
+          <div class="col-md-3"><label class="form-label">Min Match Score</label><input id="filterScore" type="number" min="0" max="1" step="0.01" class="form-control" placeholder="0.75"/></div>
+          <div class="col-md-3 d-grid"><button id="btnApplyFilters" class="btn btn-primary">Apply Filters</button></div>
         </div>
       </div>
     </div>
@@ -69,116 +100,85 @@
   <div class="modal fade" id="applyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <form id="applyForm" class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Apply to Job</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+        <div class="modal-header"><h5 class="modal-title">Apply to Job</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
           <input type="hidden" id="applyJobId"/>
-          <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input id="fullName" class="form-control" required/>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Upload CV (PDF/DOCX)</label>
-            <input id="cvFile" type="file" accept=".pdf,.doc,.docx" class="form-control" required/>
-          </div>
+          <div class="mb-3"><label class="form-label">Full Name</label><input id="fullName" class="form-control" required/></div>
+          <div class="mb-3"><label class="form-label">Upload CV (PDF/DOCX)</label><input id="cvFile" type="file" accept=".pdf,.doc,.docx" class="form-control" required/></div>
           <div id="applyStatus" class="small text-muted"></div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
-          <button class="btn btn-primary" type="submit">Submit Application</button>
-        </div>
+        <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button><button class="btn btn-primary" type="submit">Submit Application</button></div>
       </form>
     </div>
   </div>
 
   <footer class="border-top">
-    <div class="container py-4 small d-flex flex-wrap gap-3 justify-content-between">
+    <div class="container py-4 small d-flex justify-content-between flex-wrap gap-3">
       <div>© <span id="year"></span> AutoApply • All rights reserved.</div>
       <div class="d-flex gap-3"><a class="text-decoration-none" href="/privacy.html">Privacy</a><a class="text-decoration-none" href="/terms.html">Terms</a><a class="text-decoration-none" href="/contact.html">Contact</a></div>
     </div>
   </footer>
 
-  <script src="/main.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const box = document.getElementById('jobsContainer');
 
     async function fetchJobs(){
-      const params = new URLSearchParams();
+      const p = new URLSearchParams();
       const loc = document.getElementById('filterLocation').value;
       const company = document.getElementById('filterCompany').value.trim();
       const minScore = document.getElementById('filterScore').value;
-      if(loc) params.append('location', loc);
-      if(company) params.append('company', company);
-      if(minScore) params.append('min_score', minScore);
+      if(loc) p.append('location', loc);
+      if(company) p.append('company', company);
+      if(minScore) p.append('min_score', minScore);
 
-      try {
-        const jobs = await apiJSON('/jobs?'+params.toString());
-        renderJobs(jobs);
-      } catch (_) {
-        box.innerHTML = '<div class="col-12"><div class="alert alert-warning mb-0">Couldn’t load jobs. Try again later.</div></div>';
-      }
+      try { const jobs = await apiJSON('/jobs?'+p.toString()); renderJobs(jobs); }
+      catch { box.innerHTML = '<div class="col-12"><div class="alert alert-warning mb-0">Couldn’t load jobs.</div></div>'; }
     }
 
     function renderJobs(jobs){
-      box.innerHTML = '';
-      if(!Array.isArray(jobs) || jobs.length===0){
-        box.innerHTML = '<div class="col-12"><div class="alert alert-info mb-0">No jobs match your filters.</div></div>';
-        return;
-      }
+      box.innerHTML=''; if(!Array.isArray(jobs)||jobs.length===0){box.innerHTML='<div class="col-12"><div class="alert alert-info mb-0">No jobs match your filters.</div></div>';return;}
       for(const j of jobs){
-        const col = document.createElement('div');
-        col.className = 'col-md-4';
-        col.innerHTML = `
-          <div class="card h-100 shadow-sm border-0 rounded-4 card-hover">
-            <div class="card-body">
-              <h5 class="card-title mb-1">${j.title}</h5>
-              <div class="text-muted">${j.company} • ${j.location}</div>
-              <div class="mt-2">Match score: <strong>${(j.match_score*100).toFixed(0)}%</strong></div>
-              <div class="small text-muted mt-1">Posted: ${j.post_advertised_date || '-'} • Closes: ${j.closing_date || '-'}</div>
-            </div>
-            <div class="card-footer bg-transparent border-0 d-grid">
-              <button class="btn btn-outline-primary" onclick="openApply('${j.id}')">Apply</button>
-            </div>
-          </div>`;
+        const col=document.createElement('div'); col.className='col-md-4';
+        col.innerHTML=`<div class="card h-100 shadow-sm border-0 rounded-4 card-hover">
+          <div class="card-body">
+            <h5 class="card-title mb-1">${j.title}</h5>
+            <div class="text-muted">${j.company} • ${j.location}</div>
+            <div class="mt-2">Match: <strong>${(j.match_score*100).toFixed(0)}%</strong></div>
+            <div class="small text-muted mt-1">Posted: ${j.post_advertised_date||'-'} • Closes: ${j.closing_date||'-'}</div>
+          </div>
+          <div class="card-footer bg-transparent border-0 d-grid">
+            <button class="btn btn-outline-primary" onclick="openApply('${j.id}')">Apply</button>
+          </div></div>`;
         box.appendChild(col);
       }
     }
 
-    function openApply(jobId){
-      document.getElementById('applyJobId').value = jobId;
-      new bootstrap.Modal(document.getElementById('applyModal')).show();
-    }
+    function openApply(jobId){ document.getElementById('applyJobId').value=jobId; new bootstrap.Modal(document.getElementById('applyModal')).show(); }
 
     document.getElementById('btnApplyFilters').onclick = fetchJobs;
     window.addEventListener('DOMContentLoaded', fetchJobs);
 
     document.getElementById('applyForm').addEventListener('submit', async (e)=>{
       e.preventDefault();
-      const jobId = document.getElementById('applyJobId').value;
-      const fullName = document.getElementById('fullName').value;
-      const cvFile = document.getElementById('cvFile').files[0];
-      const status = document.getElementById('applyStatus');
-      status.textContent = 'Submitting…';
-
       const fd = new FormData();
-      fd.append('job_id', jobId);
-      fd.append('full_name', fullName);
-      fd.append('cv', cvFile);
+      fd.append('job_id', document.getElementById('applyJobId').value);
+      fd.append('full_name', document.getElementById('fullName').value);
+      fd.append('cv', document.getElementById('cvFile').files[0]);
 
+      const status = document.getElementById('applyStatus');
+      status.textContent='Submitting…';
       try {
         const res = await apiFetch('/apply_job', { method:'POST', body: fd });
-        const ct = res.headers.get('content-type') || '';
-        const data = ct.includes('application/json') ? await res.json() : {};
+        const ct = res.headers.get('content-type')||''; const data = ct.includes('application/json')?await res.json():{};
         if(res.ok && data.ok) status.textContent = `Submitted! Application ID: ${data.application_id}`;
         else throw new Error(data?.detail || 'Failed to submit application');
-      } catch (err) { status.textContent = err.message || 'Something went wrong.'; }
+      } catch(err){ status.textContent = err.message || 'Something went wrong.'; }
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
 
 

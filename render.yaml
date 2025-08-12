@@ -1,45 +1,34 @@
-# render.yaml — AutoApplyApp (API + Static Frontend)
-
+# render.yaml
 services:
-  # ----------------------------
-  # 1) FastAPI backend (Python)
-  # ----------------------------
+  # --- FastAPI backend (no CORS middleware needed) ---
   - type: web
     name: autoapply-api
-    env: python
-    branch: main
-    autoDeploy: true
+    runtime: python
+    rootDir: backend
+    plan: starter plus
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /health
+    autoDeployTrigger: commit
     envVars:
-      # Fill these in Render > Service > Environment, or let Blueprint manage them.
-      - key: DATABASE_URL      # e.g. postgresql://USER:PASSWORD@HOST:5432/DBNAME
-        sync: false
-      - key: SECRET_KEY        # your JWT/crypto secret
-        sync: false
-      - key: CORS_ORIGINS      # comma-separated origins allowed by the API
-        value: https://autoapply-frontend.onrender.com
+      - key: SECRET_KEY
+        sync: false  # you'll set this in the dashboard at first create
 
-  # ---------------------------------------
-  # 2) Static frontend (already-built HTML)
-  # ---------------------------------------
-  - type: static
-    name: autoapply-frontend
-    branch: main
-    autoDeploy: true
-    # If your HTML is in a different folder, change this path.
-    # It must be the directory that contains index.html.
-    buildCommand: echo "no build"
-    staticPublishPath: frontend_build
-    envVars:
-      # Used by your frontend JS to call the API (absolute URL)
-      - key: VITE_API_BASE_URL
-        value: https://autoapply-api.onrender.com
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-store
+  # --- Static site (proxies /api/* to the backend, kills CORS) ---
+  - type: web
+    name: autoapply-site
+    runtime: static
+    rootDir: site
+    staticPublishPath: .
+    routes:
+      # 1) Proxy ALL /api/* calls to your FastAPI service (same-origin to browser)
+      - type: rewrite
+        source: /api/*
+        destination: https://<YOUR-API-SERVICE>.onrender.com/api/*
+      # 2) SPA fallback (if you use client-side routing)
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
 
 
 

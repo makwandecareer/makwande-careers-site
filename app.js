@@ -1,4 +1,6 @@
 <script>
+<script src="/static/js/main.js"></script>
+
 // ---- Auth token storage ----
 const tokenKey = "aa_token";
 

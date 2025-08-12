@@ -1,3 +1,5 @@
+<script src="/static/js/main.js"></script>
+
 const TOKEN_KEY = "autoapply_token";
 
 function saveToken(token) {

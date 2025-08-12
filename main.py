@@ -76,8 +76,9 @@ class LoginBody(BaseModel):
     email: str
     password: str
 
-@app.get("/health")
-def health():
+@app.get("/api/health")
+def api_health():
+    # Reuse the same payload as /health
     return {"status": "ok", "service": "autoapply-api", "version": API_VERSION}
 
 @app.post("/api/auth/signup")

@@ -1,378 +1,280 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
-  <title>AutoApply — Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoApply — Land more interviews on autopilot</title>
+
+  <!-- SEO -->
+  <meta name="description" content="AutoApply helps you revamp your CV, match jobs, and auto-apply — all in one place." />
+  <link rel="icon" href="/favicon.ico" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="AutoApply — Land more interviews on autopilot" />
+  <meta property="og:description" content="Revamp CVs, match jobs, and auto-apply with a single click." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/" />
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
   <style>
-    :root {
-      --bg: #0f1115;
-      --panel: #161a22;
-      --muted: #8a93a6;
-      --text: #e7ecf3;
-      --accent: #6ee7b7;
-      --accent-2: #60a5fa;
-      --danger: #ef4444;
-      --border: #242a36;
+    .hero {
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(0, 123, 255, 0.08), transparent 60%),
+                  radial-gradient(1000px 500px at 90% 10%, rgba(13, 110, 253, 0.06), transparent 60%),
+                  linear-gradient(180deg, #ffffff 0%, #f8fafc 60%, #f1f5f9 100%);
     }
-    * { box-sizing: border-box; }
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-      background: var(--bg);
-      color: var(--text);
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: #f1f5f9;
     }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 16px clamp(16px, 4vw, 32px);
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    .badge-soft {
+      background: #fff3cd; color: #664d03; border: 1px solid #ffe69c;
     }
-    .brand {
-      font-weight: 700;
-      letter-spacing: .3px;
-    }
-    .tag {
-      padding: 2px 8px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .btn {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: #1b2230;
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: transform .05s ease, border-color .2s ease, background .2s ease;
-      font-weight: 600;
-    }
-    .btn:hover { border-color: #324057; }
-    .btn:active { transform: translateY(1px); }
-    .btn.secondary { background: transparent; }
-    .btn.accent {
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      color: #0b1220;
-      border: none;
-    }
-    .btn.danger {
-      background: #2a1212;
-      border-color: #3a1a1a;
-      color: #ffb4b4;
-    }
-
-    main {
-      max-width: 1100px;
-      margin: 24px auto;
-      padding: 0 clamp(16px, 4vw, 32px) 48px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    @media (min-width: 900px) {
-      .grid { grid-template-columns: 300px 1fr; }
-    }
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-    }
-    .card h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
-      color: var(--muted);
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-    .dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--muted);
-      box-shadow: 0 0 0 3px rgba(110,231,183,0.0);
-    }
-    .dot.ok { background: var(--accent); box-shadow: 0 0 0 3px rgba(110,231,183,0.15); }
-    .dot.err { background: var(--danger); box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
-
-    .list {
-      display: grid;
-      gap: 12px;
-      margin-top: 8px;
-    }
-    .job {
-      border: 1px solid var(--border);
-      background: #121723;
-      border-radius: 14px;
-      padding: 14px;
-      display: grid;
-      gap: 6px;
-    }
-    .job .meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .job .title {
-      font-weight: 700;
-      line-height: 1.3;
-    }
-    .row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .empty {
-      color: var(--muted);
-      border: 1px dashed var(--border);
-      border-radius: 12px;
-      padding: 18px;
-      text-align: center;
-    }
-    .help {
-      margin-top: 24px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    a { color: var(--accent-2); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    code { background: #0c0f14; padding: 2px 6px; border-radius: 6px; border: 1px solid var(--border); }
+    .card-hover:hover { transform: translateY(-2px); transition: transform .15s ease; }
+    .footer-link { color: inherit; text-decoration: none; }
+    .footer-link:hover { text-decoration: underline; }
   </style>
 </head>
-<body>
-  <header>
-    <div class="row">
-      <div class="brand">AutoApply</div>
-      <div class="tag">Dashboard</div>
+<body class="bg-light">
+
+  <!-- Top Nav -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">AutoApply</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="navMain" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/jobs.html">Jobs</a></li>
+          <li class="nav-item"><a class="nav-link" href="/revamp.html">CV Revamp</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pay.html">Subscription</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dashboard.html">Dashboard</a></li>
+        </ul>
+        <div class="d-flex gap-2">
+          <a id="btnLogin" href="/login.html" class="btn btn-outline-light">Log in</a>
+          <a id="btnSignup" href="/signup.html" class="btn btn-warning text-dark">Sign up</a>
+          <button id="btnLogout" class="btn btn-outline-light d-none" type="button">Logout</button>
+        </div>
+      </div>
     </div>
-    <div class="user">
-      <div id="currentUser" class="tag">…</div>
-      <button id="logoutBtn" class="btn danger">Log out</button>
+  </nav>
+
+  <!-- Status banner (populates from /api/health) -->
+  <div id="statusBanner" class="py-2 text-center small d-none">
+    <span id="statusText" class="badge badge-soft rounded-pill px-3 py-2"></span>
+  </div>
+
+  <!-- Hero -->
+  <header class="hero border-bottom">
+    <div class="container py-5 py-lg-6">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <h1 class="display-5 fw-bold mb-3">Apply to winning jobs — while you sleep.</h1>
+          <p class="lead text-secondary mb-4">
+            AutoApply revamps your CV to ATS standards, matches the right roles, and auto-applies with tailored cover letters.
+          </p>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="/signup.html" class="btn btn-primary btn-lg">Get started</a>
+            <a href="/jobs.html" class="btn btn-outline-primary btn-lg">Browse jobs</a>
+          </div>
+          <div class="mt-3 text-muted small">
+            Soft launch: Gauteng • Western Cape • KZN • + more SADC coming soon
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="mb-3">Quick health check</h5>
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="text-muted">API status</div>
+                <div id="apiDot" class="ms-3 rounded-circle" style="width:12px;height:12px;background:#adb5bd;"></div>
+              </div>
+              <div class="mt-2 small text-muted" id="apiInfo">Checking…</div>
+              <hr class="my-3" />
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="text-muted">Login state</div>
+                <div id="loginState" class="small">Signed out</div>
+              </div>
+              <div class="mt-3 d-grid gap-2">
+                <a class="btn btn-outline-secondary" href="/login.html">Log in</a>
+                <a class="btn btn-primary" href="/signup.html">Create your account</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!--/row-->
     </div>
   </header>
 
-  <main class="grid">
-    <section class="card">
-      <h3>API Status</h3>
-      <div class="status">
-        <span id="apiDot" class="dot"></span>
-        <span id="apiStatus">Checking…</span>
+  <!-- Features -->
+  <section class="container py-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="h-100 p-4 bg-white shadow-sm rounded-4 card-hover">
+          <div class="feature-icon mb-3"><span class="fw-bold">1</span></div>
+          <h5>ATS-optimized CV</h5>
+          <p class="text-muted mb-0">Revamp your CV with keywords and structure that pass Applicant Tracking Systems.</p>
+        </div>
       </div>
-
-      <div class="help">
-        Having trouble? Ensure your API URL in <code>scripts/config.js</code> is correct and your
-        Render web service is green.
+      <div class="col-md-4">
+        <div class="h-100 p-4 bg-white shadow-sm rounded-4 card-hover">
+          <div class="feature-icon mb-3"><span class="fw-bold">2</span></div>
+          <h5>Smart job matching</h5>
+          <p class="text-muted mb-0">We rank roles by fit, location, and recency so you focus on high-impact applications.</p>
+        </div>
       </div>
-    </section>
-
-    <section class="card">
-      <h3>Latest Jobs</h3>
-      <div id="jobsStatus" class="status">
-        <span class="dot" id="jobsDot"></span>
-        <span>Loading…</span>
+      <div class="col-md-4">
+        <div class="h-100 p-4 bg-white shadow-sm rounded-4 card-hover">
+          <div class="feature-icon mb-3"><span class="fw-bold">3</span></div>
+          <h5>Auto-apply engine</h5>
+          <p class="text-muted mb-0">One click to send your tailored application — with tracking from submit to interview.</p>
+        </div>
       </div>
-      <div id="jobsList" class="list" aria-live="polite"></div>
-      <div class="help">
-        This list calls <code>GET /jobs</code> with your auth token. Adjust the property names to
-        match your API response if needed.
+    </div>
+  </section>
+
+  <!-- Featured Jobs (from /api/jobs) -->
+  <section class="bg-white border-top">
+    <div class="container py-5">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="h4 m-0">Featured Jobs</h2>
+        <a class="btn btn-sm btn-outline-primary" href="/jobs.html">See all</a>
       </div>
-    </section>
-  </main>
+      <div id="jobsRow" class="row g-3">
+        <div class="col-12"><div class="small text-muted">Loading jobs…</div></div>
+      </div>
+    </div>
+  </section>
 
-  <!-- 1) Your API base URL -->
-  <script src="/scripts/config.js"></script>
+  <!-- CTA -->
+  <section class="container py-5">
+    <div class="p-4 p-md-5 bg-dark text-white rounded-4 shadow-sm">
+      <div class="row align-items-center g-3">
+        <div class="col-lg-8">
+          <h3 class="mb-2">Ready to automate your job hunt?</h3>
+          <p class="mb-0 text-white-50">Join now and get your first 10 CV revamps free each month on our launch plan.</p>
+        </div>
+        <div class="col-lg-4 d-grid">
+          <a href="/signup.html" class="btn btn-warning text-dark btn-lg">Create account</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <!-- 2) Page logic -->
+  <!-- Footer -->
+  <footer class="border-top">
+    <div class="container py-4 small d-flex flex-wrap gap-3 justify-content-between">
+      <div>© <span id="year"></span> AutoApply • All rights reserved.</div>
+      <div class="d-flex gap-3">
+        <a class="footer-link" href="/privacy.html">Privacy</a>
+        <a class="footer-link" href="/terms.html">Terms</a>
+        <a class="footer-link" href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
-    // Resolve API base URL (from config.js), with a safe fallback:
-    const API = (window.CONFIG && window.CONFIG.API_BASE_URL)
-      ? window.CONFIG.API_BASE_URL.replace(/\/+$/, '')
-      : 'https://autoapplyapp-api.onrender.com'; // fallback if CONFIG is missing
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Read token placed by your login page
-    const token = localStorage.getItem('token') || '';
+    // Auth UI state
+    const btnLogin  = document.getElementById('btnLogin');
+    const btnSignup = document.getElementById('btnSignup');
+    const btnLogout = document.getElementById('btnLogout');
+    const loginState = document.getElementById('loginState');
 
-    // UI elements
-    const elUser     = document.getElementById('currentUser');
-    const elLogout   = document.getElementById('logoutBtn');
-    const elJobsList = document.getElementById('jobsList');
-    const elJobsStat = document.getElementById('jobsStatus');
-    const elJobsDot  = document.getElementById('jobsDot');
-    const elApiStat  = document.getElementById('apiStatus');
-    const elApiDot   = document.getElementById('apiDot');
-
-    function authHeaders() {
-      const h = { 'Content-Type': 'application/json' };
-      if (token) h['Authorization'] = 'Bearer ' + token;
-      return h;
-    }
-
-    function setDot(el, ok) {
-      el.classList.remove('ok', 'err');
-      el.classList.add(ok ? 'ok' : 'err');
-    }
-
-    async function checkApi() {
-      try {
-        const r = await fetch(API + '/health', { headers: authHeaders() });
-        const ok = r.ok;
-        setDot(elApiDot, ok);
-        elApiStat.textContent = ok ? 'API online' : `API error (${r.status})`;
-      } catch (e) {
-        setDot(elApiDot, false);
-        elApiStat.textContent = 'API unreachable';
+    function setSignedInUI(signedIn) {
+      if (signedIn) {
+        btnLogin.classList.add('d-none');
+        btnSignup.classList.add('d-none');
+        btnLogout.classList.remove('d-none');
+        loginState.textContent = "Signed in";
+      } else {
+        btnLogin.classList.remove('d-none');
+        btnSignup.classList.remove('d-none');
+        btnLogout.classList.add('d-none');
+        loginState.textContent = "Signed out";
       }
     }
 
-    async function loadMe() {
-      if (!token) {
-        elUser.textContent = 'Not signed in';
-        return;
-      }
-      try {
-        const r = await fetch(API + '/auth/me', { headers: authHeaders() });
-        if (r.ok) {
-          const me = await r.json();
-          // Adjust to your API shape: { name, email } or similar
-          elUser.textContent = me.name ? `${me.name} • ${me.email || ''}`.trim() : (me.email || 'Signed in');
-        } else {
-          elUser.textContent = 'Auth expired — please log in again';
-        }
-      } catch {
-        elUser.textContent = 'Unable to fetch user';
-      }
-    }
+    setSignedInUI(!!localStorage.getItem('AA_TOKEN'));
 
-    function jobCard(job) {
-      // Adjust keys (title, company, location, link) to match your API
-      const title    = job.title || job.position || 'Untitled';
-      const company  = job.company || job.org || 'Unknown company';
-      const location = job.location || job.city || '—';
-      const link     = job.url || job.link || '#';
-
-      const div = document.createElement('div');
-      div.className = 'job';
-
-      const t = document.createElement('div');
-      t.className = 'title';
-      t.textContent = title;
-
-      const meta = document.createElement('div');
-      meta.className = 'meta';
-      meta.innerHTML = `
-        <span>${company}</span>
-        <span>•</span>
-        <span>${location}</span>
-        ${link && link !== '#' ? `<span>•</span><a href="${link}" target="_blank" rel="noopener">View</a>` : ''}
-      `;
-
-      const row = document.createElement('div');
-      row.className = 'row';
-      const btn = document.createElement('button');
-      btn.className = 'btn accent';
-      btn.textContent = 'Apply';
-      btn.onclick = async () => {
-        btn.disabled = true;
-        btn.textContent = 'Applying…';
-        try {
-          const res = await fetch(API + '/jobs/apply', {
-            method: 'POST',
-            headers: authHeaders(),
-            body: JSON.stringify({ jobId: job.id || job._id || job.url || '' })
-          });
-          if (res.ok) {
-            btn.textContent = 'Applied ✓';
-          } else {
-            btn.textContent = 'Failed';
-            setTimeout(() => { btn.textContent = 'Apply'; btn.disabled = false; }, 1200);
-          }
-        } catch {
-          btn.textContent = 'Error';
-          setTimeout(() => { btn.textContent = 'Apply'; btn.disabled = false; }, 1200);
-        }
-      };
-
-      row.appendChild(btn);
-      div.appendChild(t);
-      div.appendChild(meta);
-      div.appendChild(row);
-      return div;
-    }
-
-    async function loadJobs() {
-      elJobsList.innerHTML = '';
-      setDot(elJobsDot, true);
-      try {
-        const r = await fetch(API + '/jobs', { headers: authHeaders() });
-        if (!r.ok) {
-          setDot(elJobsDot, false);
-          elJobsStat.querySelector('span:last-child').textContent = `Failed (${r.status})`;
-          elJobsList.innerHTML = `<div class="empty">Couldn’t load jobs. Check your API logs.</div>`;
-          return;
-        }
-        const data = await r.json();
-        const jobs = Array.isArray(data) ? data : (data.jobs || []);
-        elJobsStat.querySelector('span:last-child').textContent = `Loaded ${jobs.length} job${jobs.length === 1 ? '' : 's'}`;
-        if (jobs.length === 0) {
-          elJobsList.innerHTML = `<div class="empty">No jobs yet.</div>`;
-          return;
-        }
-        const frag = document.createDocumentFragment();
-        jobs.slice(0, 20).forEach(j => frag.appendChild(jobCard(j)));
-        elJobsList.appendChild(frag);
-      } catch (e) {
-        setDot(elJobsDot, false);
-        elJobsStat.querySelector('span:last-child').textContent = 'Network error';
-        elJobsList.innerHTML = `<div class="empty">Network error while loading jobs.</div>`;
-      }
-    }
-
-    elLogout.addEventListener('click', async () => {
-      try {
-        await fetch(API + '/auth/logout', { method: 'POST', headers: authHeaders() });
-      } catch {}
-      localStorage.removeItem('token');
-      location.href = '/login.html';
+    btnLogout?.addEventListener('click', () => {
+      localStorage.removeItem('AA_TOKEN');
+      localStorage.removeItem('AA_USER');
+      setSignedInUI(false);
+      window.location.href = '/login.html';
     });
 
-    // Kick off
-    checkApi();
-    loadMe();
+    // Status banner + API health check
+    const statusBanner = document.getElementById('statusBanner');
+    const statusText   = document.getElementById('statusText');
+    const apiDot       = document.getElementById('apiDot');
+    const apiInfo      = document.getElementById('apiInfo');
+
+    async function checkHealth() {
+      try {
+        const res = await fetch('/api/health'); // same-origin via Render rewrite
+        const data = await res.json();
+        apiDot.style.background = '#198754'; // green
+        apiInfo.textContent = `OK • ${data.service} v${data.version}`;
+        statusText.textContent = 'API connected';
+        statusBanner.classList.remove('d-none');
+      } catch (e) {
+        apiDot.style.background = '#dc3545'; // red
+        apiInfo.textContent = 'API unreachable';
+        statusText.textContent = 'API: not reachable';
+        statusBanner.classList.remove('d-none');
+      }
+    }
+
+    // Featured jobs
+    const jobsRow = document.getElementById('jobsRow');
+    async function loadJobs() {
+      try {
+        const res = await fetch('/api/jobs');
+        const jobs = await res.json();
+        if (!Array.isArray(jobs) || jobs.length === 0) {
+          jobsRow.innerHTML = '<div class="col-12"><div class="alert alert-info mb-0">No jobs available right now.</div></div>';
+          return;
+        }
+
+        jobsRow.innerHTML = '';
+        jobs.slice(0, 6).forEach(j => {
+          const col = document.createElement('div');
+          col.className = 'col-md-4';
+          col.innerHTML = `
+            <div class="card h-100 shadow-sm border-0 rounded-4 card-hover">
+              <div class="card-body">
+                <h5 class="card-title mb-1">${j.title}</h5>
+                <div class="text-muted">${j.company} • ${j.location}</div>
+                <div class="mt-2 small">Match score: <strong>${(j.match_score*100).toFixed(0)}%</strong></div>
+                <div class="small text-muted mt-1">Posted: ${j.post_advertised_date || '-'} • Closes: ${j.closing_date || '-'}</div>
+              </div>
+              <div class="card-footer bg-transparent border-0 d-grid">
+                <a href="/jobs.html" class="btn btn-outline-primary">Apply</a>
+              </div>
+            </div>`;
+          jobsRow.appendChild(col);
+        });
+      } catch (e) {
+        jobsRow.innerHTML = '<div class="col-12"><div class="alert alert-warning mb-0">Couldn’t load jobs. Please try again later.</div></div>';
+      }
+    }
+
+    // Init
+    checkHealth();
     loadJobs();
   </script>
 </body>
 </html>
+
 
 
 

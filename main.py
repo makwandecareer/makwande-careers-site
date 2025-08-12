@@ -1,89 +1,155 @@
-# main.py
-import os
-from typing import List
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr
+# backend/main.py
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request, Header, Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime, timedelta
+import os, sqlite3, json, hmac, hashlib, jwt
+from passlib.hash import bcrypt
 
-# -------- App metadata --------
-APP_NAME = "AutoApply API"
-APP_VERSION = os.getenv("APP_VERSION", "1.0.0")
+API_VERSION = "v1.0.0"
+app = FastAPI(title="AutoApply API", version=API_VERSION)
 
-# -------- CORS --------
-# Default origins you actually use. Add/remove as needed.
-_default_origins: List[str] = [
-    "https://autoapplyapp-mobile.onrender.com",
-    "https://makwandecareer.co.za",
+# ---------- AUTH (JWT + SQLite) ----------
+SECRET_KEY = os.getenv("SECRET_KEY", "change-this-in-prod")
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
+
+db = sqlite3.connect("app.db", check_same_thread=False)
+db.execute("""
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  created_at TEXT NOT NULL
+)
+""")
+db.commit()
+
+def _user_row_to_dict(r):
+    return {"id": r[0], "email": r[1], "name": r[2], "password_hash": r[3], "created_at": r[4]}
+
+def get_user_by_email(email: str):
+    cur = db.cursor()
+    cur.execute("SELECT * FROM users WHERE email = ?", (email.strip().lower(),))
+    r = cur.fetchone()
+    return _user_row_to_dict(r) if r else None
+
+def create_user(email: str, name: str, password: str):
+    ph = bcrypt.hash(password)
+    now = datetime.utcnow().isoformat()
+    cur = db.cursor()
+    cur.execute("INSERT INTO users(email,name,password_hash,created_at) VALUES(?,?,?,?)",
+                (email.strip().lower(), name.strip(), ph, now))
+    db.commit()
+    return {"id": cur.lastrowid, "email": email.strip().lower(), "name": name.strip(), "created_at": now}
+
+def verify_user(email: str, password: str):
+    u = get_user_by_email(email)
+    if not u or not bcrypt.verify(password, u["password_hash"]):
+        return None
+    return u
+
+def make_token(user_id: int):
+    payload = {
+        "sub": str(user_id),
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        "iat": datetime.utcnow(),
+        "iss": "autoapply-api"
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+def require_user(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        return int(payload["sub"])
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+class SignupBody(BaseModel):
+    email: str
+    name: str
+    password: str
+
+class LoginBody(BaseModel):
+    email: str
+    password: str
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "service": "autoapply-api", "version": API_VERSION}
+
+@app.post("/api/auth/signup")
+def auth_signup(body: SignupBody):
+    if get_user_by_email(body.email):
+        raise HTTPException(status_code=409, detail="Email already registered")
+    u = create_user(body.email, body.name, body.password)
+    token = make_token(u["id"])
+    return {"access_token": token, "token_type": "bearer", "user": {"id": u["id"], "email": u["email"], "name": u["name"]}}
+
+@app.post("/api/auth/login")
+def auth_login(body: LoginBody):
+    u = verify_user(body.email, body.password)
+    if not u:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = make_token(u["id"])
+    return {"access_token": token, "token_type": "bearer", "user": {"id": u["id"], "email": u["email"], "name": u["name"]}}
+
+@app.get("/api/me")
+def me(user_id: int = Depends(require_user)):
+    cur = db.cursor()
+    cur.execute("SELECT id,email,name,created_at FROM users WHERE id = ?", (user_id,))
+    r = cur.fetchone()
+    if not r:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"id": r[0], "email": r[1], "name": r[2], "created_at": r[3]}
+
+# ---------- Demo jobs + apply (optional) ----------
+class Job(BaseModel):
+    id: str
+    title: str
+    company: str
+    location: str
+    match_score: float
+    post_advertised_date: Optional[str] = None
+    closing_date: Optional[str] = None
+
+MOCK_JOBS: List[Job] = [
+    Job(id="J001", title="Process Engineer", company="ChemWorks SA", location="Gauteng",
+        match_score=0.87, post_advertised_date="2025-08-01", closing_date="2025-08-20"),
+    Job(id="J002", title="Data Analyst", company="Insight Hub", location="Western Cape",
+        match_score=0.79, post_advertised_date="2025-08-05", closing_date="2025-08-25"),
 ]
 
-# Optional: allow overrides via env var
-_allowed = os.getenv("ALLOWED_ORIGINS", "").strip()
-ALLOWED_ORIGINS: List[str] = (
-    [o.strip() for o in _allowed.split(",")] if _allowed else _default_origins
-)
+@app.get("/api/jobs", response_model=List[Job])
+def list_jobs(location: Optional[str] = None, company: Optional[str] = None, min_score: Optional[float] = None):
+    jobs = MOCK_JOBS
+    if location: jobs = [j for j in jobs if j.location.lower() == location.lower()]
+    if company: jobs = [j for j in jobs if j.company.lower() == company.lower()]
+    if min_score is not None: jobs = [j for j in jobs if j.match_score >= min_score]
+    return jobs
 
-# -------- FastAPI app (docs explicitly enabled) --------
-app = FastAPI(
-    title=APP_NAME,
-    version=APP_VERSION,
-    docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_url="/openapi.json",
-)
+@app.post("/api/apply_job")
+async def apply_job(job_id: str = Form(...), cv: UploadFile = File(...), full_name: str = Form("AutoApply User")):
+    _ = await cv.read()  # store/forward to ATS as needed
+    return {"ok": True, "application_id": f"APP-{job_id}-12345"}
 
-# -------- Middleware --------
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# ---------- Paystack webhook stub (unchanged) ----------
+def _paystack_signature_valid(body: bytes, signature: str) -> bool:
+    secret = os.getenv("PAYSTACK_SECRET_KEY", "")
+    if not secret or not signature: return False
+    mac = hmac.new(secret.encode("utf-8"), msg=body, digestmod=hashlib.sha512).hexdigest()
+    return hmac.compare_digest(mac, signature)
 
-# -------- Schemas --------
-class SignupData(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
+@app.post("/api/paystack/webhook")
+async def paystack_webhook(request: Request, x_paystack_signature: Optional[str] = Header(None)):
+    raw = await request.body()
+    if not _paystack_signature_valid(raw, x_paystack_signature):
+        raise HTTPException(status_code=401, detail="Invalid signature")
+    event = json.loads(raw.decode("utf-8"))
+    return {"received": True, "event": event.get("event")}
 
-class LoginData(BaseModel):
-    email: EmailStr
-    password: str
-
-# -------- Routes --------
-@app.get("/")
-def root():
-    return {"ok": True, "service": APP_NAME, "version": APP_VERSION}
-
-@app.get("/healthz")
-def healthz():
-    return {"status": "healthy"}
-
-@app.post("/signup")
-def signup(data: SignupData):
-    # TODO: replace with real user creation (DB)
-    # For now we just simulate success.
-    return {"status": "success", "message": f"user {data.email} created"}
-
-@app.post("/login")
-def login(data: LoginData):
-    # TODO: replace with real auth check
-    if not data.password:
-        raise HTTPException(status_code=400, detail="Invalid credentials")
-    return {"status": "success", "message": "logged in", "token": "dummy-token"}
-
-@app.get("/jobs")
-def jobs():
-    # TODO: replace with real jobs query
-    return {
-        "jobs": [
-            {"id": 1, "title": "Frontend Developer", "location": "Remote"},
-            {"id": 2, "title": "Data Analyst", "location": "Cape Town"},
-        ]
-    }
-
-# NOTE: No _name_ block, no main(), no uvicorn.run().
-# Render will start it via your Start Command (uvicorn main:app ...).
 
 
 

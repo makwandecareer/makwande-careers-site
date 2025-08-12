@@ -5,7 +5,41 @@
   <title>Dashboard • AutoApply</title>
   <meta name="description" content="Track your applications and manage your profile."/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <style>.badge-soft{background:#fff3cd;color:#664d03;border:1px solid #ffe69c;}.card-hover:hover{transform:translateY(-2px);transition:.15s;}</style>
+  <style>.badge-soft{background:#fff3cd;color:#664d03;border:1px solid #ffe69c}.card-hover:hover{transform:translateY(-2px);transition:.15s}</style>
+
+  <!-- Inline helpers -->
+  <script>
+  (function () {
+    const $ = (s) => document.querySelector(s);
+    const apiPath = (p) => "/api" + (p.startsWith("/") ? p : "/" + p);
+    window.apiFetch = (path, opts={}) => {
+      const token = localStorage.getItem("AA_TOKEN");
+      const headers = Object.assign({}, opts.headers||{}, token?{Authorization:`Bearer ${token}`}:{});
+      return fetch(apiPath(path), Object.assign({}, opts, {headers}));
+    };
+    window.apiJSON = async (path, opts={}) => {
+      const res = await apiFetch(path, opts);
+      const ct = (res.headers.get("content-type")||"").toLowerCase();
+      const body = ct.includes("application/json") ? await res.json() : {detail: await res.text()};
+      if(!res.ok) throw new Error(body?.detail || `HTTP ${res.status}`);
+      return body;
+    };
+    window.requireAuth = function () { const t=localStorage.getItem("AA_TOKEN"); if(!t){location.href="/login.html"; return false;} return true; };
+    window.setSignedInUI = function () {
+      const signedIn=!!localStorage.getItem("AA_TOKEN");
+      const l=$("#btnLogin"), s=$("#btnSignup"), o=$("#btnLogout");
+      if(l&&s&&o){ if(signedIn){l.classList.add("d-none");s.classList.add("d-none");o.classList.remove("d-none");}
+      else{l.classList.remove("d-none");s.classList.remove("d-none");o.classList.add("d-none");}
+      o.onclick=()=>{localStorage.clear();location.href="/login.html";}}
+    };
+    window.showStatusBanner = async function () {
+      const b=$("#statusBanner"), t=$("#statusText"); if(!b||!t) return;
+      try{const j=await apiJSON("/health"); t.textContent=`API connected • v${j.version}`;}catch{t.textContent="API not reachable";}
+      b.classList.remove("d-none");
+    };
+    document.addEventListener("DOMContentLoaded",()=>{const y=$("#year"); if(y) y.textContent=new Date().getFullYear(); setSignedInUI(); showStatusBanner();});
+  })();
+  </script>
 </head>
 <body class="bg-light">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -35,67 +69,56 @@
   <main class="container py-4">
     <div class="row g-3">
       <div class="col-lg-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body">
-            <h5 class="card-title mb-3">Your profile</h5>
-            <div class="small text-muted">Name</div>
-            <div id="meName" class="mb-2 fw-semibold">—</div>
-            <div class="small text-muted">Email</div>
-            <div id="meEmail" class="fw-semibold">—</div>
-            <hr/>
-            <button class="btn btn-outline-secondary w-100" id="btnRefresh">Refresh</button>
-            <button class="btn btn-outline-danger w-100 mt-2" id="btnSignOut">Sign out</button>
-          </div>
-        </div>
+        <div class="card shadow-sm border-0 h-100"><div class="card-body">
+          <h5 class="card-title mb-3">Your profile</h5>
+          <div class="small text-muted">Name</div><div id="meName" class="mb-2 fw-semibold">—</div>
+          <div class="small text-muted">Email</div><div id="meEmail" class="fw-semibold">—</div>
+          <hr/><button class="btn btn-outline-secondary w-100" id="btnRefresh">Refresh</button>
+          <button class="btn btn-outline-danger w-100 mt-2" id="btnSignOut">Sign out</button>
+        </div></div>
       </div>
       <div class="col-lg-8">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h5 class="card-title m-0">Applications</h5>
-              <a class="btn btn-sm btn-outline-primary" href="/jobs.html">Find more jobs</a>
-            </div>
-            <div id="appsBox" class="small text-muted">Loading…</div>
+        <div class="card shadow-sm border-0 h-100"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="card-title m-0">Applications</h5>
+            <a class="btn btn-sm btn-outline-primary" href="/jobs.html">Find more jobs</a>
           </div>
-        </div>
+          <div id="appsBox" class="small text-muted">Loading…</div>
+        </div></div>
       </div>
     </div>
   </main>
 
   <footer class="border-top">
-    <div class="container py-4 small d-flex flex-wrap gap-3 justify-content-between">
+    <div class="container py-4 small d-flex justify-content-between flex-wrap gap-3">
       <div>© <span id="year"></span> AutoApply • All rights reserved.</div>
       <div class="d-flex gap-3"><a class="text-decoration-none" href="/privacy.html">Privacy</a><a class="text-decoration-none" href="/terms.html">Terms</a><a class="text-decoration-none" href="/contact.html">Contact</a></div>
     </div>
   </footer>
 
-  <script src="/main.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    if (!requireAuth()) { /* redirected */ }
-
-    const meName  = document.getElementById('meName');
-    const meEmail = document.getElementById('meEmail');
-    const appsBox = document.getElementById('appsBox');
+    if (!requireAuth()) {}
 
     async function loadMe(){
       const m = await apiJSON('/me');
-      meName.textContent  = m.name || '—';
-      meEmail.textContent = m.email || '—';
+      document.getElementById('meName').textContent  = m.name || '—';
+      document.getElementById('meEmail').textContent = m.email || '—';
     }
     async function loadApps(){
       const j = await apiJSON('/applications/protected');
-      const list = (j.applications || []).map(a=>`<li class="list-group-item d-flex justify-content-between align-items-center">
+      const list = (j.applications||[]).map(a=>`<li class="list-group-item d-flex justify-content-between align-items-center">
         <span>${a.id}</span><span class="badge text-bg-secondary">${a.status}</span></li>`).join('');
-      appsBox.innerHTML = list ? `<ul class="list-group list-group-flush">${list}</ul>` :
-        '<div class="alert alert-info mb-0">No applications yet. Start from the Jobs page.</div>';
+      document.getElementById('appsBox').innerHTML = list ? `<ul class="list-group list-group-flush">${list}</ul>` :
+        '<div class="alert alert-info mb-0">No applications yet.</div>';
     }
-    document.getElementById('btnRefresh').onclick = () => { loadMe(); loadApps(); };
-    document.getElementById('btnSignOut').onclick = () => { localStorage.clear(); location.href='/login.html'; };
+    document.getElementById('btnRefresh').onclick = ()=>{ loadMe(); loadApps(); };
+    document.getElementById('btnSignOut').onclick = ()=>{ localStorage.clear(); location.href='/login.html'; };
     loadMe(); loadApps();
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
 
 

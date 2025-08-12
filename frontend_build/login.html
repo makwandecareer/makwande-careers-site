@@ -1,12 +1,44 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Login • AutoApply</title>
   <meta name="description" content="Log in to AutoApply to access your dashboard."/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <style>.badge-soft{background:#fff3cd;color:#664d03;border:1px solid #ffe69c;}</style>
+  <style>.badge-soft{background:#fff3cd;color:#664d03;border:1px solid #ffe69c}</style>
+
+  <!-- Inline helpers -->
+  <script>
+  (function () {
+    const $ = (s) => document.querySelector(s);
+    const apiPath = (p) => "/api" + (p.startsWith("/") ? p : "/" + p);
+    window.apiFetch = (path, opts={}) => {
+      const token = localStorage.getItem("AA_TOKEN");
+      const headers = Object.assign({}, opts.headers||{}, token?{Authorization:`Bearer ${token}`}:{});
+      return fetch(apiPath(path), Object.assign({}, opts, {headers}));
+    };
+    window.apiJSON = async (path, opts={}) => {
+      const res = await apiFetch(path, opts);
+      const ct = (res.headers.get("content-type")||"").toLowerCase();
+      const body = ct.includes("application/json") ? await res.json() : {detail: await res.text()};
+      if(!res.ok) throw new Error(body?.detail || `HTTP ${res.status}`);
+      return body;
+    };
+    window.setSignedInUI = function () {
+      const signedIn=!!localStorage.getItem("AA_TOKEN");
+      const l=$("#btnLogin"), s=$("#btnSignup"), o=$("#btnLogout");
+      if(l&&s&&o){ if(signedIn){l.classList.add("d-none");s.classList.add("d-none");o.classList.remove("d-none");}
+      else{l.classList.remove("d-none");s.classList.remove("d-none");o.classList.add("d-none");}
+      o.onclick=()=>{localStorage.clear();location.href="/login.html";}}
+    };
+    window.showStatusBanner = async function () {
+      const b=$("#statusBanner"), t=$("#statusText"); if(!b||!t) return;
+      try{const j=await apiJSON("/health"); t.textContent=`API connected • v${j.version}`;}catch{t.textContent="API not reachable";}
+      b.classList.remove("d-none");
+    };
+    document.addEventListener("DOMContentLoaded",()=>{const y=$("#year"); if(y) y.textContent=new Date().getFullYear(); setSignedInUI(); showStatusBanner();});
+  })();
+  </script>
 </head>
 <body class="bg-light">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -35,20 +67,9 @@
 
   <main class="container py-5" style="max-width:520px">
     <h1 class="h3 mb-3 text-center">Welcome back</h1>
-    <p class="text-center text-muted mb-4">Sign in to continue to your dashboard.</p>
-
     <form id="loginForm" class="card p-3 p-md-4 shadow-sm">
-      <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input id="email" type="email" class="form-control" placeholder="you@email.com" required/>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Password</label>
-        <div class="input-group">
-          <input id="password" type="password" class="form-control" placeholder="••••••••" required/>
-          <button class="btn btn-outline-secondary" type="button" id="togglePw">Show</button>
-        </div>
-      </div>
+      <div class="mb-3"><label class="form-label">Email</label><input id="email" type="email" class="form-control" required/></div>
+      <div class="mb-3"><label class="form-label">Password</label><input id="password" type="password" class="form-control" required/></div>
       <button id="btnSubmit" class="btn btn-primary w-100" type="submit">Log In</button>
       <div id="loginMsg" class="small mt-3 text-muted"></div>
       <div class="mt-3 text-center small">No account? <a href="/signup.html">Create one</a></div>
@@ -56,33 +77,20 @@
   </main>
 
   <footer class="border-top">
-    <div class="container py-4 small d-flex flex-wrap gap-3 justify-content-between">
+    <div class="container py-4 small d-flex justify-content-between flex-wrap gap-3">
       <div>© <span id="year"></span> AutoApply • All rights reserved.</div>
-      <div class="d-flex gap-3">
-        <a class="text-decoration-none" href="/privacy.html">Privacy</a>
-        <a class="text-decoration-none" href="/terms.html">Terms</a>
-        <a class="text-decoration-none" href="/contact.html">Contact</a>
-      </div>
+      <div class="d-flex gap-3"><a class="text-decoration-none" href="/privacy.html">Privacy</a><a class="text-decoration-none" href="/terms.html">Terms</a><a class="text-decoration-none" href="/contact.html">Contact</a></div>
     </div>
   </footer>
 
-  <script src="/main.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.getElementById('togglePw').onclick = () => {
-      const p = document.getElementById('password');
-      p.type = p.type === 'password' ? 'text' : 'password';
-      document.getElementById('togglePw').textContent = p.type === 'password' ? 'Show' : 'Hide';
-    };
-
-    // If already logged in and token valid, bounce to dashboard
     (async () => {
       const token = localStorage.getItem('AA_TOKEN');
-      if (!token) return;
-      try { const r = await apiFetch('/me'); if (r.ok) location.href='/dashboard.html'; } catch(_) {}
+      if (token) {
+        try { const r = await apiFetch('/me'); if (r.ok) location.href='/dashboard.html'; } catch {}
+      }
     })();
 
-    // Login handler using robust JSON
     const form = document.getElementById('loginForm');
     const msg  = document.getElementById('loginMsg');
     const btn  = document.getElementById('btnSubmit');
@@ -91,21 +99,18 @@
       e.preventDefault(); msg.textContent='Signing in…'; btn.disabled = true;
       try {
         const body = await apiJSON('/auth/login', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({
-            email: document.getElementById('email').value.trim(),
-            password: document.getElementById('password').value
-          })
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email: email.value.trim(), password: password.value })
         });
         localStorage.setItem('AA_TOKEN', body.access_token);
         localStorage.setItem('AA_USER', JSON.stringify(body.user));
         setSignedInUI(); msg.textContent='Success! Redirecting…'; location.href='/dashboard.html';
-      } catch (err) {
-        msg.textContent = err.message || 'Login failed';
-      } finally { btn.disabled = false; }
+      } catch (err) { msg.textContent = err.message || 'Login failed'; }
+      finally { btn.disabled = false; }
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 

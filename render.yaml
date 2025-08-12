@@ -1,6 +1,4 @@
-# render.yaml
 services:
-  # --- FastAPI backend (no CORS middleware needed) ---
   - type: web
     name: autoapply-api
     runtime: python
@@ -8,26 +6,23 @@ services:
     plan: starter plus
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    autoDeployTrigger: commit
     envVars:
       - key: SECRET_KEY
-        sync: false  # you'll set this in the dashboard at first create
+        sync: false
 
-  # --- Static site (proxies /api/* to the backend, kills CORS) ---
   - type: web
     name: autoapply-site
     runtime: static
     rootDir: site
     staticPublishPath: .
     routes:
-      # 1) Proxy ALL /api/* calls to your FastAPI service (same-origin to browser)
       - type: rewrite
         source: /api/*
-        destination: https://<YOUR-API-SERVICE>.onrender.com/api/*
-      # 2) SPA fallback (if you use client-side routing)
+        destination: https://<YOUR-API>.onrender.com/api/*
       - type: rewrite
         source: /*
         destination: /index.html
+
 
 
 

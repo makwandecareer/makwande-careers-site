@@ -1,4 +1,3 @@
-# backend/main.py
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request, Header, Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
@@ -10,7 +9,7 @@ from passlib.hash import bcrypt
 API_VERSION = "v1.0.0"
 app = FastAPI(title="AutoApply API", version=API_VERSION)
 
-# ---------- AUTH (JWT + SQLite) ----------
+# ===== AUTH (JWT + SQLite) =====
 SECRET_KEY = os.getenv("SECRET_KEY", "change-this-in-prod")
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
@@ -76,18 +75,24 @@ class LoginBody(BaseModel):
     email: str
     password: str
 
-@app.get("/api/health")
-def api_health():
-    # Reuse the same payload as /health
+# ===== HEALTH (and /api alias for proxy) =====
+@app.get("/health")
+def health():
     return {"status": "ok", "service": "autoapply-api", "version": API_VERSION}
 
+@app.get("/api/health")
+def api_health():
+    return health()
+
+# ===== AUTH ROUTES =====
 @app.post("/api/auth/signup")
 def auth_signup(body: SignupBody):
     if get_user_by_email(body.email):
         raise HTTPException(status_code=409, detail="Email already registered")
     u = create_user(body.email, body.name, body.password)
     token = make_token(u["id"])
-    return {"access_token": token, "token_type": "bearer", "user": {"id": u["id"], "email": u["email"], "name": u["name"]}}
+    return {"access_token": token, "token_type": "bearer",
+            "user": {"id": u["id"], "email": u["email"], "name": u["name"]}}
 
 @app.post("/api/auth/login")
 def auth_login(body: LoginBody):
@@ -95,18 +100,18 @@ def auth_login(body: LoginBody):
     if not u:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = make_token(u["id"])
-    return {"access_token": token, "token_type": "bearer", "user": {"id": u["id"], "email": u["email"], "name": u["name"]}}
+    return {"access_token": token, "token_type": "bearer",
+            "user": {"id": u["id"], "email": u["email"], "name": u["name"]}}
 
 @app.get("/api/me")
 def me(user_id: int = Depends(require_user)):
     cur = db.cursor()
     cur.execute("SELECT id,email,name,created_at FROM users WHERE id = ?", (user_id,))
     r = cur.fetchone()
-    if not r:
-        raise HTTPException(status_code=404, detail="User not found")
+    if not r: raise HTTPException(status_code=404, detail="User not found")
     return {"id": r[0], "email": r[1], "name": r[2], "created_at": r[3]}
 
-# ---------- Demo jobs + apply (optional) ----------
+# ===== JOBS + APPLY =====
 class Job(BaseModel):
     id: str
     title: str
@@ -133,10 +138,25 @@ def list_jobs(location: Optional[str] = None, company: Optional[str] = None, min
 
 @app.post("/api/apply_job")
 async def apply_job(job_id: str = Form(...), cv: UploadFile = File(...), full_name: str = Form("AutoApply User")):
-    _ = await cv.read()  # store/forward to ATS as needed
+    _ = await cv.read()
     return {"ok": True, "application_id": f"APP-{job_id}-12345"}
 
-# ---------- Paystack webhook stub (unchanged) ----------
+# ===== REVAMP (stub) =====
+class RevampRequest(BaseModel):
+    cv_text: str
+    job_spec: Optional[str] = None
+
+@app.post("/api/revamp")
+def revamp(req: RevampRequest):
+    suggestions = [
+        "Add quantifiable achievements under recent roles.",
+        "Include relevant keywords from the job spec in skills section.",
+        "Reorder experience to highlight domain alignment.",
+    ]
+    return {"ats_score": 85.0, "match_rate": 82.0,
+            "suggestions": suggestions, "revamped_cv": "(ATS-optimized CV content here.)"}
+
+# ===== PAYSTACK WEBHOOK (optional stub) =====
 def _paystack_signature_valid(body: bytes, signature: str) -> bool:
     secret = os.getenv("PAYSTACK_SECRET_KEY", "")
     if not secret or not signature: return False
@@ -150,6 +170,12 @@ async def paystack_webhook(request: Request, x_paystack_signature: Optional[str]
         raise HTTPException(status_code=401, detail="Invalid signature")
     event = json.loads(raw.decode("utf-8"))
     return {"received": True, "event": event.get("event")}
+
+@app.get("/api/applications/protected")
+def applications_protected(user_id: int = Depends(require_user)):
+    return {"user_id": user_id, "applications": [{"id": "APP-1", "status": "submitted"}]}
+
+
 
 
 

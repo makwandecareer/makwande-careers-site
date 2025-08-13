@@ -6,7 +6,24 @@
   </script>
   
 <html lang="en">
+  <!-- login.html -->
+<form id="login-form"> ... </form>
+<script>
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.querySelector('input[type="email"]').value.trim();
+  const password = document.querySelector('input[type="password"]').value;
+  const out = await AutoApply.login(email, password).catch(err => ({ ok:false, message: err.message }));
+  if (out.ok) location.href = 'dashboard.html';
+  else alert(out.message || 'Login failed');
+});
+</script>
+
 <head>
+  <!-- put in <head> on every page, before any code that uses AutoApply -->
+<script>window.API_ORIGIN = 'https://autoapply-api.onrender.com';</script>
+<script src="auth.js"></script>
+
   <script>
     // Choose the correct backend automatically
     (function () {

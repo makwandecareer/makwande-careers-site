@@ -27,6 +27,22 @@
     })();
   </script>
   
+  <script>
+    (async () => {
+      const pill = document.querySelector('#api-status') || document.querySelector('.api-status');
+      if (!pill) return;
+    
+      try {
+        const info = await apiJSON('/api/health');   // uses the helper we added
+        pill.textContent = 'API connected' + (info && info.version ? ` • v${info.version}` : '');
+      } catch (e) {
+        pill.textContent = 'API not reachable';
+      }
+    })();
+    </script>
+
+<span id="api-status" class="badge"></span>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>View Applicants - AutoApply</title>

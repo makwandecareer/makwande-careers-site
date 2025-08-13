@@ -1,5 +1,3 @@
-<script src="/static/js/main.js"></script>
-
 jobs.js
 
 async function fetchJobs(q = "") {

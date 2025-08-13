@@ -98,6 +98,24 @@
     document.addEventListener("DOMContentLoaded", ()=>{ const y=$("#year"); if(y) y.textContent=new Date().getFullYear(); setSignedInUI(); showStatusBanner(); });
   })();
   </script>
+  <script>
+    (async () => {
+      const badge = document.querySelector('.api-status');
+      if (!badge) return;
+      try {
+        const r = await apiFetch('/api/health');   // uses the helper we added
+        const j = await r.json();
+        badge.textContent = j.ok
+          ? `API connected${j.version ? ' · v' + j.version : ''}`
+          : 'API not reachable';
+        badge.className = 'badge ' + (j.ok ? 'badge-soft' : 'badge-danger');
+      } catch {
+        badge.textContent = 'API not reachable';
+        badge.className = 'badge badge-danger';
+      }
+    })();
+    </script>
+    
 </head>
 <body class="bg-light">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">

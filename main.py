@@ -168,3 +168,38 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", "8080"))
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+
+# --- canonical models/handlers (already in your file) ---
+from pydantic import BaseModel
+
+class LoginBody(BaseModel):
+    email: str
+    password: str
+
+class SignupBody(BaseModel):
+    name: str
+    email: str
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+@app.post("/api/login", response_model=TokenResponse)
+async def login(body: LoginBody):
+    # ... your existing logic ...
+    ...
+
+@app.post("/api/signup", response_model=TokenResponse)
+async def signup(body: SignupBody):
+    # ... your existing logic ...
+    ...
+
+# --- add these tiny alias routes (fixes 404 immediately) ---
+@app.post("/api/auth/login", response_model=TokenResponse)
+async def login_alias(body: LoginBody):
+    return await login(body)
+
+@app.post("/api/auth/signup", response_model=TokenResponse)
+async def signup_alias(body: SignupBody):
+    return await signup(body)

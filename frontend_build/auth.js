@@ -131,3 +131,63 @@
   if (document.readyState === "complete" || document.readyState === "interactive") paintBadge();
   else document.addEventListener("DOMContentLoaded", paintBadge);
 })();
+
+// auth.js (keep only this file for auth)
+const TOKEN_KEY = 'autoapply_token';
+const API = (p) => `${(window.API_ORIGIN || '').replace(/\/$/, '')}/api${p}`;
+
+function saveToken(t){ localStorage.setItem(TOKEN_KEY, t); }
+function getToken(){ return localStorage.getItem(TOKEN_KEY); }
+function logout(){ localStorage.removeItem(TOKEN_KEY); window.location.href = "index.html"; }
+function requireAuth(){ if (!getToken()) window.location.href = "index.html"; }
+
+async function apiFetch(path, opts = {}) {
+  const headers = Object.assign(
+    { "Content-Type": "application/json" },
+    (opts.headers || {})
+  );
+  const t = getToken();
+  if (t) headers.Authorization = `Bearer ${t}`;
+  const res = await fetch(API(path), { ...opts, headers });
+  return res;
+}
+
+async function login(email, password) {
+  try {
+    const res = await apiFetch("/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      return { ok:false, message: data.detail || "Invalid credentials" };
+    }
+    if (!data.access_token) return { ok:false, message:"No token" };
+    saveToken(data.access_token);
+    return { ok:true };
+  } catch {
+    return { ok:false, message:"Network error" };
+  }
+}
+
+async function signup(name, email, password) {
+  try {
+    const res = await apiFetch("/signup", {
+      method: "POST",
+      body: JSON.stringify({ name, email, password })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok:false, message: data.detail || "Signup failed" };
+    if (!data.access_token) return { ok:false, message:"No token" };
+    saveToken(data.access_token);
+    return { ok:true };
+  } catch { return { ok:false, message:"Network error" }; }
+}
+
+async function me() {
+  const res = await apiFetch("/me", { method:"GET" });
+  return res.ok ? res.json() : null;
+}
+
+// expose for pages
+window.AutoAuth = { login, signup, logout, getToken, requireAuth, me };

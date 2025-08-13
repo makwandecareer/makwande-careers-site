@@ -1,193 +1,135 @@
-// auth.js — tiny frontend SDK for AutoApply static pages
-// - Handles token storage
-// - Retries alternate API routes to avoid 404s
-// - Provides login/signup/me/jobs/apply helpers
-// - Paints the health badge without "vundefined"
-
+/* auth.js — final, single source of truth
+   - Calls ONLY the new routes: /api/login, /api/signup, /api/me, /api/jobs, /api/apply_job, /api/applications/protected, /api/health
+   - Single token key
+   - Health badge painter (no "vundefined")
+   - Exposes one API: window.AutoAuth (and aliases window.AutoApply = AutoAuth)
+*/
 (() => {
-  const TOKEN_KEY = "AA_TOKEN";
+  'use strict';
 
-  // Decide API origin:
-  // 1) window.API_ORIGIN (recommended)
-  // 2) <meta name="api-origin" content="...">
-  // 3) fall back to same origin
-  const ORIGIN =
-    (typeof window.API_ORIGIN === "string" && window.API_ORIGIN) ||
+  // ---- Config --------------------------------------------------------------
+  const TOKEN_KEY = 'autoapply_token';
+  const DEFAULT_API_ORIGIN = 'https://autoapply-api.onrender.com';
+
+  // Resolve API origin (window var -> <meta> -> default)
+  const API_ORIGIN =
+    (typeof window.API_ORIGIN === 'string' && window.API_ORIGIN.trim()) ||
     (document.querySelector('meta[name="api-origin"]')?.content) ||
-    location.origin;
+    DEFAULT_API_ORIGIN;
 
-  // Join URL parts, keep "https://" intact
-  const join = (...parts) => {
-    const s = parts.join("/").replace(/(?<!:)\/{2,}/g, "/");
-    return s;
-  };
+  // Build full URL safely
+  const API = (path) =>
+    `${API_ORIGIN.replace(/\/+$/,'')}/api${path.startsWith('/') ? path : '/'+path}`;
 
-  const API_BASE = join(ORIGIN, "api");
+  // ---- Token helpers -------------------------------------------------------
+  const saveToken   = (t) => localStorage.setItem(TOKEN_KEY, t);
+  const getToken    = ()   => localStorage.getItem(TOKEN_KEY);
+  const clearToken  = ()   => localStorage.removeItem(TOKEN_KEY);
+  const logout      = ()   => { clearToken(); location.href = 'login.html'; };
+  const requireAuth = ()   => { if (!getToken()) location.href = 'login.html'; };
 
-  // --- token helpers ---
-  const getToken = () => localStorage.getItem(TOKEN_KEY);
-  const saveToken = (t) => localStorage.setItem(TOKEN_KEY, t);
-  const clearToken = () => localStorage.removeItem(TOKEN_KEY);
-  const requireAuth = () => { if (!getToken()) location.href = "login.html"; };
-  const logout = () => { clearToken(); location.href = "login.html"; };
+  // ---- Fetch helpers -------------------------------------------------------
+  const withTimeout = (p, ms=15000) =>
+    Promise.race([ p, new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')), ms)) ]);
 
-  // --- fetch helpers ---
-  const withTimeout = (p, ms = 15000) =>
-    Promise.race([p, new Promise((_, r) => setTimeout(() => r(new Error("timeout")), ms))]);
-
-  const doFetch = (url, opts = {}) =>
-    withTimeout(fetch(url, opts)).then(async (res) => {
-      let data;
-      try { data = await res.json(); } catch { data = {}; }
-      if (!res.ok) {
-        const err = new Error(data.detail || data.message || res.statusText);
-        err.status = res.status;
-        err.data = data;
-        throw err;
-      }
-      return data;
-    });
-
-  const authHeaders = (extra = {}) => {
+  async function doFetch(url, opts={}) {
+    const headers = Object.assign(
+      { 'Content-Type': 'application/json' },
+      opts.headers || {}
+    );
     const t = getToken();
-    return Object.assign({}, extra, t ? { Authorization: `Bearer ${t}` } : {});
-  };
+    if (t) headers.Authorization = `Bearer ${t}`;
 
-  // Try a list of paths until one works; only 404 triggers a retry
-  const tryPaths = async (paths, options) => {
-    let lastErr;
-    for (const p of paths) {
-      try { return await doFetch(p, options); }
-      catch (e) {
-        lastErr = e;
-        if (e.status !== 404) throw e;
-      }
-    }
-    throw lastErr || new Error("Not Found");
-  };
+    const res = await withTimeout(fetch(url, { ...opts, headers }));
+    let data = null;
+    try { data = await res.json(); } catch { /* no body */ }
 
-  // --- API helpers (with alias fallbacks to kill 404s) ---
-  async function health() {
-    const paths = [ join(ORIGIN, "health"), join(API_BASE, "health") ];
-    try {
-      const h = await tryPaths(paths, { cache: "no-store" });
-      return { ok: !!h.ok, service: h.service, version: h.version };
-    } catch {
-      return { ok: false };
+    if (!res.ok) {
+      const msg = (data && (data.detail || data.message)) || res.statusText || 'Request failed';
+      const err = new Error(msg);
+      err.status = res.status;
+      err.data = data;
+      throw err;
     }
+    return data;
   }
 
+  // ---- API calls (new, stable paths) --------------------------------------
   async function login(email, password) {
-    const body = JSON.stringify({ email, password });
-    const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
-    const paths = [ join(API_BASE, "auth/login"), join(API_BASE, "login") ];
-    const data = await tryPaths(paths, options);
-    if (data.access_token) saveToken(data.access_token);
+    const data = await doFetch(API('/login'), {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+    if (!data || !data.access_token) throw new Error('No token in response');
+    saveToken(data.access_token);
     return data;
   }
 
   async function signup(name, email, password) {
-    const body = JSON.stringify({ name, email, password });
-    const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
-    const paths = [ join(API_BASE, "auth/signup"), join(API_BASE, "signup") ];
-    return tryPaths(paths, options);
-  }
-
-  const me = () =>
-    doFetch(join(API_BASE, "me"), { headers: authHeaders() });
-
-  const listJobs = () =>
-    doFetch(join(API_BASE, "jobs"), { headers: authHeaders() });
-
-  const applyJob = (payload) =>
-    doFetch(join(API_BASE, "apply_job"), {
-      method: "POST",
-      headers: authHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify(payload),
-    });
-
-  const applications = () =>
-    doFetch(join(API_BASE, "applications/protected"), { headers: authHeaders() });
-
-  // --- badge painter (optional) ---
-  async function paintBadge() {
-    const el = document.getElementById("api-status");
-    if (!el) return;
-    const h = await health();
-    el.textContent = h.ok ? `API connected • v${h.version || "-"}` : "API not reachable";
-  }
-
-  // Expose a single global
-  window.AutoApply = {
-    API_ORIGIN: ORIGIN,
-    API_BASE,
-    getToken, saveToken, clearToken, requireAuth, logout,
-    health, paintBadge,
-    login, signup, me, listJobs, applyJob, applications,
-    apiFetch: doFetch,
-  };
-
-  // Auto-paint the badge if present
-  if (document.readyState === "complete" || document.readyState === "interactive") paintBadge();
-  else document.addEventListener("DOMContentLoaded", paintBadge);
-})();
-
-// auth.js (keep only this file for auth)
-const TOKEN_KEY = 'autoapply_token';
-const API = (p) => `${(window.API_ORIGIN || '').replace(/\/$/, '')}/api${p}`;
-
-function saveToken(t){ localStorage.setItem(TOKEN_KEY, t); }
-function getToken(){ return localStorage.getItem(TOKEN_KEY); }
-function logout(){ localStorage.removeItem(TOKEN_KEY); window.location.href = "index.html"; }
-function requireAuth(){ if (!getToken()) window.location.href = "index.html"; }
-
-async function apiFetch(path, opts = {}) {
-  const headers = Object.assign(
-    { "Content-Type": "application/json" },
-    (opts.headers || {})
-  );
-  const t = getToken();
-  if (t) headers.Authorization = `Bearer ${t}`;
-  const res = await fetch(API(path), { ...opts, headers });
-  return res;
-}
-
-async function login(email, password) {
-  try {
-    const res = await apiFetch("/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      return { ok:false, message: data.detail || "Invalid credentials" };
-    }
-    if (!data.access_token) return { ok:false, message:"No token" };
-    saveToken(data.access_token);
-    return { ok:true };
-  } catch {
-    return { ok:false, message:"Network error" };
-  }
-}
-
-async function signup(name, email, password) {
-  try {
-    const res = await apiFetch("/signup", {
-      method: "POST",
+    const data = await doFetch(API('/signup'), {
+      method: 'POST',
       body: JSON.stringify({ name, email, password })
     });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok:false, message: data.detail || "Signup failed" };
-    if (!data.access_token) return { ok:false, message:"No token" };
-    saveToken(data.access_token);
-    return { ok:true };
-  } catch { return { ok:false, message:"Network error" }; }
-}
+    if (data && data.access_token) saveToken(data.access_token);
+    return data;
+  }
 
-async function me() {
-  const res = await apiFetch("/me", { method:"GET" });
-  return res.ok ? res.json() : null;
-}
+  const me            = () => doFetch(API('/me'), { method: 'GET' });
+  const listJobs      = () => doFetch(API('/jobs'), { method: 'GET' });
+  const applications  = () => doFetch(API('/applications/protected'), { method: 'GET' });
+  const applyJob      = (payload) =>
+    doFetch(API('/apply_job'), { method: 'POST', body: JSON.stringify(payload) });
 
-// expose for pages
-window.AutoAuth = { login, signup, logout, getToken, requireAuth, me };
+  // Health (try /api/health first; fall back to /health if present)
+  async function health() {
+    try {
+      return await doFetch(API('/health'), { method: 'GET', cache: 'no-store' });
+    } catch (e) {
+      try {
+        const url = `${API_ORIGIN.replace(/\/+$/,'')}/health`;
+        return await doFetch(url, { method: 'GET', cache: 'no-store' });
+      } catch {
+        return { ok:false };
+      }
+    }
+  }
+
+  // ---- Badge painter -------------------------------------------------------
+  async function paintBadge() {
+    const el = document.getElementById('api-status');
+    if (!el) return;
+    try {
+      const h = await health();
+      el.textContent = h && h.ok
+        ? `API connected • v${h.version || '-'}`
+        : 'API not reachable';
+    } catch {
+      el.textContent = 'API not reachable';
+    }
+  }
+
+  // ---- Public API ----------------------------------------------------------
+  const AutoAuth = {
+    // config
+    API_ORIGIN,
+    API,
+
+    // token & nav
+    saveToken, getToken, clearToken, requireAuth, logout,
+
+    // calls
+    login, signup, me, listJobs, applications, applyJob, health, paintBadge,
+  };
+
+  // Expose
+  window.AutoAuth = AutoAuth;
+  // Backwards-friendly alias if some pages still reference AutoApply.*
+  window.AutoApply = AutoAuth;
+
+  // Auto paint the badge if present
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', paintBadge);
+  } else {
+    paintBadge();
+  }
+})();

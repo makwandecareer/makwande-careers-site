@@ -1,5 +1,24 @@
 <!doctype html>
 <html lang="en">
+  <form id="loginForm">
+    <input id="email" type="email" required>
+    <input id="password" type="password" required>
+    <button type="submit">Log In</button>
+  </form>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      try {
+        await AutoAuth.login(email, password);
+        location.href = 'dashboard.html';
+      } catch (err) {
+        alert(err.message || 'Login failed');
+      }
+    });
+  </script>
+  
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -31,7 +50,7 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   msg.textContent = "Signing in…";
   try {
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type':'application/json' },
       body: JSON.stringify({

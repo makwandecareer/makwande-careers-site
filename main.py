@@ -135,10 +135,10 @@ def _login(body: LoginBody) -> TokenResponse:
     return TokenResponse(access_token=token, user={"id": user["id"], "name": user["name"], "email": email})
 
 # Primary paths
-@app.post("/api/auth/signup", response_model=TokenResponse)
+@app.post("/api/signup", response_model=TokenResponse)
 def signup_auth(body: SignupBody): return _signup(body)
 
-@app.post("/api/auth/login", response_model=TokenResponse)
+@app.post("/api/login", response_model=TokenResponse)
 def login_auth(body: LoginBody): return _login(body)
 
 # Compatible aliases (so 404s disappear if your frontend uses the shorter paths)
@@ -196,10 +196,10 @@ async def signup(body: SignupBody):
     ...
 
 # --- add these tiny alias routes (fixes 404 immediately) ---
-@app.post("/api/auth/login", response_model=TokenResponse)
+@app.post("/api/login", response_model=TokenResponse)
 async def login_alias(body: LoginBody):
     return await login(body)
 
-@app.post("/api/auth/signup", response_model=TokenResponse)
+@app.post("/api/signup", response_model=TokenResponse)
 async def signup_alias(body: SignupBody):
     return await signup(body)

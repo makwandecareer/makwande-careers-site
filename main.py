@@ -1,132 +1,170 @@
-from fastapi import FastAPI, HTTPException, Request, Header, Depends
+# main.py
+from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, List, Dict, Any
-import hashlib, uuid, time
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel, EmailStr
+from typing import Dict, Optional
+from datetime import datetime, timedelta
+from jose import jwt, JWTError
+import hashlib
+import os
 
-app = FastAPI(title="AutoApply API", version="1.0.0")
+# --------------------------------------------------------------------------------------
+# Config
+# --------------------------------------------------------------------------------------
+SECRET_KEY = os.getenv("SECRET_KEY", "change-me-in-prod")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_MINUTES = int(os.getenv("ACCESS_TOKEN_MINUTES", "43200"))  # 30 days
 
-# --- CORS (allow your static site and dev) -----------------------------------
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],          # relax for now; tighten later if needed
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+# Shown in /api/health
+API_VERSION = (
+    os.getenv("API_VERSION")
+    or os.getenv("RENDER_GIT_COMMIT", "")[:7]
+    or "1.0.0"
 )
 
-# --- In-memory stores (simple & deployment-safe; replace with DB later) ------
-USERS: Dict[str, Dict[str, Any]] = {}      # email -> user dict
-TOKENS: Dict[str, str] = {}                # token -> email
-APPLICATIONS: Dict[str, List[Dict[str, Any]]] = {}  # email -> list
-JOBS: List[Dict[str, Any]] = [
-    {"id": "J101", "title": "Junior Data Analyst", "company": "Acme", "url": "https://example.com/jobs/101"},
-    {"id": "J202", "title": "Software Engineer",  "company": "Globex","url": "https://example.com/jobs/202"},
-    {"id": "J303", "title": "Support Specialist", "company": "Initech","url": "https://example.com/jobs/303"},
+ALLOWED_ORIGINS = [
+    "https://autoapplyapp-mobile.onrender.com",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
 ]
+# Allow override from env (comma separated)
+if os.getenv("ALLOWED_ORIGINS"):
+    ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS").split(",") if o.strip()]
 
-# --- Helpers -----------------------------------------------------------------
-def _hash_pw(raw: str) -> str:
-    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+# --------------------------------------------------------------------------------------
+# App
+# --------------------------------------------------------------------------------------
+app = FastAPI(title="AutoApply API", version=API_VERSION)
 
-def _new_token() -> str:
-    return uuid.uuid4().hex
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
+    allow_credentials=False,
+)
 
-def _require_user(authorization: Optional[str] = Header(None)) -> Dict[str, Any]:
-    if not authorization or not authorization.lower().startswith("bearer "):
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    token = authorization.split(" ", 1)[1].strip()
-    email = TOKENS.get(token)
-    if not email or email not in USERS:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    return USERS[email]
+security = HTTPBearer(auto_error=False)
 
-# --- Schemas -----------------------------------------------------------------
+# --------------------------------------------------------------------------------------
+# Simple in-memory store (keeps your existing flows working; swap for DB when ready)
+# --------------------------------------------------------------------------------------
+_users: Dict[str, Dict] = {}   # key: email -> {id, name, email, password_hash}
+_next_id = 1
+
+def _hash_password(raw: str) -> str:
+    return hashlib.sha256((SECRET_KEY + "::" + raw).encode("utf-8")).hexdigest()
+
+def _create_token(payload: dict, minutes: int = ACCESS_TOKEN_MINUTES) -> str:
+    to_encode = payload.copy()
+    now = datetime.utcnow()
+    to_encode.update({"iat": int(now.timestamp()), "exp": int((now + timedelta(minutes=minutes)).timestamp())})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def _decode_token(token: str) -> dict:
+    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+# --------------------------------------------------------------------------------------
+# Models
+# --------------------------------------------------------------------------------------
 class SignupBody(BaseModel):
-    name: str = Field(..., min_length=1)
+    name: str
     email: EmailStr
-    password: str = Field(..., min_length=6)
+    password: str
 
 class LoginBody(BaseModel):
     email: EmailStr
     password: str
 
-class RevampRequest(BaseModel):
-    text: str
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
 
-class ApplyJobBody(BaseModel):
-    id: Optional[str] = None
-    url: Optional[str] = None
-    notes: Optional[str] = None
+# --------------------------------------------------------------------------------------
+# Auth helper
+# --------------------------------------------------------------------------------------
+def get_current_user(creds: Optional[HTTPAuthorizationCredentials] = Depends(security)):
+    if not creds or not creds.scheme.lower() == "bearer":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    try:
+        data = _decode_token(creds.credentials)
+        email = data.get("sub")
+        if not email or email not in _users:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        return _users[email]
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
-# --- Health ------------------------------------------------------------------
-@app.get("/health")
-def health_root():
-    return {"ok": True, "service": "autoapply-api"}
-
+# --------------------------------------------------------------------------------------
+# Health
+# --------------------------------------------------------------------------------------
 @app.get("/api/health")
-def health_api():
-    return {"ok": True, "service": "autoapply-api", "version": app.version}
+def api_health():
+    return {"status": "ok", "version": API_VERSION}
 
-# --- Auth --------------------------------------------------------------------
-@app.post("/api/auth/signup")
-def signup(body: SignupBody):
-    email = body.email.lower()
-    if email in USERS:
+@app.get("/health")
+def root_health():
+    return {"status": "ok", "version": API_VERSION}
+
+# --------------------------------------------------------------------------------------
+# Auth: Signup + Login  (both /api/auth/* and /api/* aliases)
+# --------------------------------------------------------------------------------------
+def _signup(body: SignupBody) -> TokenResponse:
+    global _next_id
+    email = body.email.lower().strip()
+    if email in _users:
         raise HTTPException(status_code=400, detail="User already exists")
-    user = {
-        "id": len(USERS) + 1,
+    _users[email] = {
+        "id": _next_id,
         "name": body.name.strip(),
         "email": email,
-        "password_hash": _hash_pw(body.password),
-        "created_at": int(time.time()),
+        "password_hash": _hash_password(body.password),
     }
-    USERS[email] = user
-    token = _new_token()
-    TOKENS[token] = email
-    # response payload matches typical JWT style field names used by UIs
-    return {"access_token": token, "token_type": "bearer", "user": {"id": user["id"], "name": user["name"], "email": user["email"]}}
+    _next_id += 1
+    token = _create_token({"sub": email, "name": _users[email]["name"], "uid": _users[email]["id"]})
+    return TokenResponse(access_token=token, user={"id": _users[email]["id"], "name": _users[email]["name"], "email": email})
 
-@app.post("/api/auth/login")
-def login(body: LoginBody):
-    email = body.email.lower()
-    user = USERS.get(email)
-    if not user or user["password_hash"] != _hash_pw(body.password):
+def _login(body: LoginBody) -> TokenResponse:
+    email = body.email.lower().strip()
+    user = _users.get(email)
+    if not user or user["password_hash"] != _hash_password(body.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    token = _new_token()
-    TOKENS[token] = email
-    return {"access_token": token, "token_type": "bearer", "user": {"id": user["id"], "name": user["name"], "email": user["email"]}}
+    token = _create_token({"sub": email, "name": user["name"], "uid": user["id"]})
+    return TokenResponse(access_token=token, user={"id": user["id"], "name": user["name"], "email": email})
 
+# Primary paths
+@app.post("/api/auth/signup", response_model=TokenResponse)
+def signup_auth(body: SignupBody): return _signup(body)
+
+@app.post("/api/auth/login", response_model=TokenResponse)
+def login_auth(body: LoginBody): return _login(body)
+
+# Compatible aliases (so 404s disappear if your frontend uses the shorter paths)
+@app.post("/api/signup", response_model=TokenResponse)
+def signup_alias(body: SignupBody): return _signup(body)
+
+@app.post("/api/login", response_model=TokenResponse)
+def login_alias(body: LoginBody): return _login(body)
+
+# --------------------------------------------------------------------------------------
+# Me (protected)
+# --------------------------------------------------------------------------------------
 @app.get("/api/me")
-def me(current=Depends(_require_user)):
-    return {"id": current["id"], "name": current["name"], "email": current["email"]}
+def me(user=Depends(get_current_user)):
+    return {"id": user["id"], "name": user["name"], "email": user["email"]}
 
-# --- Jobs --------------------------------------------------------------------
-@app.get("/api/jobs")
-def list_jobs() -> List[Dict[str, Any]]:
-    return JOBS
+# --------------------------------------------------------------------------------------
+# Misc convenience
+# --------------------------------------------------------------------------------------
+@app.get("/")
+def home():
+    return {"message": "AutoApply API", "version": API_VERSION}
 
-@app.post("/api/apply_job")
-def apply_job(body: ApplyJobBody, current=Depends(_require_user)):
-    # pretend to apply & save application
-    entry = {"when": int(time.time()), "job_id": body.id, "url": body.url, "notes": body.notes}
-    APPLICATIONS.setdefault(current["email"], []).append(entry)
-    return {"applied": True, "entry": entry}
-
-@app.get("/api/applications/protected")
-def list_my_applications(current=Depends(_require_user)):
-    return {"items": APPLICATIONS.get(current["email"], [])}
-
-# --- CV Revamp (stub) --------------------------------------------------------
-@app.post("/api/revamp")
-def revamp(body: RevampRequest, current=Depends(_require_user)):
-    # very simple demo transformer
-    cleaned = " ".join(body.text.split())
-    improved = cleaned.capitalize()
-    return {"input_len": len(body.text), "output": improved}
-
-# --- Paystack webhook (no-op stub) -------------------------------------------
-@app.post("/api/paystack/webhook")
-async def paystack_webhook(request: Request):
-    _ = await request.body()
-    return {"received": True}
+# Standard entrypoint (!!! make sure it’s __name__ == '__main__' !!!)
+if __name__ == "__main__":
+    # Local dev: python main.py
+    import uvicorn
+    port = int(os.getenv("PORT", "8080"))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)

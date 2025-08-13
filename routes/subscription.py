@@ -1,5 +1,3 @@
-// main.js - Absolute URL version for Vercel + Render integration
-
 // ✅ Absolute URL for Render backend
 const API_BASE_URL = 'https://autoapply-api.onrender.com';
 

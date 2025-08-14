@@ -1,205 +1,169 @@
-# main.py
-from fastapi import FastAPI, HTTPException, Depends, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel, EmailStr
-from typing import Dict, Optional
-from datetime import datetime, timedelta
-from jose import jwt, JWTError
-import hashlib
 import os
+from typing import List, Optional
+from datetime import datetime
 
-# --------------------------------------------------------------------------------------
-# Config
-# --------------------------------------------------------------------------------------
-SECRET_KEY = os.getenv("SECRET_KEY", "change-me-in-prod")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_MINUTES = int(os.getenv("ACCESS_TOKEN_MINUTES", "43200"))  # 30 days
+from fastapi import FastAPI, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-# Shown in /api/health
-API_VERSION = (
-    os.getenv("API_VERSION")
-    or os.getenv("RENDER_GIT_COMMIT", "")[:7]
-    or "1.0.0"
-)
+# ----------------------------
+# Models
+# ----------------------------
+class Health(BaseModel):
+    ok: bool
+    service: str = "autoapply-api"
+    version: str = "1.0.0"
 
-ALLOWED_ORIGINS = [
-    "https://autoapplyapp-mobile.onrender.com",
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-]
-# Allow override from env (comma separated)
-if os.getenv("ALLOWED_ORIGINS"):
-    ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS").split(",") if o.strip()]
+class Job(BaseModel):
+    id: str
+    title: str
+    company: str
+    location: Optional[str] = None
+    url: str
+    posted_at: Optional[str] = None  # ISO string
 
-# --------------------------------------------------------------------------------------
+# ----------------------------
 # App
-# --------------------------------------------------------------------------------------
-app = FastAPI(title="AutoApply API", version=API_VERSION)
+# ----------------------------
+app = FastAPI(title="AutoApply API", version="1.0.0")
 
+# Open CORS (frontend is on a different domain)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type"],
-    allow_credentials=False,
+    allow_origins=["*"],  # you can restrict to your static site later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-security = HTTPBearer(auto_error=False)
+router = APIRouter(prefix="/api")
 
-# --------------------------------------------------------------------------------------
-# Simple in-memory store (keeps your existing flows working; swap for DB when ready)
-# --------------------------------------------------------------------------------------
-_users: Dict[str, Dict] = {}   # key: email -> {id, name, email, password_hash}
-_next_id = 1
-
-def _hash_password(raw: str) -> str:
-    return hashlib.sha256((SECRET_KEY + "::" + raw).encode("utf-8")).hexdigest()
-
-def _create_token(payload: dict, minutes: int = ACCESS_TOKEN_MINUTES) -> str:
-    to_encode = payload.copy()
-    now = datetime.utcnow()
-    to_encode.update({"iat": int(now.timestamp()), "exp": int((now + timedelta(minutes=minutes)).timestamp())})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-def _decode_token(token: str) -> dict:
-    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-
-# --------------------------------------------------------------------------------------
-# Models
-# --------------------------------------------------------------------------------------
-class SignupBody(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-
-class LoginBody(BaseModel):
-    email: EmailStr
-    password: str
-
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-    user: dict
-
-# --------------------------------------------------------------------------------------
-# Auth helper
-# --------------------------------------------------------------------------------------
-def get_current_user(creds: Optional[HTTPAuthorizationCredentials] = Depends(security)):
-    if not creds or not creds.scheme.lower() == "bearer":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    try:
-        data = _decode_token(creds.credentials)
-        email = data.get("sub")
-        if not email or email not in _users:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-        return _users[email]
-    except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-
-# --------------------------------------------------------------------------------------
+# ----------------------------
 # Health
-# --------------------------------------------------------------------------------------
-@app.get("/api/health")
-def api_health():
-    return {"status": "ok", "version": API_VERSION}
+# ----------------------------
+@app.get("/health", response_model=Health, tags=["Health"])
+@router.get("/health", response_model=Health, tags=["Health"])
+def health() -> Health:
+    return Health(ok=True)
 
-@app.get("/health")
-def root_health():
-    return {"status": "ok", "version": API_VERSION}
+# ----------------------------
+# Snowflake helpers (optional)
+# ----------------------------
+def _snowflake_env_ok() -> bool:
+    needed = [
+        "SNOWFLAKE_ACCOUNT",
+        "SNOWFLAKE_USER",
+        "SNOWFLAKE_PASSWORD",
+        "SNOWFLAKE_WAREHOUSE",
+        "SNOWFLAKE_DATABASE",
+        "SNOWFLAKE_SCHEMA",
+    ]
+    return all(os.getenv(k) for k in needed)
 
-# --------------------------------------------------------------------------------------
-# Auth: Signup + Login  (both /api/auth/* and /api/* aliases)
-# --------------------------------------------------------------------------------------
-def _signup(body: SignupBody) -> TokenResponse:
-    global _next_id
-    email = body.email.lower().strip()
-    if email in _users:
-        raise HTTPException(status_code=400, detail="User already exists")
-    _users[email] = {
-        "id": _next_id,
-        "name": body.name.strip(),
-        "email": email,
-        "password_hash": _hash_password(body.password),
-    }
-    _next_id += 1
-    token = _create_token({"sub": email, "name": _users[email]["name"], "uid": _users[email]["id"]})
-    return TokenResponse(access_token=token, user={"id": _users[email]["id"], "name": _users[email]["name"], "email": email})
+def _fetch_jobs_from_snowflake(limit: int = 50) -> List[Job]:
+    """
+    Query Snowflake if env is configured and connector is available.
+    Expects a table or view JOBS with columns:
+      ID, TITLE, COMPANY, LOCATION, URL, POSTED_AT
+    """
+    if not _snowflake_env_ok():
+        return []
 
-def _login(body: LoginBody) -> TokenResponse:
-    email = body.email.lower().strip()
-    user = _users.get(email)
-    if not user or user["password_hash"] != _hash_password(body.password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    token = _create_token({"sub": email, "name": user["name"], "uid": user["id"]})
-    return TokenResponse(access_token=token, user={"id": user["id"], "name": user["name"], "email": email})
+    try:
+        import snowflake.connector  # type: ignore
+    except Exception:
+        # connector not installed — return empty and fall back
+        return []
 
-# Primary paths
-@app.post("/api/signup", response_model=TokenResponse)
-def signup_auth(body: SignupBody): return _signup(body)
+    conn = snowflake.connector.connect(
+        account=os.getenv("SNOWFLAKE_ACCOUNT"),
+        user=os.getenv("SNOWFLAKE_USER"),
+        password=os.getenv("SNOWFLAKE_PASSWORD"),
+        warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
+        database=os.getenv("SNOWFLAKE_DATABASE"),
+        schema=os.getenv("SNOWFLAKE_SCHEMA"),
+    )
+    try:
+        sql = f"""
+            SELECT ID, TITLE, COMPANY, LOCATION, URL, POSTED_AT
+            FROM JOBS
+            ORDER BY COALESCE(POSTED_AT, CURRENT_TIMESTAMP()) DESC
+            LIMIT {int(limit)}
+        """
+        cur = conn.cursor()
+        cur.execute(sql)
+        rows = cur.fetchall()
+        jobs: List[Job] = []
+        for r in rows:
+            jid, title, company, location, url, posted = r
+            jobs.append(
+                Job(
+                    id=str(jid),
+                    title=title,
+                    company=company,
+                    location=location,
+                    url=url,
+                    posted_at=posted.isoformat() if posted else None,
+                )
+            )
+        return jobs
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
 
-@app.post("/api/login", response_model=TokenResponse)
-def login_auth(body: LoginBody): return _login(body)
+# ----------------------------
+# Fallback demo jobs
+# ----------------------------
+_DEMO_JOBS: List[Job] = [
+    Job(
+        id="demo-1",
+        title="Junior Data Analyst",
+        company="Acme Corp",
+        location="Remote",
+        url="https://example.com/jobs/1",
+        posted_at=datetime.utcnow().isoformat(timespec="seconds"),
+    ),
+    Job(
+        id="demo-2",
+        title="Software Engineer (Python)",
+        company="Globex",
+        location="Frankfurt",
+        url="https://example.com/jobs/2",
+        posted_at=datetime.utcnow().isoformat(timespec="seconds"),
+    ),
+]
 
-# Compatible aliases (so 404s disappear if your frontend uses the shorter paths)
-@app.post("/api/signup", response_model=TokenResponse)
-def signup_alias(body: SignupBody): return _signup(body)
+def _get_jobs(limit: int = 50) -> List[Job]:
+    jobs = _fetch_jobs_from_snowflake(limit)
+    if jobs:
+        return jobs
+    # No Snowflake data? Return a small list so the UI works.
+    return _DEMO_JOBS[:limit]
 
-@app.post("/api/login", response_model=TokenResponse)
-def login_alias(body: LoginBody): return _login(body)
+# ----------------------------
+# Jobs endpoints (both /api/jobs and /jobs)
+# ----------------------------
+@app.get("/jobs", response_model=List[Job], tags=["List Jobs"])
+@router.get("/jobs", response_model=List[Job], tags=["List Jobs"])
+def list_jobs(limit: int = 50) -> List[Job]:
+    return _get_jobs(limit)
 
-# --------------------------------------------------------------------------------------
-# Me (protected)
-# --------------------------------------------------------------------------------------
-@app.get("/api/me")
-def me(user=Depends(get_current_user)):
-    return {"id": user["id"], "name": user["name"], "email": user["email"]}
+# ----------------------------
+# Include router and root
+# ----------------------------
+app.include_router(router)
 
-# --------------------------------------------------------------------------------------
-# Misc convenience
-# --------------------------------------------------------------------------------------
-@app.get("/")
-def home():
-    return {"message": "AutoApply API", "version": API_VERSION}
+@app.get("/", tags=["Root"])
+def root():
+    return {"ok": True, "service": "autoapply-api"}
 
-# Standard entrypoint (!!! make sure it’s __name__ == '__main__' !!!)
+# ----------------------------
+# Local dev
+# ----------------------------
 if __name__ == "__main__":
-    # Local dev: python main.py
     import uvicorn
     port = int(os.getenv("PORT", "8080"))
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
 
-# --- canonical models/handlers (already in your file) ---
-from pydantic import BaseModel
-
-class LoginBody(BaseModel):
-    email: str
-    password: str
-
-class SignupBody(BaseModel):
-    name: str
-    email: str
-    password: str
-
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-
-@app.post("/api/login", response_model=TokenResponse)
-async def login(body: LoginBody):
-    # ... your existing logic ...
-    ...
-
-@app.post("/api/signup", response_model=TokenResponse)
-async def signup(body: SignupBody):
-    # ... your existing logic ...
-    ...
-
-# --- add these tiny alias routes (fixes 404 immediately) ---
-@app.post("/api/login", response_model=TokenResponse)
-async def login_alias(body: LoginBody):
-    return await login(body)
-
-@app.post("/api/signup", response_model=TokenResponse)
-async def signup_alias(body: SignupBody):
-    return await signup(body)

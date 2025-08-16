@@ -1,172 +1,68 @@
+login.html (green, clean, no JS)
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Auto Apply App — Login (SAFE MODE)</title>
-  <!-- Optional: hardcode your backend here -->
-  <!-- <meta name="backend-url" content="https://YOUR-BACKEND.onrender.com"> -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AutoApply — Sign in</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#f6f7fb; --card:#fff; --txt:#111; --muted:#666; --brand:#0d6efd; --err:#d22; --ok:#17803d; }
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--txt)}
-    .wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
-    .card{width:100%;max-width:420px;background:var(--card);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:22px}
-    h1{font-size:20px;margin:0 0 8px} .sub{font-size:12px;color:var(--muted);margin-bottom:16px}
-    label{display:block;font-size:13px;margin:10px 0 6px}
-    input{width:100%;padding:12px 12px;border:1px solid #ddd;border-radius:10px;font-size:14px}
-    .row{display:flex;gap:10px;align-items:center}
-    .btn{width:100%;padding:12px;border:0;border-radius:10px;background:var(--brand);color:#fff;font-weight:600;cursor:pointer}
-    .btn[disabled]{opacity:.6;cursor:not-allowed}
-    .hint{font-size:12px;color:var(--muted);margin-top:8px}
-    .alert{margin:10px 0 0;padding:10px 12px;border-radius:10px;font-size:13px;display:none}
-    .alert.ok{display:block;background:#e9f7ef;color:var(--ok);border:1px solid #b8e0c7}
-    .alert.err{display:block;background:#fdeaea;color:var(--err);border:1px solid #f1c3c3}
-    .top{font-size:12px;margin-bottom:8px;color:var(--muted)}
-    .small{font-size:12px}
-    .link{color:var(--brand);text-decoration:none}
+    :root{
+      --bg:#07150f; --panel:#0d2419; --card:#0f2a1e; --text:#ecfdf5; --muted:#a7f3d0;
+      --brand:#22c55e; --brand-2:#16a34a; --border:rgba(34,197,94,.28); --ring:#34d399;
+      --shadow:0 18px 40px rgba(0,0,0,.45); --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif; color:var(--text);
+      background:linear-gradient(180deg,var(--bg),#081a13 40%, #06140f)
+    }
+    a{color:inherit;text-decoration:none}
+    .nav{position:sticky;top:0;background:rgba(7,20,15,.7);border-bottom:1px solid var(--border);
+         backdrop-filter:saturate(150%) blur(8px)}
+    .nav-inner{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .badge{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:var(--shadow)}
+    .wrap{max-width:440px;margin:56px auto 40px;padding:0 24px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px}
+    h1{font-size:22px;margin:0 0 6px}
+    .muted{color:var(--muted);font-size:14px;margin:0 0 18px}
+    label{display:block;margin:12px 0 6px;font-weight:600}
+    input{width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--border);background:#0b1e16;color:var(--text)}
+    input::placeholder{color:#76e1b8}
+    .btn{display:inline-block;width:100%;padding:13px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.06);
+         font-weight:800;letter-spacing:.2px;background:linear-gradient(135deg,var(--brand),var(--brand-2));
+         color:#062117;box-shadow:var(--shadow);margin-top:16px}
+    a:focus,button:focus,input:focus{outline:3px solid var(--ring);outline-offset:2px;border-radius:12px}
+    .help{text-align:center;margin-top:12px}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="top">Auto Apply App — <strong>Login (SAFE MODE)</strong></div>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="index.html"><span class="badge"></span> AutoApply</a>
+      <a href="signup.html" class="muted" style="font-weight:700">Create account</a>
+    </div>
+  </header>
 
-      <div class="row">
-        <div style="flex:1">
-          <label for="apiBase">API Base</label>
-          <input id="apiBase" placeholder="https://your-backend.onrender.com" />
-        </div>
-        <button id="saveApi" class="btn" style="width:auto; padding:12px 14px;">Save</button>
-      </div>
-      <div id="apiAlert" class="alert"></div>
-
+  <main class="wrap">
+    <!-- Replace action with your real backend route; form posts as x-www-form-urlencoded -->
+    <form class="card" method="post" action="https://YOUR-BACKEND.onrender.com/login">
       <h1>Sign in</h1>
-      <div class="sub">Use your email and password. Token is saved to localStorage.</div>
+      <p class="muted">Use your email and password to access your dashboard.</p>
 
       <label for="email">Email</label>
-      <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+      <input id="email" name="email" type="email" placeholder="you@example.com" required autocomplete="email">
 
       <label for="password">Password</label>
-      <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+      <input id="password" name="password" type="password" placeholder="••••••••" required autocomplete="current-password">
 
-      <div style="margin-top:12px">
-        <button id="loginBtn" class="btn">Sign in</button>
-      </div>
-      <div id="alert" class="alert"></div>
+      <button class="btn" type="submit">Sign in</button>
+      <div class="help muted">Don’t have an account? <a href="signup.html">Create one</a>.</div>
+    </form>
+  </main>
 
-      <div class="hint">
-        No account? <a class="link" href="signup.html">Create one</a> ·
-        Forgot? <a class="link" href="reset.html">Reset</a>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // ---------- Utilities ----------
-    const $ = sel => document.querySelector(sel);
-    const alertBox = $('#alert');
-    const apiAlert = $('#apiAlert');
-
-    function showAlert(el, type, msg) {
-      el.className = 'alert ' + (type === 'ok' ? 'ok' : 'err');
-      el.innerHTML = msg;
-      el.style.display = 'block';
-    }
-    function clearAlert(el){ el.style.display='none'; }
-
-    function getDefaultApiBase(){
-      const meta = document.querySelector('meta[name="backend-url"]')?.content?.trim();
-      const ls   = localStorage.getItem('API_BASE_URL');
-      if (ls) return ls;
-      if (meta) return meta.replace(/\/+$/,'');
-      const host = location.hostname;
-      if (host === 'localhost' || host === '127.0.0.1') return 'http://127.0.0.1:8000';
-      return location.origin; // same-origin proxy by default
-    }
-
-    let API_BASE = getDefaultApiBase();
-    $('#apiBase').value = API_BASE;
-
-    $('#saveApi').addEventListener('click', () => {
-      const v = $('#apiBase').value.trim().replace(/\/+$/,'');
-      if (!v) return;
-      API_BASE = v;
-      localStorage.setItem('API_BASE_URL', API_BASE);
-      showAlert(apiAlert, 'ok', API set to <code>${API_BASE}</code>);
-      setTimeout(() => clearAlert(apiAlert), 1200);
-    });
-
-    const LOGIN_PATHS = ["/api/login", "/auth/login", "/login"];
-
-    async function tryLogin(payload){
-      let lastErr = null;
-      for (const path of LOGIN_PATHS){
-        const url = API_BASE + path;
-        try{
-          const res = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-
-          if (res.status === 404) { lastErr = 404 at ${path}; continue; }
-          if (!res.ok){
-            let msg = HTTP ${res.status};
-            try{
-              const d = await res.json();
-              msg = d?.message || d?.error || (Array.isArray(d?.detail) ? d.detail.map(x=>x.msg||x).join(', ') : d?.detail || msg);
-            }catch(_){}
-            lastErr = ${path}: ${msg}; continue;
-          }
-
-          const data = await res.json();
-          return { path, data };
-        }catch(e){
-          lastErr = ${path}: ${e.message};
-        }
-      }
-      throw new Error(lastErr || "All login paths failed.");
-    }
-
-    function extractToken(d){
-      let token = d?.access_token || d?.token || d?.jwt;
-      if (!token && d?.data) token = d.data.access_token || d.data.token || d.data.jwt;
-      if (!token && d?.session) token = d.session.token;
-      const type = d?.token_type || d?.type || 'Bearer';
-      return { token, type };
-    }
-
-    async function doLogin(){
-      clearAlert(alertBox);
-      const email = $('#email').value.trim();
-      const password = $('#password').value;
-      if (!email || !password) { showAlert(alertBox, 'err', 'Email and password are required.'); return; }
-
-      $('#loginBtn').disabled = true; $('#loginBtn').textContent = 'Signing in…';
-      try{
-        const { data } = await tryLogin({ email, username: email, password });
-        const { token, type } = extractToken(data);
-        localStorage.setItem('user_email', email);
-        if (token){ localStorage.setItem('auth_token', token); localStorage.setItem('token_type', type); }
-        else { localStorage.removeItem('auth_token'); localStorage.setItem('token_type', 'Cookie'); }
-
-        showAlert(alertBox, 'ok', 'Logged in. Redirecting…');
-        setTimeout(()=> location.href = 'dashboard.html', 600);
-      }catch(e){
-        const hint = `<div class="small" style="color:#666;margin-top:6px">
-          If this looks like a connection/CORS issue, confirm the <strong>API Base</strong> above points to your backend.
-        </div>`;
-        showAlert(alertBox, 'err', (e.message || 'Login failed.') + hint);
-      }finally{
-        $('#loginBtn').disabled = false; $('#loginBtn').textContent = 'Sign in';
-      }
-    }
-
-    $('#loginBtn').addEventListener('click', doLogin);
-
-    // Pre-fill remembered email if any (optional)
-    const remembered = localStorage.getItem('remember_email');
-    if (remembered) $('#email').value = remembered;
-  </script>
+  <footer class="muted" style="text-align:center;padding:0 0 26px">© 2025 Makwande Careers</footer>
 </body>
 </html>

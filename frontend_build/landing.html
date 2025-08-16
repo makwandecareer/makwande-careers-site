@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Makwande Careers — Landing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#07150f; --bg2:#0a2016; --panel:#0d2419; --card:#0f2a1e;
+      --text:#ecfdf5; --muted:#a7f3d0;
+      --brand:#22c55e; --brand2:#16a34a;
+      --border:rgba(34,197,94,.28); --ring:#34d399;
+      --shadow:0 18px 40px rgba(0,0,0,.45);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif; color:var(--text);
+      background:
+        radial-gradient(1100px 700px at 12% -10%, rgba(34,197,94,.22), transparent 60%),
+        radial-gradient(1000px 640px at 110% -20%, rgba(5,150,105,.24), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2) 40%, #06140f);
+      line-height:1.55;
+    }
+    a{ color:inherit; text-decoration:none }
+    .container{ max-width:1200px; margin:0 auto; padding:0 24px }
+
+    /* Top bar */
+    .nav{ position:sticky; top:0; z-index:10; backdrop-filter:saturate(160%) blur(8px);
+      background:rgba(7,20,15,.65); border-bottom:1px solid var(--border) }
+    .nav-inner{ height:72px; display:flex; align-items:center; justify-content:space-between }
+    .brand{ display:flex; align-items:center; gap:12px; font-weight:900; letter-spacing:.3px }
+    .brand-badge{ width:30px; height:30px; border-radius:10px; background:linear-gradient(135deg,var(--brand),var(--brand2)); box-shadow:var(--shadow) }
+    .links{ display:flex; gap:22px; align-items:center }
+    .links a{ color:var(--muted); font-weight:700 }
+    .links a:hover{ color:#fff }
+
+    /* Buttons */
+    .btn{
+      display:inline-block; padding:13px 18px; border-radius:14px; font-weight:800; letter-spacing:.2px;
+      background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#062117;
+      border:1px solid rgba(255,255,255,.06); box-shadow:var(--shadow)
+    }
+    .btn-outline{ background:transparent; color:var(--text); border:1px solid var(--border) }
+    .btn-outline:hover{ border-color:rgba(52,211,153,.6) }
+    a:focus,button:focus{ outline:3px solid var(--ring); outline-offset:2px; border-radius:12px }
+
+    /* Hero */
+    .hero{ min-height:calc(100vh - 72px); display:grid; align-items:center; }
+    .grid{ display:grid; grid-template-columns:1.05fr 1fr; gap:36px; align-items:center }
+    .logo-wrap{
+      background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      padding:28px; box-shadow:var(--shadow)
+    }
+    .logo{
+      width:280px; height:auto; max-width:100%; display:block;
+      image-rendering:auto;
+    }
+    .title{ font-size:48px; line-height:1.04; margin:14px 0 12px; font-weight:900 }
+    .lead{ color:var(--muted); margin:0 0 18px }
+
+    /* Map panel */
+    .map-card{
+      position:relative; background:var(--card); border:1px solid var(--border);
+      border-radius:28px; padding:20px; box-shadow:var(--shadow); overflow:hidden
+    }
+    .map-halo{
+      position:absolute; inset:-20%; background:
+        radial-gradient(70% 70% at 50% 40%, rgba(34,197,94,.22), transparent 60%),
+        radial-gradient(60% 60% at 70% 30%, rgba(16,185,129,.16), transparent 60%);
+      filter:blur(30px); pointer-events:none
+    }
+    .map-frame{
+      position:relative; border-radius:20px; border:1px solid var(--border);
+      background:#0b1e16; padding:18px
+    }
+    .map-img{
+      width:100%; height:auto; display:block;
+      filter: drop-shadow(0 12px 24px rgba(34,197,94,.25));
+    }
+    .caption{ margin-top:10px; color:var(--muted); font-size:14px; text-align:center }
+
+    /* Footer */
+    .footer{ padding:26px 0; color:var(--muted); border-top:1px solid var(--border); text-align:center }
+
+    /* Responsive */
+    @media (max-width: 1020px){
+      .grid{ grid-template-columns:1fr; gap:24px }
+      .title{ font-size:38px }
+      .logo{ width:220px }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top bar -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <span class="brand-badge" aria-hidden="true"></span>
+        Makwande Careers
+      </div>
+      <nav class="links">
+        <a href="index.html">Home</a>
+        <a href="jobs.html">Jobs</a>
+        <a href="revamp.html">CV Revamp</a>
+        <a class="btn-outline" href="login.html">Sign in</a>
+        <a class="btn" href="signup.html">Get started</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero with Logo & Africa Map -->
+  <main class="hero">
+    <div class="container grid">
+      <!-- Left: Logo & Copy -->
+      <section class="logo-wrap">
+        <!-- PNG logo with retina support -->
+        <img
+          class="logo"
+          src="assets/logo.png"
+          srcset="assets/logo.png 1x, assets/logo@2x.png 2x"
+          width="280" height="84"
+          alt="Makwande Careers logo">
+        <h1 class="title">Opportunity across Africa — beautifully organized.</h1>
+        <p class="lead">Your one hub for ATS-optimized CVs and smart job applications across the SADC region.</p>
+        <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:8px">
+          <a class="btn" href="signup.html">Create account</a>
+          <a class="btn-outline" href="jobs.html">Browse jobs</a>
+        </div>
+      </section>
+
+      <!-- Right: Africa Map showcase -->
+      <aside class="map-card" aria-label="Africa map">
+        <div class="map-halo" aria-hidden="true"></div>
+        <div class="map-frame">
+          <!-- PNG map with retina support -->
+          <img
+            class="map-img"
+            src="assets/africa-map.png"
+            srcset="assets/africa-map.png 1x, assets/africa-map@2x.png 2x"
+            width="520" height="520"
+            loading="lazy"
+            alt="Stylized map of Africa">
+        </div>
+        <div class="caption">Serving jobseekers across SADC — built in South Africa.</div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">© 2025 Makwande Careers — All rights reserved.</footer>
+</body>
+</html>

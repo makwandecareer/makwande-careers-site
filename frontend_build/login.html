@@ -2,170 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Login • AutoApply</title>
 
-  <!-- Favicon (SVG) -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <!-- point directly to your API on Render -->
+  <script>window.API_ORIGIN = "https://autoapply-api.onrender.com";</script>
+
+  <!-- favicon -->
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
   <!-- Bootstrap (CDN) -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-    crossorigin="anonymous"
-  />
-
-  <!-- Tell pages where the API lives (Render) -->
-  <script>
-    window.API_ORIGIN = "https://autoapply-api.onrender.com";
-  </script>
-
-  <style>
-    body { background:#f8fafc; }
-    .auth-card { max-width: 520px; }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-  <nav class="navbar navbar-light bg-white border-bottom sticky-top">
+<body class="bg-light">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container">
-      <a class="navbar-brand fw-bold">AutoApply</a>
-      <span id="api-status" class="badge text-bg-warning">Checking API…</span>
+      <a class="navbar-brand" href="/index.html">AutoApply</a>
     </div>
   </nav>
 
-  <main class="container py-5 d-flex justify-content-center">
-    <div class="card shadow-sm auth-card w-100">
-      <div class="card-body p-4 p-md-5">
-        <h1 class="h3 mb-4 text-center">Welcome back</h1>
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-sm-10 col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <h1 class="h3 text-center mb-4">Welcome back</h1>
 
-        <!-- LOGIN FORM -->
-        <form id="loginForm" method="post" action="#">
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              class="form-control"
-              required
-              autocomplete="email"
-              inputmode="email"
-            />
+            <form id="login-form" novalidate>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" name="email" type="email"
+                       class="form-control" required
+                       autocomplete="username" />
+              </div>
+
+              <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <input id="password" name="password" type="password"
+                       class="form-control" required
+                       autocomplete="current-password" />
+              </div>
+
+              <button id="login-btn" type="submit" class="btn btn-primary w-100">
+                Log in
+              </button>
+
+              <div id="msg" class="text-danger small mt-3" role="alert" style="min-height:1.25rem;"></div>
+
+              <p class="text-center mt-3 mb-0">
+                No account? <a href="/signup.html">Create one</a>
+              </p>
+            </form>
           </div>
-
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              class="form-control"
-              required
-              autocomplete="current-password"
-            />
-          </div>
-
-          <button id="loginBtn" type="submit" class="btn btn-primary w-100">
-            Log in
-          </button>
-
-          <div id="loginError" class="text-danger small mt-3" role="alert" aria-live="polite"></div>
-
-          <p class="text-center mt-4 mb-0">
-            No account? <a href="signup.html">Create one</a>
-          </p>
-        </form>
+        </div>
       </div>
     </div>
   </main>
 
-  <!-- Bootstrap bundle (CDN) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"
-  ></script>
+  <!-- Bootstrap JS (optional, for components only) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Minimal auth JS (inline to keep it simple) -->
+  <!-- Minimal auth client + redirect -->
   <script>
-    (function () {
-      const TOKEN_KEY = "autoapply_token";
-      const API_BASE = (window.API_ORIGIN || "").replace(/\/$/, "") + "/api";
+    const TOKEN_KEY = "autoapply_token";
+    const API = (p) => ${window.API_ORIGIN.replace(/\/$/, "")}/api${p};
 
-      const $ = (id) => document.getElementById(id);
-      const saveToken = (t) => localStorage.setItem(TOKEN_KEY, t);
+    function saveToken(t)   { localStorage.setItem(TOKEN_KEY, t); }
+    function clearToken()   { localStorage.removeItem(TOKEN_KEY); }
 
-      // Health badge
-      async function paintBadge() {
-        const badge = $("api-status");
-        if (!badge) return;
-        try {
-          const res = await fetch(API_BASE + "/health", { cache: "no-store" });
-          const data = await res.json().catch(() => ({}));
-          if (res.ok && data && (data.ok === true || data.service)) {
-            badge.className = "badge text-bg-success";
-            badge.textContent = API connected • v${data.version || "-"};
-          } else {
-            throw new Error();
-          }
-        } catch {
-          // fallback to /health without /api
-          try {
-            const h = await fetch((window.API_ORIGIN || "").replace(/\/$/, "") + "/health", { cache: "no-store" });
-            const d = await h.json().catch(() => ({}));
-            if (h.ok) {
-              $("api-status").className = "badge text-bg-success";
-              $("api-status").textContent = API connected • v${d.version || "-"};
-              return;
-            }
-          } catch {}
-          badge.className = "badge text-bg-danger";
-          badge.textContent = "API not reachable";
-        }
-      }
-
-      async function handleLogin(evt) {
-        evt.preventDefault();
-        const email = ($("email").value || "").trim();
-        const password = ($("password").value || "");
-
-        $("loginError").textContent = "";
-        $("loginBtn").disabled = true;
-
-        try {
-          const res = await fetch(API_BASE + "/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-          });
-
-          const data = await res.json().catch(() => ({}));
-
-          if (!res.ok) {
-            $("loginError").textContent = data.detail || "Invalid email or password.";
-            return;
-          }
-          if (!data.access_token) {
-            $("loginError").textContent = "Login succeeded but no token was returned.";
-            return;
-          }
-
-          saveToken(data.access_token);
-          // Go to dashboard after successful login
-          window.location.href = "dashboard.html";
-        } catch (e) {
-          $("loginError").textContent = "Network error. Please try again.";
-        } finally {
-          $("loginBtn").disabled = false;
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        $("loginForm").addEventListener("submit", handleLogin);
-        paintBadge();
+    async function login(email, password) {
+      const res = await fetch(API("/auth/login"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
       });
-    })();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.detail || data.message || "Login failed");
+      }
+      if (!data.access_token) {
+        throw new Error("No token returned");
+      }
+      return data.access_token;
+    }
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email    = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const msg = document.getElementById("msg");
+      const btn = document.getElementById("login-btn");
+      msg.textContent = "";
+      btn.disabled = true;
+
+      try {
+        const token = await login(email, password);
+        saveToken(token);
+        // ✅ ABSOLUTE path so it never lands on a blank page
+        window.location.replace("/dashboard.html");
+      } catch (err) {
+        msg.textContent = err.message || "Network error";
+        btn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>

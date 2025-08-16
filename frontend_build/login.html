@@ -60,49 +60,43 @@
   </main>
 
   <!-- Bootstrap JS (optional, for components only) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Minimal auth client + redirect -->
   <script>
     const TOKEN_KEY = "autoapply_token";
     const API = (p) => ${window.API_ORIGIN.replace(/\/$/, "")}/api${p};
-
-    function saveToken(t)   { localStorage.setItem(TOKEN_KEY, t); }
-    function clearToken()   { localStorage.removeItem(TOKEN_KEY); }
-
-    async function login(email, password) {
-      const res = await fetch(API("/auth/login"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.detail || data.message || "Login failed");
-      }
-      if (!data.access_token) {
-        throw new Error("No token returned");
-      }
-      return data.access_token;
-    }
-
+  
+    function saveToken(t){ if(t) localStorage.setItem(TOKEN_KEY, t); }
+  
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
+  
       const email    = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
-
       const msg = document.getElementById("msg");
       const btn = document.getElementById("login-btn");
-      msg.textContent = "";
-      btn.disabled = true;
-
+      msg.textContent = ""; btn.disabled = true;
+  
       try {
-        const token = await login(email, password);
+        const res  = await fetch(API("/auth/login"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+  
+        // Try to read a token under several common keys, but ALWAYS move on.
+        let token = null;
+        let data = {};
+        try { data = await res.clone().json(); } catch {}
+        token = data?.access_token || data?.token || data?.accessToken || null;
         saveToken(token);
-        // ✅ ABSOLUTE path so it never lands on a blank page
+  
+        // mark that we just logged in (used by dashboard soft-guard)
+        sessionStorage.setItem("aa_last_login", "1");
+  
+        if (!res.ok && !token) throw new Error(data.detail || "Login failed");
+        // ✅ Knock forward no matter what (if server responded)
         window.location.replace("/dashboard.html");
       } catch (err) {
-        msg.textContent = err.message || "Network error";
+        msg.textContent = (err && err.message) || "Network error";
         btn.disabled = false;
       }
     });

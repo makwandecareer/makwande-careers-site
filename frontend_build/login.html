@@ -2,146 +2,170 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-  <!-- Point to your API on Render -->
-  <script>window.API_ORIGIN = "https://autoapply-api.onrender.com";</script>
-
-  <!-- Favicon (pure green) -->
-  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-
-  <!-- Bootstrap (CDN) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login • AutoApply</title>
 
+  <!-- Favicon (SVG) -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Bootstrap (CDN) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  />
+
+  <!-- Tell pages where the API lives (Render) -->
+  <script>
+    window.API_ORIGIN = "https://autoapply-api.onrender.com";
+  </script>
+
   <style>
-    body{background:#f7f9fc}
-    .card{max-width:520px;margin:6rem auto;padding:1rem}
-    .brand{font-weight:700;letter-spacing:.3px}
-    .muted{color:#6c757d}
+    body { background:#f8fafc; }
+    .auth-card { max-width: 520px; }
   </style>
 </head>
 <body>
-  <nav class="navbar bg-white border-bottom">
+  <nav class="navbar navbar-light bg-white border-bottom sticky-top">
     <div class="container">
-      <span class="navbar-brand brand">AutoApply</span>
-      <small id="api-status" class="muted"></small>
+      <a class="navbar-brand fw-bold">AutoApply</a>
+      <span id="api-status" class="badge text-bg-warning">Checking API…</span>
     </div>
   </nav>
 
-  <main class="container">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h1 class="h3 mb-3 text-center">Welcome back</h1>
+  <main class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-sm auth-card w-100">
+      <div class="card-body p-4 p-md-5">
+        <h1 class="h3 mb-4 text-center">Welcome back</h1>
 
-        <form id="login-form" autocomplete="on" novalidate>
-          <label class="form-label" for="email">Email</label>
-          <input id="email" name="email" type="email" class="form-control"
-                 autocomplete="email" inputmode="email"
-                 autocapitalize="none" spellcheck="false" required />
+        <!-- LOGIN FORM -->
+        <form id="loginForm" method="post" action="#">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              class="form-control"
+              required
+              autocomplete="email"
+              inputmode="email"
+            />
+          </div>
 
-          <label class="form-label mt-3" for="password">Password</label>
-          <input id="password" name="password" type="password" class="form-control"
-                 autocomplete="current-password" minlength="6" required />
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              class="form-control"
+              required
+              autocomplete="current-password"
+            />
+          </div>
 
-          <button id="login-btn" class="btn btn-primary w-100 mt-4" type="submit">Log in</button>
-          <p id="login-error" class="text-danger small mt-3"></p>
+          <button id="loginBtn" type="submit" class="btn btn-primary w-100">
+            Log in
+          </button>
+
+          <div id="loginError" class="text-danger small mt-3" role="alert" aria-live="polite"></div>
+
+          <p class="text-center mt-4 mb-0">
+            No account? <a href="signup.html">Create one</a>
+          </p>
         </form>
-
-        <p class="mt-3 text-center">
-          No account? <a href="signup.html">Create one</a>
-        </p>
       </div>
     </div>
   </main>
 
-  <!-- Minimal inline SDK (no main.js) -->
+  <!-- Bootstrap bundle (CDN) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- Minimal auth JS (inline to keep it simple) -->
   <script>
     (function () {
-      const TOKEN_KEY = "AA_TOKEN";
+      const TOKEN_KEY = "autoapply_token";
+      const API_BASE = (window.API_ORIGIN || "").replace(/\/$/, "") + "/api";
 
-      const ORIGIN = (typeof window.API_ORIGIN === "string" && window.API_ORIGIN) || location.origin;
-      const join = (...p) => p.join("/").replace(/(?<!:)\/{2,}/g, "/");
-      const API = (path) => join(ORIGIN.replace(/\/$/, ""), "api", path.replace(/^\//, ""));
-
-      const getToken = () => localStorage.getItem(TOKEN_KEY);
+      const $ = (id) => document.getElementById(id);
       const saveToken = (t) => localStorage.setItem(TOKEN_KEY, t);
 
-      async function tryPaths(paths, options){
-        let lastErr;
-        for (const p of paths){
-          try{
-            const res = await fetch(p, options);
-            let data = {};
-            try { data = await res.json(); } catch {}
-            if (!res.ok) {
-              const e = new Error(data.detail || data.message || res.statusText);
-              e.status = res.status; e.data = data; throw e;
-            }
-            return data;
-          }catch(e){
-            lastErr = e;
-            if (e.status !== 404) throw e; // only retry on 404
-          }
-        }
-        throw lastErr || new Error("Not Found");
-      }
-
-      async function health(){
+      // Health badge
+      async function paintBadge() {
+        const badge = $("api-status");
+        if (!badge) return;
         try {
-          const h = await tryPaths([ join(ORIGIN,"health"), API("health") ], { cache: "no-store" });
-          return { ok: !!h.ok, version: h.version };
-        } catch { return { ok:false }; }
-      }
-
-      async function login(email, password){
-        const body = JSON.stringify({ email, password });
-        const opts = { method:"POST", headers:{ "Content-Type":"application/json" }, body };
-        // Try both canonical and alias routes to avoid 404
-        return tryPaths([ API("auth/login"), API("login") ], opts);
-      }
-
-      // Paint small badge
-      (async () => {
-        const el = document.getElementById("api-status");
-        if (!el) return;
-        const h = await health();
-        el.textContent = h.ok ? API connected • v${h.version || "-"} : "API not reachable";
-      })();
-
-      // Handle form submit
-      const form = document.getElementById("login-form");
-      const btn  = document.getElementById("login-btn");
-      const err  = document.getElementById("login-error");
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        err.textContent = "";
-        btn.disabled = true; btn.textContent = "Signing in…";
-
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-
-        try{
-          const data = await login(email, password);
-          if (!data || !data.access_token) throw new Error(data?.detail || "No token returned");
-          saveToken(data.access_token);
-          // go to dashboard (adjust if your file is elsewhere)
-          location.href = "dashboard.html";
-        }catch(ex){
-          err.textContent = (ex && ex.message) ? ex.message : "Login failed";
-        }finally{
-          btn.disabled = false; btn.textContent = "Log in";
+          const res = await fetch(API_BASE + "/health", { cache: "no-store" });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data && (data.ok === true || data.service)) {
+            badge.className = "badge text-bg-success";
+            badge.textContent = API connected • v${data.version || "-"};
+          } else {
+            throw new Error();
+          }
+        } catch {
+          // fallback to /health without /api
+          try {
+            const h = await fetch((window.API_ORIGIN || "").replace(/\/$/, "") + "/health", { cache: "no-store" });
+            const d = await h.json().catch(() => ({}));
+            if (h.ok) {
+              $("api-status").className = "badge text-bg-success";
+              $("api-status").textContent = API connected • v${d.version || "-"};
+              return;
+            }
+          } catch {}
+          badge.className = "badge text-bg-danger";
+          badge.textContent = "API not reachable";
         }
-      });
+      }
 
-      // expose tiny helper if you ever need it
-      window.AutoAuth = { getToken };
+      async function handleLogin(evt) {
+        evt.preventDefault();
+        const email = ($("email").value || "").trim();
+        const password = ($("password").value || "");
+
+        $("loginError").textContent = "";
+        $("loginBtn").disabled = true;
+
+        try {
+          const res = await fetch(API_BASE + "/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (!res.ok) {
+            $("loginError").textContent = data.detail || "Invalid email or password.";
+            return;
+          }
+          if (!data.access_token) {
+            $("loginError").textContent = "Login succeeded but no token was returned.";
+            return;
+          }
+
+          saveToken(data.access_token);
+          // Go to dashboard after successful login
+          window.location.href = "dashboard.html";
+        } catch (e) {
+          $("loginError").textContent = "Network error. Please try again.";
+        } finally {
+          $("loginBtn").disabled = false;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        $("loginForm").addEventListener("submit", handleLogin);
+        paintBadge();
+      });
     })();
   </script>
-
-  <!-- Bootstrap JS (optional) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -1,194 +1,147 @@
 <!doctype html>
 <html lang="en">
-  <form id="loginForm" autocomplete="on" novalidate>
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        class="form-control"
-        autocomplete="email"
-        required
-      />
-    </div>
-  
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        class="form-control"
-        autocomplete="current-password"
-        required
-      />
-    </div>
-  
-    <button type="submit" class="btn btn-primary w-100">Log in</button>
-  </form>
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- Point to your API on Render -->
+  <script>window.API_ORIGIN = "https://autoapply-api.onrender.com";</script>
+
+  <!-- Favicon (pure green) -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+
+  <!-- Bootstrap (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
   <title>Login • AutoApply</title>
 
-  <!-- Favicons (green) -->
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-
-  <!-- Bootstrap CDN (CSS only) -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-    crossorigin="anonymous"
-  />
-
   <style>
-    body { background:#f6f7fb; }
-    .aa-wrap { min-height:100vh; display:flex; align-items:center; }
-    .aa-card { max-width: 460px; margin: 4rem auto; }
-    .brand { font-weight:700; letter-spacing:.2px; }
-    #api-status.badge { font-weight:500; }
+    body{background:#f7f9fc}
+    .card{max-width:520px;margin:6rem auto;padding:1rem}
+    .brand{font-weight:700;letter-spacing:.3px}
+    .muted{color:#6c757d}
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <nav class="navbar bg-white border-bottom">
     <div class="container">
-      <a class="navbar-brand brand" href="index.html">AutoApply</a>
-      <span id="api-status" class="badge text-bg-warning ms-2">checking…</span>
+      <span class="navbar-brand brand">AutoApply</span>
+      <small id="api-status" class="muted"></small>
     </div>
   </nav>
 
-  <div class="aa-wrap">
-    <div class="container">
-      <div class="card shadow-sm aa-card">
-        <div class="card-body p-4">
-          <h1 class="h3 mb-3 text-center">Welcome back</h1>
+  <main class="container">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h3 mb-3 text-center">Welcome back</h1>
 
-          <form id="login-form" novalidate>
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input id="email" name="email" type="email" class="form-control" autocomplete="username" required />
-            </div>
+        <form id="login-form" autocomplete="on" novalidate>
+          <label class="form-label" for="email">Email</label>
+          <input id="email" name="email" type="email" class="form-control"
+                 autocomplete="email" inputmode="email"
+                 autocapitalize="none" spellcheck="false" required />
 
-            <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
-              <input id="password" name="password" type="password" class="form-control" autocomplete="current-password" required />
-            </div>
+          <label class="form-label mt-3" for="password">Password</label>
+          <input id="password" name="password" type="password" class="form-control"
+                 autocomplete="current-password" minlength="6" required />
 
-            <button id="login-btn" class="btn btn-primary w-100" type="submit">
-              Log in
-            </button>
+          <button id="login-btn" class="btn btn-primary w-100 mt-4" type="submit">Log in</button>
+          <p id="login-error" class="text-danger small mt-3"></p>
+        </form>
 
-            <div id="login-msg" class="form-text text-danger mt-3"></div>
-          </form>
-
-          <hr class="my-4" />
-          <div class="text-center">
-            No account? <a href="signup.html">Create one</a>
-          </div>
-        </div>
+        <p class="mt-3 text-center">
+          No account? <a href="signup.html">Create one</a>
+        </p>
       </div>
     </div>
-  </div>
+  </main>
 
-  <!-- Your tiny SDK (keep only this file, no main.js) -->
-  <script src="auth.js" defer></script>
+  <!-- Minimal inline SDK (no main.js) -->
+  <script>
+    (function () {
+      const TOKEN_KEY = "AA_TOKEN";
 
-  <!-- Page logic (defensive: no crashes, no trim on undefined) -->
-  <script defer>
-    // Helper to get whichever API wrapper exists
-    function getAPI() { return window.AutoApply || window.AutoAuth || null; }
+      const ORIGIN = (typeof window.API_ORIGIN === "string" && window.API_ORIGIN) || location.origin;
+      const join = (...p) => p.join("/").replace(/(?<!:)\/{2,}/g, "/");
+      const API = (path) => join(ORIGIN.replace(/\/$/, ""), "api", path.replace(/^\//, ""));
 
-    // Paint badge if your SDK exposes it; otherwise try /api/health best-effort
-    async function paintBadge() {
-      const badge = document.getElementById('api-status');
-      if (!badge) return;
+      const getToken = () => localStorage.getItem(TOKEN_KEY);
+      const saveToken = (t) => localStorage.setItem(TOKEN_KEY, t);
 
-      const api = getAPI();
-      if (api?.paintBadge) { api.paintBadge(); return; }
-
-      // fallback health check
-      try {
-        const origin =
-          (typeof window.API_ORIGIN === 'string' && window.API_ORIGIN) ||
-          (document.querySelector('meta[name="api-origin"]')?.content) ||
-          location.origin;
-        const res = await fetch(origin.replace(/\/$/, '') + '/api/health', { cache:'no-store' });
-        const data = await res.json().catch(() => ({}));
-        if (res.ok && (data.ok === true || data.service)) {
-          badge.className = 'badge text-bg-warning';
-          badge.textContent = 'API connected • ' + (data.version || '-');
-        } else {
-          throw new Error();
-        }
-      } catch {
-        badge.className = 'badge text-bg-warning';
-        badge.textContent = 'API not reachable';
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      paintBadge();
-
-      const api   = getAPI();
-      const form  = document.getElementById('login-form');
-      const btn   = document.getElementById('login-btn');
-      const msg   = document.getElementById('login-msg');
-      const emailEl = document.getElementById('email');
-      const passEl  = document.getElementById('password');
-
-      // If already logged in, bounce to dashboard
-      try {
-        const t = api?.getToken ? api.getToken() : null;
-        if (t) { window.location.href = 'dashboard.html'; return; }
-      } catch {}
-
-      if (!form || !api || typeof api.login !== 'function') {
-        if (msg) msg.textContent = 'Login unavailable (script not loaded).';
-        return;
-      }
-
-      form.addEventListener('submit', async (ev) => {
-        ev.preventDefault();
-
-        const email = (emailEl?.value || '').trim();
-        const password = (passEl?.value || '').trim();
-
-        if (!email || !password) {
-          if (msg) msg.textContent = 'Please enter email and password.';
-          return;
-        }
-
-        btn.disabled = true; msg.textContent = '';
-        try {
-          const res = await api.login(email, password);
-          const ok = (res?.ok === true) || !!res?.access_token;
-          if (!ok) {
-            const reason = res?.message || res?.detail || 'Invalid credentials';
-            msg.textContent = reason;
-            btn.disabled = false;
-            return;
+      async function tryPaths(paths, options){
+        let lastErr;
+        for (const p of paths){
+          try{
+            const res = await fetch(p, options);
+            let data = {};
+            try { data = await res.json(); } catch {}
+            if (!res.ok) {
+              const e = new Error(data.detail || data.message || res.statusText);
+              e.status = res.status; e.data = data; throw e;
+            }
+            return data;
+          }catch(e){
+            lastErr = e;
+            if (e.status !== 404) throw e; // only retry on 404
           }
-          // some SDKs also save the token internally; if token present, great
-          if (res?.access_token && api?.saveToken) api.saveToken(res.access_token);
+        }
+        throw lastErr || new Error("Not Found");
+      }
 
-          window.location.href = 'dashboard.html';
-        } catch (e) {
-          msg.textContent = e?.message || 'Network error';
-          btn.disabled = false;
+      async function health(){
+        try {
+          const h = await tryPaths([ join(ORIGIN,"health"), API("health") ], { cache: "no-store" });
+          return { ok: !!h.ok, version: h.version };
+        } catch { return { ok:false }; }
+      }
+
+      async function login(email, password){
+        const body = JSON.stringify({ email, password });
+        const opts = { method:"POST", headers:{ "Content-Type":"application/json" }, body };
+        // Try both canonical and alias routes to avoid 404
+        return tryPaths([ API("auth/login"), API("login") ], opts);
+      }
+
+      // Paint small badge
+      (async () => {
+        const el = document.getElementById("api-status");
+        if (!el) return;
+        const h = await health();
+        el.textContent = h.ok ? API connected • v${h.version || "-"} : "API not reachable";
+      })();
+
+      // Handle form submit
+      const form = document.getElementById("login-form");
+      const btn  = document.getElementById("login-btn");
+      const err  = document.getElementById("login-error");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        err.textContent = "";
+        btn.disabled = true; btn.textContent = "Signing in…";
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        try{
+          const data = await login(email, password);
+          if (!data || !data.access_token) throw new Error(data?.detail || "No token returned");
+          saveToken(data.access_token);
+          // go to dashboard (adjust if your file is elsewhere)
+          location.href = "dashboard.html";
+        }catch(ex){
+          err.textContent = (ex && ex.message) ? ex.message : "Login failed";
+        }finally{
+          btn.disabled = false; btn.textContent = "Log in";
         }
       });
-    });
+
+      // expose tiny helper if you ever need it
+      window.AutoAuth = { getToken };
+    })();
   </script>
 
-  <!-- Bootstrap JS (optional; not required for login to work) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"
-    defer
-  ></script>
+  <!-- Bootstrap JS (optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

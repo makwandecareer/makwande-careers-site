@@ -3,112 +3,362 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Point to your Render API -->
-  <meta name="api-origin" content="https://autoapply-api.onrender.com" />
+  <title>Auto Apply App — Login</title>
 
-  <title>Login • AutoApply</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <!-- Optional: hard-code your backend here (overrides auto-detect) -->
+  <!-- <meta name="backend-url" content="https://YOUR-BACKEND.onrender.com"> -->
+
+  <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Bootstrap Icons (for the gear & eye icon) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
   <style>
-    body { background:#f8fafc }
-    .card { max-width: 560px; margin: 6rem auto; }
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #f6f7fb;
+    }
+    .app-card {
+      width: 100%;
+      max-width: 430px;
+      border: 0;
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .status-badge {
+      font-size: .8rem;
+    }
+    .api-chip {
+      font-size: .75rem;
+      background: #eef2ff;
+      color: #3b5bcc;
+      border-radius: 999px;
+      padding: .25rem .6rem;
+    }
+    .top-actions {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-light bg-white border-bottom">
-    <div class="container">
-      <a class="navbar-brand fw-bold">AutoApply</a>
-    </div>
-  </nav>
 
-  <main class="container">
-    <div class="card shadow-sm">
+  <!-- Quick actions (show API base + settings) -->
+  <div class="top-actions">
+    <span id="apiChip" class="api-chip d-none"></span>
+    <button id="setApiBtn" type="button" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-gear"></i> API
+    </button>
+  </div>
+
+  <main class="container py-4">
+    <div class="card app-card p-3 p-md-4">
       <div class="card-body">
-        <h1 class="h3 text-center mb-4">Welcome back</h1>
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div>
+            <h1 class="h4 brand mb-1">Auto Apply App</h1>
+            <span class="badge text-bg-warning-subtle border status-badge">
+              Soft launch — job board refresh coming soon
+            </span>
+          </div>
+        </div>
 
-        <div id="alert" class="alert alert-danger d-none" role="alert"></div>
+        <div id="alertBox" class="alert d-none" role="alert"></div>
 
-        <!-- SINGLE FORM ONLY -->
-        <form id="loginForm" novalidate autocomplete="on">
+        <form id="loginForm" class="mt-3" novalidate>
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input id="email" name="email" type="email" class="form-control" required
-                   autocomplete="email" />
+            <input id="email" type="email" class="form-control" placeholder="you@example.com" autocomplete="email" required />
+            <div class="invalid-feedback">Please enter a valid email.</div>
           </div>
-          <div class="mb-4">
-            <label for="password" class="form-label">Password</label>
-            <input id="password" name="password" type="password" class="form-control" required
-                   autocomplete="current-password" />
-          </div>
-          <button id="submitBtn" type="submit" class="btn btn-primary w-100">
-            Log in
-          </button>
-        </form>
 
-        <p class="mt-3 text-center">
-          No account? <a href="signup.html">Create one</a>
-        </p>
+          <div class="mb-2">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+              <input id="password" type="password" class="form-control" placeholder="••••••••" autocomplete="current-password" required minlength="6" />
+              <button class="btn btn-outline-secondary" type="button" id="togglePw" aria-label="Show/Hide password">
+                <i class="bi bi-eye"></i>
+              </button>
+              <div class="invalid-feedback">Password is required (min 6 characters).</div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="rememberMe">
+              <label class="form-check-label" for="rememberMe">Remember me</label>
+            </div>
+            <a href="reset.html" class="link-secondary">Forgot password?</a>
+          </div>
+
+          <button id="loginBtn" type="submit" class="btn btn-primary w-100">
+            <span class="btn-text">Sign in</span>
+            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+          </button>
+
+          <p class="text-center mt-3 mb-0">
+            No account? <a href="signup.html">Create one</a>
+          </p>
+        </form>
       </div>
     </div>
   </main>
 
   <script>
-    (function () {
-      // Read API origin from <meta>, or fallback
-      var meta = document.querySelector('meta[name="api-origin"]');
-      var ORIGIN = meta ? meta.content : (window.API_ORIGIN || location.origin);
-    
-      function api(p) {
-        return ORIGIN.replace(/\/+$/, '') + '/api' + p;
+    // --- Config & helpers ----------------------------------------------------
+    const alertBox = document.getElementById('alertBox');
+    const apiChip  = document.getElementById('apiChip');
+    const setApiBtn = document.getElementById('setApiBtn');
+
+    // Resolve API base URL in a resilient way.
+    function resolveApiBase() {
+      const meta = document.querySelector('meta[name="backend-url"]')?.content?.trim();
+      const ls   = localStorage.getItem('API_BASE_URL');
+      const env  = window._API_BASE_; // optional global if you set it elsewhere
+      let base = meta || ls || env || "";
+
+      if (!base) {
+        const host = location.hostname;
+        if (host === "localhost" || host === "127.0.0.1") {
+          base = "http://127.0.0.1:8000"; // local dev
+        } else if (host.endsWith("makwandecareer.co.za")) {
+          // If you've set up an API subdomain in DNS/proxy:
+          base = https://api.${host};
+          // If your backend is on Render and not proxied, set the meta tag or use the gear to set it once.
+        } else {
+          // Assume same-origin proxy (/api rewrites). If not set up, use the gear button to set it.
+          base = location.origin;
+        }
       }
-      function token() { return localStorage.getItem('AA_TOKEN'); }
-      function saveToken(t) { localStorage.setItem('AA_TOKEN', t); }
-      function showErr(msg) {
-        var a = document.getElementById('alert');
-        if (!a) return;
-        a.textContent = msg || 'Something went wrong';
-        a.classList.remove('d-none');
+      // Tidy: drop trailing slash
+      return base.replace(/\/+$/, "");
+    }
+
+    let API_BASE = resolveApiBase();
+    showApiChip(API_BASE);
+
+    function showApiChip(base) {
+      apiChip.textContent = API: ${base};
+      apiChip.classList.remove("d-none");
+    }
+
+    function showAlert(type, message) {
+      alertBox.className = alert alert-${type};
+      alertBox.innerHTML = message;
+      alertBox.classList.remove("d-none");
+    }
+
+    function clearAlert() {
+      alertBox.classList.add("d-none");
+    }
+
+    function setLoading(loading) {
+      const btn = document.getElementById('loginBtn');
+      const spinner = btn.querySelector('.spinner-border');
+      const text = btn.querySelector('.btn-text');
+      btn.disabled = loading;
+      spinner.classList.toggle('d-none', !loading);
+      text.textContent = loading ? "Signing in..." : "Sign in";
+    }
+
+    // Allow user to set API base at runtime (persisted)
+    setApiBtn.addEventListener('click', () => {
+      const current = API_BASE || "";
+      const value = prompt("Set API Base URL (e.g. https://autoapplyapp-backend.onrender.com):", current);
+      if (value && value.trim()) {
+        API_BASE = value.trim().replace(/\/+$/,"");
+        localStorage.setItem('API_BASE_URL', API_BASE);
+        showApiChip(API_BASE);
+        showAlert('info', API base set to <code>${API_BASE}</code>.);
       }
-    
-      // If already logged in, go to dashboard
-      if (token()) { window.location.replace('dashboard.html'); return; }
-    
-      var form = document.getElementById('loginForm');
-      if (!form) return;
-      form.addEventListener('submit', function (ev) {
-        ev.preventDefault(); // stop default submit
-    
-        var email = (document.getElementById('email') || {}).value || '';
-        var password = (document.getElementById('password') || {}).value || '';
-        email = email.trim();
-    
-        if (!email || !password) { showErr('Please enter email and password'); return false; }
-    
-        var btn = document.getElementById('submitBtn');
-        if (btn) btn.disabled = true;
-    
-        fetch(api('/auth/login'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email, password: password })
-        })
-          .then(function (res) {
-            return res.json().catch(function(){ return {}; }).then(function(data){ return { ok: res.ok, data: data }; });
-          })
-          .then(function (r) {
-            if (!r.ok) throw new Error(r.data.detail || 'Invalid credentials');
-            if (!r.data.access_token) throw new Error('No token received');
-            saveToken(r.data.access_token);
-            window.location.replace('dashboard.html'); // forward after success
-          })
-          .catch(function (err) {
-            showErr(err.message);
-            if (btn) btn.disabled = false;
+    });
+
+    // --- UI: Show/hide password ---------------------------------------------
+    document.getElementById('togglePw').addEventListener('click', () => {
+      const pw = document.getElementById('password');
+      const icon = document.querySelector('#togglePw i');
+      if (pw.type === 'password') {
+        pw.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+      } else {
+        pw.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+      }
+    });
+
+    // --- Login flow ----------------------------------------------------------
+    const LOGIN_PATHS = [
+      "/api/login",
+      "/auth/login",
+      "/login"
+    ];
+
+    async function tryLoginOnPaths(payload) {
+      let lastError = null;
+
+      for (const path of LOGIN_PATHS) {
+        const url = ${API_BASE}${path};
+
+        try {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload),
+            // credentials left default; set to "include" if your API uses cookies
           });
-    
-        return false;
-      });
+
+          // If endpoint doesn't exist, try next
+          if (res.status === 404) {
+            lastError = Endpoint not found at ${url};
+            continue;
+          }
+
+          // Handle typical validation/unauthorized
+          if (!res.ok) {
+            // Try to parse server message
+            let msg = HTTP ${res.status};
+            try {
+              const data = await res.json();
+              if (data?.detail) msg = Array.isArray(data.detail) ? data.detail.map(d=>d.msg || d).join("<br>") : (data.detail.msg || data.detail);
+              if (data?.message) msg = data.message;
+              if (data?.error) msg = data.error;
+            } catch (_) {}
+            lastError = Login failed at <code>${path}</code>: ${msg};
+            // don't stop — another path might work
+            continue;
+          }
+
+          // Success
+          const data = await res.json();
+          return { path, data };
+        } catch (err) {
+          lastError = Network error to <code>${path}</code>: ${err.message};
+          // try next path
+        }
+      }
+
+      throw new Error(lastError || "Unable to reach any login endpoint.");
+    }
+
+    function extractToken(respData) {
+      // Support multiple backend shapes
+      // Common keys: access_token (FastAPI OAuth2), token, jwt, data.token, session.token
+      let token = respData?.access_token || respData?.token || respData?.jwt;
+      if (!token && respData?.data) {
+        token = respData.data.access_token || respData.data.token || respData.data.jwt;
+      }
+      if (!token && respData?.session) {
+        token = respData.session.token;
+      }
+      // Optional type
+      const type = respData?.token_type || respData?.type || "Bearer";
+      return { token, type };
+    }
+
+    async function handleLogin(email, password) {
+      const payload = {
+        email: email,
+        username: email,   // supports backends that expect "username"
+        password: password
+      };
+
+      const { path, data } = await tryLoginOnPaths(payload);
+      const { token, type } = extractToken(data);
+
+      if (!token) {
+        // Some APIs set auth cookies instead of returning a token; allow that path too.
+        // If there's a user object or success flag, accept and proceed.
+        if (data?.user || data?.success === true) {
+          return { path, token: null, type: null, cookieBased: true, user: data.user || null };
+        }
+        throw new Error("Login succeeded but no token was returned. Check backend response or enable cookie-based auth.");
+      }
+
+      return { path, token, type, cookieBased: false, user: data.user || null };
+    }
+
+    // --- Form handling -------------------------------------------------------
+    const form = document.getElementById('loginForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearAlert();
+
+      // HTML5 validation
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+      }
+
+      setLoading(true);
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const result = await handleLogin(email, password);
+
+        // Persist session
+        localStorage.setItem('user_email', email);
+        if (result.token) {
+          localStorage.setItem('auth_token', result.token);
+          localStorage.setItem('token_type', result.type || 'Bearer');
+        } else {
+          // Cookie-based; clear any stale tokens
+          localStorage.removeItem('auth_token');
+          localStorage.setItem('token_type', 'Cookie');
+        }
+
+        // Optional: remember email
+        const remember = document.getElementById('rememberMe').checked;
+        if (remember) {
+          localStorage.setItem('remember_email', email);
+        } else {
+          localStorage.removeItem('remember_email');
+        }
+
+        showAlert('success', 'Logged in successfully. Redirecting to dashboard…');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 600);
+
+      } catch (err) {
+        // Connection guidance
+        const hint = `
+          <div class="small text-muted mt-2">
+            If this is a connection issue, click the <i class="bi bi-gear"></i> button (top-right) and set your API base URL.
+          </div>`;
+        showAlert('danger', ${err.message || 'Login failed.'}${hint});
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // Pre-fill remembered email
+    (function hydrateRememberedEmail() {
+      const remembered = localStorage.getItem('remember_email');
+      if (remembered) {
+        document.getElementById('email').value = remembered;
+        document.getElementById('rememberMe').checked = true;
+      }
     })();
-    </script>
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -7,7 +7,58 @@
   
 <html lang="en">
   <script>window.API_ORIGIN = "https://autoapply-api.onrender.com";</script>
-
+  <form id="signupForm" autocomplete="on" novalidate>
+    <div class="mb-3">
+      <label for="name" class="form-label">Full name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        class="form-control"
+        autocomplete="name"
+        required
+      />
+    </div>
+  
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        class="form-control"
+        autocomplete="email"
+        required
+      />
+    </div>
+  
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        class="form-control"
+        autocomplete="new-password"
+        required
+      />
+    </div>
+  
+    <div class="mb-3">
+      <label for="password2" class="form-label">Confirm password</label>
+      <input
+        type="password"
+        id="password2"
+        name="password2"
+        class="form-control"
+        autocomplete="new-password"
+        required
+      />
+    </div>
+  
+    <button type="submit" class="btn btn-primary w-100">Create account</button>
+  </form>
+  
 
 <head>
   <!-- put in <head> on every page, before any code that uses AutoApply -->

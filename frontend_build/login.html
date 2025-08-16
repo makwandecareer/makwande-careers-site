@@ -3,362 +3,170 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Auto Apply App — Login</title>
-
-  <!-- Optional: hard-code your backend here (overrides auto-detect) -->
+  <title>Auto Apply App — Login (SAFE MODE)</title>
+  <!-- Optional: hardcode your backend here -->
   <!-- <meta name="backend-url" content="https://YOUR-BACKEND.onrender.com"> -->
-
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-  <!-- Bootstrap Icons (for the gear & eye icon) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
-
   <style>
-    body {
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      background: #f6f7fb;
-    }
-    .app-card {
-      width: 100%;
-      max-width: 430px;
-      border: 0;
-      border-radius: 1rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-    .brand {
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
-    .status-badge {
-      font-size: .8rem;
-    }
-    .api-chip {
-      font-size: .75rem;
-      background: #eef2ff;
-      color: #3b5bcc;
-      border-radius: 999px;
-      padding: .25rem .6rem;
-    }
-    .top-actions {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    :root { --bg:#f6f7fb; --card:#fff; --txt:#111; --muted:#666; --brand:#0d6efd; --err:#d22; --ok:#17803d; }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--txt)}
+    .wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
+    .card{width:100%;max-width:420px;background:var(--card);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:22px}
+    h1{font-size:20px;margin:0 0 8px} .sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+    label{display:block;font-size:13px;margin:10px 0 6px}
+    input{width:100%;padding:12px 12px;border:1px solid #ddd;border-radius:10px;font-size:14px}
+    .row{display:flex;gap:10px;align-items:center}
+    .btn{width:100%;padding:12px;border:0;border-radius:10px;background:var(--brand);color:#fff;font-weight:600;cursor:pointer}
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+    .hint{font-size:12px;color:var(--muted);margin-top:8px}
+    .alert{margin:10px 0 0;padding:10px 12px;border-radius:10px;font-size:13px;display:none}
+    .alert.ok{display:block;background:#e9f7ef;color:var(--ok);border:1px solid #b8e0c7}
+    .alert.err{display:block;background:#fdeaea;color:var(--err);border:1px solid #f1c3c3}
+    .top{font-size:12px;margin-bottom:8px;color:var(--muted)}
+    .small{font-size:12px}
+    .link{color:var(--brand);text-decoration:none}
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">Auto Apply App — <strong>Login (SAFE MODE)</strong></div>
 
-  <!-- Quick actions (show API base + settings) -->
-  <div class="top-actions">
-    <span id="apiChip" class="api-chip d-none"></span>
-    <button id="setApiBtn" type="button" class="btn btn-outline-secondary btn-sm">
-      <i class="bi bi-gear"></i> API
-    </button>
-  </div>
-
-  <main class="container py-4">
-    <div class="card app-card p-3 p-md-4">
-      <div class="card-body">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <div>
-            <h1 class="h4 brand mb-1">Auto Apply App</h1>
-            <span class="badge text-bg-warning-subtle border status-badge">
-              Soft launch — job board refresh coming soon
-            </span>
-          </div>
+      <div class="row">
+        <div style="flex:1">
+          <label for="apiBase">API Base</label>
+          <input id="apiBase" placeholder="https://your-backend.onrender.com" />
         </div>
+        <button id="saveApi" class="btn" style="width:auto; padding:12px 14px;">Save</button>
+      </div>
+      <div id="apiAlert" class="alert"></div>
 
-        <div id="alertBox" class="alert d-none" role="alert"></div>
+      <h1>Sign in</h1>
+      <div class="sub">Use your email and password. Token is saved to localStorage.</div>
 
-        <form id="loginForm" class="mt-3" novalidate>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input id="email" type="email" class="form-control" placeholder="you@example.com" autocomplete="email" required />
-            <div class="invalid-feedback">Please enter a valid email.</div>
-          </div>
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required />
 
-          <div class="mb-2">
-            <label for="password" class="form-label">Password</label>
-            <div class="input-group">
-              <input id="password" type="password" class="form-control" placeholder="••••••••" autocomplete="current-password" required minlength="6" />
-              <button class="btn btn-outline-secondary" type="button" id="togglePw" aria-label="Show/Hide password">
-                <i class="bi bi-eye"></i>
-              </button>
-              <div class="invalid-feedback">Password is required (min 6 characters).</div>
-            </div>
-          </div>
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
 
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="rememberMe">
-              <label class="form-check-label" for="rememberMe">Remember me</label>
-            </div>
-            <a href="reset.html" class="link-secondary">Forgot password?</a>
-          </div>
+      <div style="margin-top:12px">
+        <button id="loginBtn" class="btn">Sign in</button>
+      </div>
+      <div id="alert" class="alert"></div>
 
-          <button id="loginBtn" type="submit" class="btn btn-primary w-100">
-            <span class="btn-text">Sign in</span>
-            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
-          </button>
-
-          <p class="text-center mt-3 mb-0">
-            No account? <a href="signup.html">Create one</a>
-          </p>
-        </form>
+      <div class="hint">
+        No account? <a class="link" href="signup.html">Create one</a> ·
+        Forgot? <a class="link" href="reset.html">Reset</a>
       </div>
     </div>
-  </main>
+  </div>
 
   <script>
-    // --- Config & helpers ----------------------------------------------------
-    const alertBox = document.getElementById('alertBox');
-    const apiChip  = document.getElementById('apiChip');
-    const setApiBtn = document.getElementById('setApiBtn');
+    // ---------- Utilities ----------
+    const $ = sel => document.querySelector(sel);
+    const alertBox = $('#alert');
+    const apiAlert = $('#apiAlert');
 
-    // Resolve API base URL in a resilient way.
-    function resolveApiBase() {
+    function showAlert(el, type, msg) {
+      el.className = 'alert ' + (type === 'ok' ? 'ok' : 'err');
+      el.innerHTML = msg;
+      el.style.display = 'block';
+    }
+    function clearAlert(el){ el.style.display='none'; }
+
+    function getDefaultApiBase(){
       const meta = document.querySelector('meta[name="backend-url"]')?.content?.trim();
       const ls   = localStorage.getItem('API_BASE_URL');
-      const env  = window._API_BASE_; // optional global if you set it elsewhere
-      let base = meta || ls || env || "";
-
-      if (!base) {
-        const host = location.hostname;
-        if (host === "localhost" || host === "127.0.0.1") {
-          base = "http://127.0.0.1:8000"; // local dev
-        } else if (host.endsWith("makwandecareer.co.za")) {
-          // If you've set up an API subdomain in DNS/proxy:
-          base = https://api.${host};
-          // If your backend is on Render and not proxied, set the meta tag or use the gear to set it once.
-        } else {
-          // Assume same-origin proxy (/api rewrites). If not set up, use the gear button to set it.
-          base = location.origin;
-        }
-      }
-      // Tidy: drop trailing slash
-      return base.replace(/\/+$/, "");
+      if (ls) return ls;
+      if (meta) return meta.replace(/\/+$/,'');
+      const host = location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1') return 'http://127.0.0.1:8000';
+      return location.origin; // same-origin proxy by default
     }
 
-    let API_BASE = resolveApiBase();
-    showApiChip(API_BASE);
+    let API_BASE = getDefaultApiBase();
+    $('#apiBase').value = API_BASE;
 
-    function showApiChip(base) {
-      apiChip.textContent = API: ${base};
-      apiChip.classList.remove("d-none");
-    }
-
-    function showAlert(type, message) {
-      alertBox.className = alert alert-${type};
-      alertBox.innerHTML = message;
-      alertBox.classList.remove("d-none");
-    }
-
-    function clearAlert() {
-      alertBox.classList.add("d-none");
-    }
-
-    function setLoading(loading) {
-      const btn = document.getElementById('loginBtn');
-      const spinner = btn.querySelector('.spinner-border');
-      const text = btn.querySelector('.btn-text');
-      btn.disabled = loading;
-      spinner.classList.toggle('d-none', !loading);
-      text.textContent = loading ? "Signing in..." : "Sign in";
-    }
-
-    // Allow user to set API base at runtime (persisted)
-    setApiBtn.addEventListener('click', () => {
-      const current = API_BASE || "";
-      const value = prompt("Set API Base URL (e.g. https://autoapplyapp-backend.onrender.com):", current);
-      if (value && value.trim()) {
-        API_BASE = value.trim().replace(/\/+$/,"");
-        localStorage.setItem('API_BASE_URL', API_BASE);
-        showApiChip(API_BASE);
-        showAlert('info', API base set to <code>${API_BASE}</code>.);
-      }
+    $('#saveApi').addEventListener('click', () => {
+      const v = $('#apiBase').value.trim().replace(/\/+$/,'');
+      if (!v) return;
+      API_BASE = v;
+      localStorage.setItem('API_BASE_URL', API_BASE);
+      showAlert(apiAlert, 'ok', API set to <code>${API_BASE}</code>);
+      setTimeout(() => clearAlert(apiAlert), 1200);
     });
 
-    // --- UI: Show/hide password ---------------------------------------------
-    document.getElementById('togglePw').addEventListener('click', () => {
-      const pw = document.getElementById('password');
-      const icon = document.querySelector('#togglePw i');
-      if (pw.type === 'password') {
-        pw.type = 'text';
-        icon.classList.remove('bi-eye');
-        icon.classList.add('bi-eye-slash');
-      } else {
-        pw.type = 'password';
-        icon.classList.remove('bi-eye-slash');
-        icon.classList.add('bi-eye');
-      }
-    });
+    const LOGIN_PATHS = ["/api/login", "/auth/login", "/login"];
 
-    // --- Login flow ----------------------------------------------------------
-    const LOGIN_PATHS = [
-      "/api/login",
-      "/auth/login",
-      "/login"
-    ];
-
-    async function tryLoginOnPaths(payload) {
-      let lastError = null;
-
-      for (const path of LOGIN_PATHS) {
-        const url = ${API_BASE}${path};
-
-        try {
+    async function tryLogin(payload){
+      let lastErr = null;
+      for (const path of LOGIN_PATHS){
+        const url = API_BASE + path;
+        try{
           const res = await fetch(url, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
-            // credentials left default; set to "include" if your API uses cookies
           });
 
-          // If endpoint doesn't exist, try next
-          if (res.status === 404) {
-            lastError = Endpoint not found at ${url};
-            continue;
-          }
-
-          // Handle typical validation/unauthorized
-          if (!res.ok) {
-            // Try to parse server message
+          if (res.status === 404) { lastErr = 404 at ${path}; continue; }
+          if (!res.ok){
             let msg = HTTP ${res.status};
-            try {
-              const data = await res.json();
-              if (data?.detail) msg = Array.isArray(data.detail) ? data.detail.map(d=>d.msg || d).join("<br>") : (data.detail.msg || data.detail);
-              if (data?.message) msg = data.message;
-              if (data?.error) msg = data.error;
-            } catch (_) {}
-            lastError = Login failed at <code>${path}</code>: ${msg};
-            // don't stop — another path might work
-            continue;
+            try{
+              const d = await res.json();
+              msg = d?.message || d?.error || (Array.isArray(d?.detail) ? d.detail.map(x=>x.msg||x).join(', ') : d?.detail || msg);
+            }catch(_){}
+            lastErr = ${path}: ${msg}; continue;
           }
 
-          // Success
           const data = await res.json();
           return { path, data };
-        } catch (err) {
-          lastError = Network error to <code>${path}</code>: ${err.message};
-          // try next path
+        }catch(e){
+          lastErr = ${path}: ${e.message};
         }
       }
-
-      throw new Error(lastError || "Unable to reach any login endpoint.");
+      throw new Error(lastErr || "All login paths failed.");
     }
 
-    function extractToken(respData) {
-      // Support multiple backend shapes
-      // Common keys: access_token (FastAPI OAuth2), token, jwt, data.token, session.token
-      let token = respData?.access_token || respData?.token || respData?.jwt;
-      if (!token && respData?.data) {
-        token = respData.data.access_token || respData.data.token || respData.data.jwt;
-      }
-      if (!token && respData?.session) {
-        token = respData.session.token;
-      }
-      // Optional type
-      const type = respData?.token_type || respData?.type || "Bearer";
+    function extractToken(d){
+      let token = d?.access_token || d?.token || d?.jwt;
+      if (!token && d?.data) token = d.data.access_token || d.data.token || d.data.jwt;
+      if (!token && d?.session) token = d.session.token;
+      const type = d?.token_type || d?.type || 'Bearer';
       return { token, type };
     }
 
-    async function handleLogin(email, password) {
-      const payload = {
-        email: email,
-        username: email,   // supports backends that expect "username"
-        password: password
-      };
+    async function doLogin(){
+      clearAlert(alertBox);
+      const email = $('#email').value.trim();
+      const password = $('#password').value;
+      if (!email || !password) { showAlert(alertBox, 'err', 'Email and password are required.'); return; }
 
-      const { path, data } = await tryLoginOnPaths(payload);
-      const { token, type } = extractToken(data);
+      $('#loginBtn').disabled = true; $('#loginBtn').textContent = 'Signing in…';
+      try{
+        const { data } = await tryLogin({ email, username: email, password });
+        const { token, type } = extractToken(data);
+        localStorage.setItem('user_email', email);
+        if (token){ localStorage.setItem('auth_token', token); localStorage.setItem('token_type', type); }
+        else { localStorage.removeItem('auth_token'); localStorage.setItem('token_type', 'Cookie'); }
 
-      if (!token) {
-        // Some APIs set auth cookies instead of returning a token; allow that path too.
-        // If there's a user object or success flag, accept and proceed.
-        if (data?.user || data?.success === true) {
-          return { path, token: null, type: null, cookieBased: true, user: data.user || null };
-        }
-        throw new Error("Login succeeded but no token was returned. Check backend response or enable cookie-based auth.");
+        showAlert(alertBox, 'ok', 'Logged in. Redirecting…');
+        setTimeout(()=> location.href = 'dashboard.html', 600);
+      }catch(e){
+        const hint = `<div class="small" style="color:#666;margin-top:6px">
+          If this looks like a connection/CORS issue, confirm the <strong>API Base</strong> above points to your backend.
+        </div>`;
+        showAlert(alertBox, 'err', (e.message || 'Login failed.') + hint);
+      }finally{
+        $('#loginBtn').disabled = false; $('#loginBtn').textContent = 'Sign in';
       }
-
-      return { path, token, type, cookieBased: false, user: data.user || null };
     }
 
-    // --- Form handling -------------------------------------------------------
-    const form = document.getElementById('loginForm');
+    $('#loginBtn').addEventListener('click', doLogin);
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      clearAlert();
-
-      // HTML5 validation
-      if (!form.checkValidity()) {
-        form.classList.add('was-validated');
-        return;
-      }
-
-      setLoading(true);
-
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-
-      try {
-        const result = await handleLogin(email, password);
-
-        // Persist session
-        localStorage.setItem('user_email', email);
-        if (result.token) {
-          localStorage.setItem('auth_token', result.token);
-          localStorage.setItem('token_type', result.type || 'Bearer');
-        } else {
-          // Cookie-based; clear any stale tokens
-          localStorage.removeItem('auth_token');
-          localStorage.setItem('token_type', 'Cookie');
-        }
-
-        // Optional: remember email
-        const remember = document.getElementById('rememberMe').checked;
-        if (remember) {
-          localStorage.setItem('remember_email', email);
-        } else {
-          localStorage.removeItem('remember_email');
-        }
-
-        showAlert('success', 'Logged in successfully. Redirecting to dashboard…');
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 600);
-
-      } catch (err) {
-        // Connection guidance
-        const hint = `
-          <div class="small text-muted mt-2">
-            If this is a connection issue, click the <i class="bi bi-gear"></i> button (top-right) and set your API base URL.
-          </div>`;
-        showAlert('danger', ${err.message || 'Login failed.'}${hint});
-      } finally {
-        setLoading(false);
-      }
-    });
-
-    // Pre-fill remembered email
-    (function hydrateRememberedEmail() {
-      const remembered = localStorage.getItem('remember_email');
-      if (remembered) {
-        document.getElementById('email').value = remembered;
-        document.getElementById('rememberMe').checked = true;
-      }
-    })();
+    // Pre-fill remembered email if any (optional)
+    const remembered = localStorage.getItem('remember_email');
+    if (remembered) $('#email').value = remembered;
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

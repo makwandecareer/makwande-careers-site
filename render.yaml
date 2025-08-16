@@ -1,27 +1,24 @@
 services:
   - type: web
-    name: autoapply-api
-    runtime: python
-    rootDir: backend
-    plan: starter plus
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    envVars:
-      - key: SECRET_KEY
-        sync: false
+    name: Auto_Apply_App_Mobile          # keep the exact name if you already created it
+    runtime: static plus
+    branch: main
+    buildCommand: "echo noop"            # no build step
+    staticPublishPath: "."               # serve your current folder
+    autoDeploy: true
 
-  - type: web
-    name: autoapply-site
-    runtime: static
-    rootDir: site
-    staticPublishPath: .
+    # (optional) make sure browsers don't cache old files during your testing
+    headers:
+      - path: "/*"
+        name: Cache-Control
+        value: "public, max-age=0, must-revalidate"
+
+    # ⭐ the only thing that matters: proxy /api/* to your backend
     routes:
       - type: rewrite
-        source: /api/*
-        destination: https://<YOUR-API>.onrender.com/api/*
-      - type: rewrite
-        source: /*
-        destination: /index.html
+        source: "/api/*"
+        destination: "https://autoapplyapp-backend.onrender.com/api/*"
+
 
 
 

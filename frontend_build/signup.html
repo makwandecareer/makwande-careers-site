@@ -1,264 +1,113 @@
 <!doctype html>
-<!-- put this BEFORE any other <script> tags -->
-  <script>
-    // point directly to your API service on Render
-    window.API_ORIGIN = 'https://autoapply-api.onrender.com';
-  </script>
-  
 <html lang="en">
-  <script>window.API_ORIGIN = "https://autoapply-api.onrender.com";</script>
-  <form id="signupForm" autocomplete="on" novalidate>
-    <div class="mb-3">
-      <label for="name" class="form-label">Full name</label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        class="form-control"
-        autocomplete="name"
-        required
-      />
-    </div>
-  
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        class="form-control"
-        autocomplete="email"
-        required
-      />
-    </div>
-  
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        class="form-control"
-        autocomplete="new-password"
-        required
-      />
-    </div>
-  
-    <div class="mb-3">
-      <label for="password2" class="form-label">Confirm password</label>
-      <input
-        type="password"
-        id="password2"
-        name="password2"
-        class="form-control"
-        autocomplete="new-password"
-        required
-      />
-    </div>
-  
-    <button type="submit" class="btn btn-primary w-100">Create account</button>
-  </form>
-  
-
 <head>
-  <!-- put in <head> on every page, before any code that uses AutoApply -->
-<script>window.API_ORIGIN = 'https://autoapply-api.onrender.com';</script>
-<script src="auth.js"></script>
-<link rel="icon" href="data:,">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="api-origin" content="https://autoapply-api.onrender.com" />
 
-  <script>
-    // Choose the correct backend automatically
-    (function () {
-      const PROD = 'https://autoapply-api.onrender.com';
-      const LOCAL = 'http://localhost:8000';
-      window.API_ORIGIN = location.hostname.endsWith('onrender.com') ? PROD : LOCAL;
-  
-      // Read token if you already stored it
-      const getToken = () => (localStorage.getItem('AA_TOKEN') || '').trim();
-  
-      // Simple helpers
-      window.apiFetch = (path, opts = {}) => {
-        const headers = Object.assign({'Content-Type': 'application/json'}, opts.headers || {});
-        const t = getToken(); if (t) headers.Authorization = `Bearer ${t}`;
-        return fetch(window.API_ORIGIN + path, Object.assign({}, opts, { headers }));
-      };
-  
-      window.apiJSON = async (path, opts = {}) => {
-        const r = await window.apiFetch(path, opts);
-        if (!r.ok) throw new Error(`${r.status} ${await r.text()}`);
-        const ct = r.headers.get('content-type') || '';
-        return ct.includes('json') ? r.json() : r.text();
-      };
-    })();
-  </script>
-  
-  <script>
-    (async () => {
-      const pill = document.querySelector('#api-status') || document.querySelector('.api-status');
-      if (!pill) return;
-    
-      try {
-        const info = await apiJSON('/api/health');   // uses the helper we added
-        pill.textContent = 'API connected' + (info && info.version ? ` • v${info.version}` : '');
-      } catch (e) {
-        pill.textContent = 'API not reachable';
-      }
-    })();
-    </script>
-
-<span id="api-status" class="badge"></span>
-
-  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Sign up • AutoApply</title>
-  <meta name="description" content="Create your AutoApply account."/>
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <style>.badge-soft{background:#fff3cd;color:#664d03;border:1px solid #ffe69c}</style>
-
-  <!-- Inline helpers -->
-<script>
-  // 1) Where is the API?
-  // Force the real backend to avoid any old /api proxy or cached JS.
-  const API_ORIGIN = "https://autoapply-api.onrender.com";
-  if (!window.apiBase) window.apiBase = () => `${API_ORIGIN}/api`;
-
-  // 2) Tiny fetch helpers
-  if (!window.apiFetch) window.apiFetch = (p, o = {}) => {
-    const t = localStorage.getItem("AA_TOKEN");
-    const h = Object.assign({}, o.headers || {}, t ? { Authorization: `Bearer ${t}` } : {});
-    const url = window.apiBase() + (p.startsWith('/') ? p : `/${p}`);
-    return fetch(url, Object.assign({}, o, { headers: h }));
-  };
-  if (!window.apiJSON) window.apiJSON = async (p, o = {}) => {
-    const r = await window.apiFetch(p, o);
-    const ct = r.headers.get("content-type") || "";
-    const body = ct.includes("application/json") ? await r.json() : await r.text();
-    if (!r.ok) throw body;
-    return body;
-  };
-
-  // 3) Show “API connected • <short-commit>”
-  (async () => {
-    const badge = document.querySelector('#api-status,.api-status,.badge-soft');
-    if (!badge) return;
-    try {
-      const h = await window.apiJSON('/health');
-      const v = (h.version || "").slice(0, 7) || "ok";
-      badge.textContent = `API connected • v${v}`;
-      badge.className = 'badge badge-soft';
-    } catch (e) {
-      badge.textContent = 'API not reachable';
-      badge.className = 'badge badge-soft';
-    }
-  })();
-</script>
-
-  <script>
-    (async () => {
-      const badge = document.querySelector('.api-status');
-      if (!badge) return;
-      try {
-        const r = await apiFetch('/api/health');   // uses the helper we added
-        const j = await r.json();
-        badge.textContent = j.ok
-          ? `API connected${j.version ? ' · v' + j.version : ''}`
-          : 'API not reachable';
-        badge.className = 'badge ' + (j.ok ? 'badge-soft' : 'badge-danger');
-      } catch {
-        badge.textContent = 'API not reachable';
-        badge.className = 'badge badge-danger';
-      }
-    })();
-    </script>
-    
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body { background:#f8fafc }
+    .card { max-width: 560px; margin: 6rem auto; }
+  </style>
 </head>
-<body class="bg-light">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<body>
+  <nav class="navbar navbar-light bg-white border-bottom">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="/">AutoApply</a>
-      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMain"><span class="navbar-toggler-icon"></span></button>
-      <div id="navMain" class="collapse navbar-collapse">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link" href="/jobs.html">Jobs</a></li>
-          <li class="nav-item"><a class="nav-link" href="/revamp.html">CV Revamp</a></li>
-          <li class="nav-item"><a class="nav-link" href="/pay.html">Subscription</a></li>
-          <li class="nav-item"><a class="nav-link" href="/dashboard.html">Dashboard</a></li>
-        </ul>
-        <div class="d-flex gap-2">
-          <a id="btnLogin" href="/login.html" class="btn btn-outline-light">Log in</a>
-          <a id="btnSignup" href="/signup.html" class="btn btn-warning text-dark">Sign up</a>
-          <button id="btnLogout" class="btn btn-outline-light d-none" type="button">Logout</button>
-        </div>
-      </div>
+      <a class="navbar-brand fw-bold">AutoApply</a>
     </div>
   </nav>
 
-  <div id="statusBanner" class="py-2 text-center small d-none">
-    <span id="statusText" class="badge badge-soft rounded-pill px-3 py-2"></span>
-  </div>
+  <main class="container">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h3 text-center mb-4">Create your account</h1>
 
-  <main class="container py-5" style="max-width:560px">
-    <h1 class="h3 mb-3 text-center">Create your account</h1>
-    <form id="signupForm" class="card p-3 p-md-4 shadow-sm needs-validation" novalidate>
-      <div class="mb-3"><label class="form-label">Full name</label><input id="name" class="form-control" required/></div>
-      <div class="mb-3"><label class="form-label">Email</label><input id="email" type="email" class="form-control" required/></div>
-      <div class="row g-3">
-        <div class="col-md-6"><label class="form-label">Password</label><input id="password" type="password" class="form-control" minlength="6" required/><div class="form-text">Min 6 characters.</div></div>
-        <div class="col-md-6"><label class="form-label">Confirm</label><input id="confirm" type="password" class="form-control" minlength="6" required/></div>
+        <div id="alert" class="alert alert-danger d-none" role="alert"></div>
+
+        <form id="signupForm" novalidate autocomplete="on">
+          <div class="mb-3">
+            <label for="name" class="form-label">Full name</label>
+            <input id="name" name="name" type="text" class="form-control" required
+                   autocomplete="name" />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" name="email" type="email" class="form-control" required
+                   autocomplete="email" />
+          </div>
+          <div class="mb-4">
+            <label for="password" class="form-label">Password</label>
+            <input id="password" name="password" type="password" class="form-control" required
+                   autocomplete="new-password" minlength="6" />
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" value="" id="agree" required />
+            <label class="form-check-label" for="agree">
+              I agree to the <a href="privacy.html">Terms &amp; Privacy</a>.
+            </label>
+          </div>
+
+          <button id="submitBtn" type="submit" class="btn btn-primary w-100">
+            Create account
+          </button>
+        </form>
+
+        <p class="mt-3 text-center">
+          Already have an account? <a href="login.html">Log in</a>
+        </p>
       </div>
-      <div class="form-check my-3">
-        <input class="form-check-input" id="terms" type="checkbox" required/>
-        <label for="terms" class="form-check-label">I agree to the <a href="/terms.html">Terms</a> & <a href="/privacy.html">Privacy</a>.</label>
-      </div>
-      <button class="btn btn-primary w-100" type="submit">Create account</button>
-      <div id="signupMsg" class="small mt-3 text-muted"></div>
-      <div class="mt-3 text-center small">Already have an account? <a href="/login.html">Log in</a></div>
-    </form>
+    </div>
   </main>
 
-  <footer class="border-top">
-    <div class="container py-4 small d-flex justify-content-between flex-wrap gap-3">
-      <div>© <span id="year"></span> AutoApply • All rights reserved.</div>
-      <div class="d-flex gap-3"><a class="text-decoration-none" href="/privacy.html">Privacy</a><a class="text-decoration-none" href="/terms.html">Terms</a><a class="text-decoration-none" href="/contact.html">Contact</a></div>
-    </div>
-  </footer>
-
   <script>
-    const form = document.getElementById('signupForm');
-    const msg  = document.getElementById('signupMsg');
-    form.addEventListener('submit', async (e)=>{
-      e.preventDefault(); form.classList.add('was-validated');
-      const name = document.getElementById('name').value.trim();
-      const email= document.getElementById('email').value.trim();
-      const pw   = document.getElementById('password').value;
-      const cf   = document.getElementById('confirm').value;
-      if(!name || !email || pw.length<6 || pw!==cf || !document.getElementById('terms').checked) return;
+    (function () {
+      const ORIGIN = document.querySelector('meta[name="api-origin"]').content;
+      const API = (p) => ${ORIGIN}/api${p};
+      const saveToken = (t) => localStorage.setItem('AA_TOKEN', t);
+      const showErr = (msg) => {
+        const a = document.getElementById('alert');
+        a.textContent = msg || 'Something went wrong';
+        a.classList.remove('d-none');
+      };
 
-      msg.textContent='Creating account…';
-      try{
-        const body = await apiJSON('/auth/signup', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ name, email, password: pw })
-        });
-        localStorage.setItem('AA_TOKEN', body.access_token);
-        localStorage.setItem('AA_USER', JSON.stringify(body.user));
-        setSignedInUI(); msg.textContent='Success! Redirecting…'; location.href='/dashboard.html';
-      }catch(err){ msg.textContent=err.message || 'Sign up failed'; }
-    });
+      // If already logged in, go straight to dashboard
+      if (localStorage.getItem('AA_TOKEN')) {
+        location.replace('dashboard.html');
+        return;
+      }
+
+      document.getElementById('signupForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!name || !email || !password) return showErr('Please fill all fields');
+
+        btn.disabled = true;
+        try {
+          const res = await fetch(API('/auth/signup'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.detail || 'Signup failed');
+          if (!data.access_token) throw new Error('No token received');
+
+          saveToken(data.access_token);
+          location.replace('dashboard.html');
+        } catch (err) {
+          showErr(err.message);
+          btn.disabled = false;
+        }
+      });
+    })();
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,164 +2,100 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Point to your Render API -->
+  <meta name="api-origin" content="https://autoapply-api.onrender.com" />
+
   <title>Login • AutoApply</title>
-
-  <!-- point directly to your API on Render -->
-  <script>window.API_ORIGIN = "https://autoapply-api.onrender.com";</script>
-
-  <!-- favicon -->
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-
-  <!-- Bootstrap (CDN) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body { background:#f8fafc }
+    .card { max-width: 560px; margin: 6rem auto; }
+  </style>
 </head>
-<body class="bg-light">
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+<body>
+  <nav class="navbar navbar-light bg-white border-bottom">
     <div class="container">
-      <a class="navbar-brand" href="/index.html">AutoApply</a>
+      <a class="navbar-brand fw-bold">AutoApply</a>
     </div>
   </nav>
 
-  <main class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-sm-10 col-md-8 col-lg-6">
-        <div class="card shadow-sm">
-          <div class="card-body p-4">
-            <h1 class="h3 text-center mb-4">Welcome back</h1>
+  <main class="container">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h3 text-center mb-4">Welcome back</h1>
 
-<!-- LOGIN FORM -->
-<form id="loginForm" autocomplete="on" novalidate>
-  <label for="email" class="form-label">Email</label>
-  <input id="email"
-         name="email"
-         type="email"
-         class="form-control"
-         required
-         autocomplete="email">
+        <div id="alert" class="alert alert-danger d-none" role="alert"></div>
 
-  <label for="password" class="form-label mt-3">Password</label>
-  <input id="password"
-         name="password"
-         type="password"
-         class="form-control"
-         required
-         autocomplete="current-password">
-
-  <button id="loginBtn" type="submit" class="btn btn-primary mt-4 w-100">
-    Log in
-  </button>
-
-  <p id="msg" class="text-danger mt-2" style="min-height:1.25rem"></p>
-</form>
-
-<script>
-(function () {
-  // If you already set window.API_ORIGIN elsewhere, this uses it.
-  // Otherwise it defaults to your Render API.
-  const API = (window.API_ORIGIN || 'https://autoapply-api.onrender.com')
-               .replace(/\/$/, '') + '/api';
-  const TOKEN_KEY = 'AA_TOKEN';
-
-  function saveToken(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch (_) {} }
-
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();                 // stop normal page submit
-    const btn = document.getElementById('loginBtn');
-    const msg = document.getElementById('msg');
-    msg.textContent = '';
-    btn.disabled = true;
-
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-
-    try {
-      const res = await fetch(${API}/auth/login, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) throw new Error(data.detail || 'Invalid email or password');
-      if (!data.access_token) throw new Error('No token returned');
-
-      saveToken(data.access_token);
-      // ✅ success → go to dashboard
-      window.location.href = 'dashboard.html';
-    } catch (err) {
-      msg.textContent = err.message || 'Login failed';
-    } finally {
-      btn.disabled = false;
-    }
-  });
-})();
-</script>
-
-              <div class="mb-4">
-                <label for="password" class="form-label">Password</label>
-                <input id="password" name="password" type="password"
-                       class="form-control" required
-                       autocomplete="current-password" />
-              </div>
-
-              <button id="login-btn" type="submit" class="btn btn-primary w-100">
-                Log in
-              </button>
-
-              <div id="msg" class="text-danger small mt-3" role="alert" style="min-height:1.25rem;"></div>
-
-              <p class="text-center mt-3 mb-0">
-                No account? <a href="/signup.html">Create one</a>
-              </p>
-            </form>
+        <!-- SINGLE FORM ONLY -->
+        <form id="loginForm" novalidate autocomplete="on">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" name="email" type="email" class="form-control" required
+                   autocomplete="email" />
           </div>
-        </div>
+          <div class="mb-4">
+            <label for="password" class="form-label">Password</label>
+            <input id="password" name="password" type="password" class="form-control" required
+                   autocomplete="current-password" />
+          </div>
+          <button id="submitBtn" type="submit" class="btn btn-primary w-100">
+            Log in
+          </button>
+        </form>
+
+        <p class="mt-3 text-center">
+          No account? <a href="signup.html">Create one</a>
+        </p>
       </div>
     </div>
   </main>
 
-  <!-- Bootstrap JS (optional, for components only) -->
   <script>
-    const TOKEN_KEY = "autoapply_token";
-    const API = (p) => ${window.API_ORIGIN.replace(/\/$/, "")}/api${p};
-  
-    function saveToken(t){ if(t) localStorage.setItem(TOKEN_KEY, t); }
-  
-    document.getElementById("login-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-  
-      const email    = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const msg = document.getElementById("msg");
-      const btn = document.getElementById("login-btn");
-      msg.textContent = ""; btn.disabled = true;
-  
-      try {
-        const res  = await fetch(API("/auth/login"), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
-        });
-  
-        // Try to read a token under several common keys, but ALWAYS move on.
-        let token = null;
-        let data = {};
-        try { data = await res.clone().json(); } catch {}
-        token = data?.access_token || data?.token || data?.accessToken || null;
-        saveToken(token);
-  
-        // mark that we just logged in (used by dashboard soft-guard)
-        sessionStorage.setItem("aa_last_login", "1");
-  
-        if (!res.ok && !token) throw new Error(data.detail || "Login failed");
-        // ✅ Knock forward no matter what (if server responded)
-        window.location.replace("/dashboard.html");
-      } catch (err) {
-        msg.textContent = (err && err.message) || "Network error";
-        btn.disabled = false;
+    (function () {
+      const ORIGIN = document.querySelector('meta[name="api-origin"]').content;
+      const API = (p) => ${ORIGIN}/api${p};
+      const saveToken = (t) => localStorage.setItem('AA_TOKEN', t);
+      const showErr = (msg) => {
+        const a = document.getElementById('alert');
+        a.textContent = msg || 'Something went wrong';
+        a.classList.remove('d-none');
+      };
+
+      // If already logged in, go straight to dashboard
+      if (localStorage.getItem('AA_TOKEN')) {
+        location.replace('dashboard.html');
+        return;
       }
-    });
+
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();             // <-- prevents query-string submits & duplicates
+        const btn = document.getElementById('submitBtn');
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!email || !password) return showErr('Please enter email and password');
+
+        btn.disabled = true;
+        try {
+          const res = await fetch(API('/auth/login'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.detail || 'Invalid credentials');
+          if (!data.access_token) throw new Error('No token received');
+
+          saveToken(data.access_token);
+          location.replace('dashboard.html');   // <-- forward to dashboard
+        } catch (err) {
+          showErr(err.message);
+          btn.disabled = false;
+        }
+      });
+    })();
   </script>
 </body>
 </html>

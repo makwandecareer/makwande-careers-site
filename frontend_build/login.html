@@ -54,48 +54,61 @@
 
   <script>
     (function () {
-      const ORIGIN = document.querySelector('meta[name="api-origin"]').content;
-      const API = (p) => ${ORIGIN}/api${p};
-      const saveToken = (t) => localStorage.setItem('AA_TOKEN', t);
-      const showErr = (msg) => {
-        const a = document.getElementById('alert');
+      // Read API origin from <meta>, or fallback
+      var meta = document.querySelector('meta[name="api-origin"]');
+      var ORIGIN = meta ? meta.content : (window.API_ORIGIN || location.origin);
+    
+      function api(p) {
+        return ORIGIN.replace(/\/+$/, '') + '/api' + p;
+      }
+      function token() { return localStorage.getItem('AA_TOKEN'); }
+      function saveToken(t) { localStorage.setItem('AA_TOKEN', t); }
+      function showErr(msg) {
+        var a = document.getElementById('alert');
+        if (!a) return;
         a.textContent = msg || 'Something went wrong';
         a.classList.remove('d-none');
-      };
-
-      // If already logged in, go straight to dashboard
-      if (localStorage.getItem('AA_TOKEN')) {
-        location.replace('dashboard.html');
-        return;
       }
-
-      document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();             // <-- prevents query-string submits & duplicates
-        const btn = document.getElementById('submitBtn');
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-
-        if (!email || !password) return showErr('Please enter email and password');
-
-        btn.disabled = true;
-        try {
-          const res = await fetch(API('/auth/login'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
+    
+      // If already logged in, go to dashboard
+      if (token()) { window.location.replace('dashboard.html'); return; }
+    
+      var form = document.getElementById('loginForm');
+      if (!form) return;
+      form.addEventListener('submit', function (ev) {
+        ev.preventDefault(); // stop default submit
+    
+        var email = (document.getElementById('email') || {}).value || '';
+        var password = (document.getElementById('password') || {}).value || '';
+        email = email.trim();
+    
+        if (!email || !password) { showErr('Please enter email and password'); return false; }
+    
+        var btn = document.getElementById('submitBtn');
+        if (btn) btn.disabled = true;
+    
+        fetch(api('/auth/login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, password: password })
+        })
+          .then(function (res) {
+            return res.json().catch(function(){ return {}; }).then(function(data){ return { ok: res.ok, data: data }; });
+          })
+          .then(function (r) {
+            if (!r.ok) throw new Error(r.data.detail || 'Invalid credentials');
+            if (!r.data.access_token) throw new Error('No token received');
+            saveToken(r.data.access_token);
+            window.location.replace('dashboard.html'); // forward after success
+          })
+          .catch(function (err) {
+            showErr(err.message);
+            if (btn) btn.disabled = false;
           });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(data.detail || 'Invalid credentials');
-          if (!data.access_token) throw new Error('No token received');
-
-          saveToken(data.access_token);
-          location.replace('dashboard.html');   // <-- forward to dashboard
-        } catch (err) {
-          showErr(err.message);
-          btn.disabled = false;
-        }
+    
+        return false;
       });
     })();
-  </script>
+    </script>
 </body>
 </html>

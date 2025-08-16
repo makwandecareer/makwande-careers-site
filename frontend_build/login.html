@@ -28,13 +28,73 @@
           <div class="card-body p-4">
             <h1 class="h3 text-center mb-4">Welcome back</h1>
 
-            <form id="login-form" novalidate>
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input id="email" name="email" type="email"
-                       class="form-control" required
-                       autocomplete="username" />
-              </div>
+<!-- LOGIN FORM -->
+<form id="loginForm" autocomplete="on" novalidate>
+  <label for="email" class="form-label">Email</label>
+  <input id="email"
+         name="email"
+         type="email"
+         class="form-control"
+         required
+         autocomplete="email">
+
+  <label for="password" class="form-label mt-3">Password</label>
+  <input id="password"
+         name="password"
+         type="password"
+         class="form-control"
+         required
+         autocomplete="current-password">
+
+  <button id="loginBtn" type="submit" class="btn btn-primary mt-4 w-100">
+    Log in
+  </button>
+
+  <p id="msg" class="text-danger mt-2" style="min-height:1.25rem"></p>
+</form>
+
+<script>
+(function () {
+  // If you already set window.API_ORIGIN elsewhere, this uses it.
+  // Otherwise it defaults to your Render API.
+  const API = (window.API_ORIGIN || 'https://autoapply-api.onrender.com')
+               .replace(/\/$/, '') + '/api';
+  const TOKEN_KEY = 'AA_TOKEN';
+
+  function saveToken(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch (_) {} }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();                 // stop normal page submit
+    const btn = document.getElementById('loginBtn');
+    const msg = document.getElementById('msg');
+    msg.textContent = '';
+    btn.disabled = true;
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    try {
+      const res = await fetch(${API}/auth/login, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) throw new Error(data.detail || 'Invalid email or password');
+      if (!data.access_token) throw new Error('No token returned');
+
+      saveToken(data.access_token);
+      // ✅ success → go to dashboard
+      window.location.href = 'dashboard.html';
+    } catch (err) {
+      msg.textContent = err.message || 'Login failed';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
 
               <div class="mb-4">
                 <label for="password" class="form-label">Password</label>

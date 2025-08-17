@@ -1,0 +1,68 @@
+name: run-scraper
+
+on:
+  schedule:
+    - cron: "0 4 * * *"          # daily at 04:00 UTC
+  workflow_dispatch:             # allow manual runs
+
+permissions:
+  contents: write
+
+jobs:
+  scrape-and-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # 1) Run YOUR scraper so it writes jobs.csv and EXITS (no servers here)
+      - name: Run scraper -> jobs.csv
+        run: |
+          python scraper.py --out jobs.csv
+
+      # 2) Quick sanity output
+      - name: Show head and count
+        run: |
+          head -n 20 jobs.csv || true
+          wc -l jobs.csv || true
+
+      # 3) Commit CSV only if changed
+      - name: Commit CSV if changed
+        run: |
+          if [[ -n "$(git status --porcelain jobs.csv)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add jobs.csv
+            git commit -m "chore: update jobs.csv (auto)"
+            git push
+          else
+            echo "No changes to jobs.csv"
+          fi
+
+      # 4) Tell your backend to ingest the RAW CSV -> Snowflake
+      - name: Trigger backend sync
+        env:
+          SYNC_URL: https://autoapply-api.onrender.com/api/sync/github
+          SYNC_TOKEN: ${{ secrets.BACKEND_SYNC_TOKEN }}
+        run: |
+          # Try POST; if blocked, fall back to GET with ?token=
+          curl -fsSL -X POST "$SYNC_URL" -H "X-Sync-Token: $SYNC_TOKEN" \
+          || curl -fsSL "$SYNC_URL?token=$SYNC_TOKEN"
+
+      # 5) Attach the CSV artifact so you can download/check it
+      - name: Upload CSV artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs.csv
+          path: jobs.csv
+          if-no-files-found: error

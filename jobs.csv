@@ -1,0 +1,6 @@
+title,company,location,description,apply_url,country,remote,closing_date,posted_at
+"Software Engineer","Example Corp","Remote","Build backend APIs with Python and FastAPI. 3+ years experience.","https://example.com/jobs/1","ZA",true,,"2025-08-17T12:00:00Z"
+"Data Analyst","Sample Ltd","Johannesburg","Analyze datasets, create dashboards (SQL, Power BI).","https://example.com/jobs/2","ZA",false,"2025-09-01","2025-08-16T09:30:00Z"
+"Frontend Developer","Bright Apps","Cape Town","React + TypeScript UI development. Work with design systems.","https://example.com/jobs/3","ZA",false,,"2025-08-15T15:10:00Z"
+"Product Manager","Acme SA","Durban","Own roadmap, write specs, coordinate cross-functional teams.","https://example.com/jobs/4","ZA",false,,"2025-08-14T11:45:00Z"
+"Cloud Engineer","Nimbus Tech","Pretoria","Deploy and operate AWS infrastructure (IaC, Terraform).","https://example.com/jobs/5","ZA",true,,"2025-08-13T08:20:00Z"

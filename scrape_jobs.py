@@ -1,12 +1,9 @@
-name: Daily Job Scraper
+name: run-scraper
 
 on:
   schedule:
-    - cron: "0 4 * * *"   # every day at 04:00 UTC (adjust if you like)
-  workflow_dispatch:      # run it manually from the Actions tab
-  push:
-    paths:
-      - "jobs.csv"        # if jobs.csv changes, trigger sync
+    - cron: "0 4 * * *"        # daily 04:00 UTC
+  workflow_dispatch:           # allow manual run
 
 permissions:
   contents: write
@@ -14,25 +11,35 @@ permissions:
 jobs:
   scrape-and-sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install deps
+      - name: Install dependencies
         run: |
           python -m pip install -U pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt || true; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # 👉 your scraper MUST write jobs.csv at repo root (adjust command/path)
-      - name: Run scraper
+      # If you use Selenium, keep your Chrome step; otherwise remove it.
+      # - name: Install Chrome for Selenium
+      #   uses: browser-actions/setup-chrome@v1
+
+      # 👇 Run YOUR scraper script — adjust this command to your real entrypoint
+      - name: Run scraper -> jobs.csv
         run: |
           python scraper.py --out jobs.csv
 
+      # Show a bit of output for debugging
+      - name: Show head and count
+        run: |
+          head -n 20 jobs.csv || true
+          wc -l jobs.csv || true
+
+      # Commit only if changed
       - name: Commit CSV if changed
         run: |
           if [[ -n "$(git status --porcelain jobs.csv)" ]]; then
@@ -45,9 +52,21 @@ jobs:
             echo "No changes to jobs.csv"
           fi
 
-      - name: Trigger backend sync (GitHub CSV ➜ Snowflake)
+      # Trigger your backend to ingest the RAW CSV from GitHub -> Snowflake
+      - name: Trigger backend sync
         env:
-          SYNC_URL: ${{ secrets.BACKEND_SYNC_URL }}      # e.g. https://YOUR-BACKEND/api/sync/github
-          SYNC_TOKEN: ${{ secrets.BACKEND_SYNC_TOKEN }}  # must match SYNC_TOKEN in Render
+          SYNC_URL: https://autoapply-api.onrender.com/api/sync/github
+          SYNC_TOKEN: ${{ secrets.BACKEND_SYNC_TOKEN }}
         run: |
-          curl -fsSL -X POST "$SYNC_URL" -H "X-Sync-Token: $SYNC_TOKEN"
+          # Try POST, fall back to GET with ?token=
+          curl -fsSL -X POST "$SYNC_URL" -H "X-Sync-Token: $SYNC_TOKEN" \
+          || curl -fsSL "$SYNC_URL?token=$SYNC_TOKEN"
+
+      # Attach the produced CSV so you can download and verify the rows
+      - name: Upload CSV artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs.csv
+          path: jobs.csv
+          if-no-files-found: error
+

@@ -1,188 +1,171 @@
-index.html
-
 <!doctype html>
 <html lang="en">
-  <link rel="stylesheet" href="assets/light-green.css">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AutoApply — Apply to winning jobs</title>
-  <meta name="description" content="ATS-optimized CVs, smart matching, and one-click auto-apply across the SADC region.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Makwande Careers — AutoApply</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
   <style>
-    /* ===== Theme (Green) — HTML & CSS only ===== */
+    /* ===== Light Emerald — inline, no external theme ===== */
     :root{
-      --bg:#07150f;            /* deep green-black */
-      --bg-2:#0a2016;
-      --panel:#0d2419;
-      --card:#0f2a1e;
-      --text:#ecfdf5;          /* mint-50 */
-      --muted:#a7f3d0;         /* mint-200 */
-      --brand:#22c55e;         /* emerald-500 */
-      --brand-2:#16a34a;       /* green-600 */
-      --border:rgba(34,197,94,.28);
-      --ring:#34d399;          /* emerald-400 */
-      --shadow:0 18px 40px rgba(0,0,0,.45);
-      --radius:20px;
-      --gap:22px;
+      --brand-600:#16a34a;   /* primary emerald */
+      --brand-500:#22c55e;   /* gradient mate */
+      --text:#0b1f17;        /* body text */
+      --muted:#6a7f74;       /* secondary text */
+      --surface:#ffffff;     /* cards/panels */
+      --bg:#ffffff;          /* page background */
+      --border:#e6f4ec;      /* soft green border */
+      --ring:#86efac;        /* focus ring */
+      --shadow:0 10px 24px rgba(2,110,77,.10);
+      --radius:16px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+      margin:0; font:400 16px/1.55 Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
       color:var(--text);
       background:
-        radial-gradient(900px 600px at 15% -10%, rgba(34,197,94,.25), transparent 60%),
-        radial-gradient(900px 600px at 110% -20%, rgba(5,150,105,.25), transparent 60%),
-        linear-gradient(180deg,var(--bg),var(--bg-2) 40%, #07140e);
-      line-height:1.55;
+        radial-gradient(900px 500px at 12% -10%, rgba(34,197,94,.06), transparent 60%),
+        radial-gradient(700px 400px at 110% -20%, rgba(16,185,129,.06), transparent 60%),
+        var(--bg);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
     a{color:inherit;text-decoration:none}
     .container{max-width:1160px;margin:0 auto;padding:0 24px}
 
-    /* Nav (CSS-only mobile menu via <details>) */
-    .nav{position:sticky;top:0;z-index:40;backdrop-filter:saturate(150%) blur(8px);
-         background:rgba(7,20,15,.7);border-bottom:1px solid var(--border)}
-    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
-    .brand-badge{width:28px;height:28px;border-radius:8px;
-      background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:var(--shadow)}
-    details.menu{display:none}
-    .links{display:flex;gap:24px;align-items:center}
-    .links a{color:var(--muted);font-weight:600}
-    .links a:hover{color:#fff}
+    /* Navbar */
+    .nav{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid var(--border);
+         backdrop-filter:saturate(140%) blur(6px)}
+    .nav-inner{height:68px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+    .badge{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand-600),var(--brand-500));box-shadow:var(--shadow)}
+    .links{display:flex;gap:22px;align-items:center}
+    .links a{color:#6b7f75;font-weight:600}
+    .links a:hover{color:#0b1f17}
 
     /* Buttons */
-    .btn{
-      display:inline-block;padding:13px 18px;border-radius:14px;font-weight:700;letter-spacing:.2px;
-      background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#062117;border:1px solid rgba(255,255,255,.06);
-      box-shadow:var(--shadow)
-    }
-    .btn:hover{filter:brightness(1.05)}
-    .btn-outline{
-      background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none
-    }
-    .btn-outline:hover{border-color:rgba(52,211,153,.55)}
+    .btn{display:inline-block;padding:12px 16px;border-radius:14px;font-weight:800;letter-spacing:.2px;color:#fff;
+         background:linear-gradient(135deg,var(--brand-600),var(--brand-500));border:0;box-shadow:var(--shadow)}
+    .btn:hover{filter:brightness(1.04)}
+    .btn-outline{background:#fff;color:var(--brand-600);border:1px solid var(--brand-600);box-shadow:none}
+    .btn-outline:hover{background:#f0fdf4}
+    a:focus,button:focus{outline:3px solid var(--ring);outline-offset:2px;border-radius:12px}
 
     /* Hero */
-    .hero{padding:84px 0 56px}
-    .hero-grid{display:grid;grid-template-columns:1.2fr .9fr;gap:44px;align-items:center}
+    .hero{padding:72px 0 48px}
+    .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center}
     .chip{display:inline-flex;align-items:center;gap:8px;font-size:12px;padding:6px 10px;border-radius:999px;
-          background:rgba(52,211,153,.12);color:#d1fae5;border:1px solid var(--border)}
-    .title{font-size:48px;line-height:1.05;margin:12px 0 16px;font-weight:800}
-    .lead{color:var(--muted);font-size:18px;margin:0 0 28px}
-    .hero-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
-      border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+          background:#f0fdf4;border:1px solid #d1fae5;color:#065f46;font-weight:700}
+    .title{font-size:44px;line-height:1.08;margin:12px 0 10px;font-weight:900}
+    .lead{color:var(--muted);margin:0 0 22px}
+    .hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
 
     /* Sections */
     .section{padding:56px 0}
-    .section h2{font-size:28px;margin:0 0 22px}
-    .grid{display:grid;gap:22px}
+    .section h2{font-size:28px;margin:0 0 18px}
+    .grid{display:grid;gap:20px}
     .grid--3{grid-template-columns:repeat(3,1fr)}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 20px 22px;
-          box-shadow:var(--shadow)}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
     .card h3{margin:8px 0 8px;font-size:18px}
     .muted{color:var(--muted)}
 
     /* Steps */
     .steps{counter-reset:step}
-    .step{display:flex;gap:16px;align-items:flex-start}
-    .step+.step{margin-top:16px}
-    .num{counter-increment:step;width:34px;height:34px;border-radius:10px;
-         background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;
-         color:#052e23;font-weight:800}
+    .step{display:flex;gap:14px;align-items:flex-start}
+    .step+.step{margin-top:14px}
+    .num{counter-increment:step;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-weight:900;
+         color:#fff;background:linear-gradient(135deg,var(--brand-600),var(--brand-500))}
+
+    /* CTA strip */
+    .cta{margin-top:18px;padding:22px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);
+         display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 
     /* Footer */
-    .footer{padding:28px 0;color:var(--muted);border-top:1px solid var(--border);text-align:center}
+    .footer{padding:24px 0;color:#6b7280;border-top:1px solid var(--border);text-align:center}
 
     /* Responsive */
     @media (max-width: 980px){
       .hero-grid{grid-template-columns:1fr}
-      .links{display:none}
-      details.menu{display:block}
-      details.menu summary{list-style:none;cursor:pointer;font-weight:700;border:1px solid var(--border);
-        padding:10px 14px;border-radius:12px}
-      details.menu[open] .panel{margin-top:12px;border:1px solid var(--border);border-radius:14px;padding:12px;background:var(--panel)}
       .grid--3{grid-template-columns:1fr}
-      .title{font-size:38px}
+      .title{font-size:36px}
     }
-    /* Focus states for accessibility */
-    a:focus,button:focus,summary:focus{outline:3px solid var(--ring);outline-offset:2px;border-radius:10px}
   </style>
 </head>
 <body>
+  <!-- NAV -->
   <header class="nav">
     <div class="container nav-inner">
-      <a class="brand" href="#"><span class="brand-badge"></span> AutoApply</a>
+      <div class="brand"><span class="badge" aria-hidden="true"></span> Makwande Careers</div>
       <nav class="links">
         <a href="jobs.html">Jobs</a>
         <a href="revamp.html">CV Revamp</a>
         <a href="dashboard.html">Dashboard</a>
-        <a class="btn btn-outline" href="login.html">Sign in</a>
+        <a class="btn-outline" href="login.html">Sign in</a>
         <a class="btn" href="signup.html">Get started</a>
       </nav>
-      <details class="menu">
-        <summary>Menu</summary>
-        <div class="panel">
-          <div style="display:grid;gap:10px">
-            <a href="jobs.html">Jobs</a>
-            <a href="revamp.html">CV Revamp</a>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="login.html">Sign in</a>
-            <a class="btn" href="signup.html">Get started</a>
-          </div>
-        </div>
-      </details>
     </div>
   </header>
 
+  <!-- HERO -->
   <section class="hero">
     <div class="container hero-grid">
       <div>
-        <span class="chip">AI-powered applications</span>
-        <h1 class="title">Apply to winning jobs — while you sleep.</h1>
-        <p class="lead">ATS-optimized CVs, smart matching, and one-click auto-apply across the SADC region.</p>
-        <div style="display:flex;gap:14px;flex-wrap:wrap">
-          <a class="btn" href="signup.html">Get started</a>
+        <span class="chip">AI-powered job toolkit</span>
+        <h1 class="title">Get shortlisted faster.</h1>
+        <p class="lead">Professional CV revamps, precise matching, and one-click applications across Africa.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn" href="signup.html">Create account</a>
           <a class="btn btn-outline" href="jobs.html">Browse jobs</a>
         </div>
       </div>
       <aside class="hero-card">
-        <h2 style="margin:0 0 10px;font-size:20px">What you get</h2>
-        <div class="muted" style="display:grid;gap:12px;margin-top:12px">
-          <div>• Professional CV revamp with ATS scoring</div>
-          <div>• Intelligent job matching & filters</div>
-          <div>• One dashboard to track every application</div>
-          <div>• Secure, private, and fast</div>
-        </div>
+        <h2 style="margin:0 0 8px;font-size:20px">Why AutoApply</h2>
+        <ul class="muted" style="margin:8px 0 0;padding-left:18px">
+          <li>ATS-optimized CV revamp and scoring</li>
+          <li>Smart matching by role, country, and company</li>
+          <li>One dashboard to track every application</li>
+          <li>Secure. Fast. Built in South Africa.</li>
+        </ul>
       </aside>
     </div>
   </section>
 
+  <!-- FEATURES -->
   <section class="section">
     <div class="container">
       <h2>Features that matter</h2>
       <div class="grid grid--3">
         <article class="card">
           <div class="chip">CV</div>
-          <h3>ATS-optimized revamps</h3>
-          <p class="muted">We restructure your CV, highlight impact, and score for compliance so you pass the first filter.</p>
+          <h3>ATS-ready revamps</h3>
+          <p class="muted">We restructure your CV, quantify impact, and align keywords so you pass the first screen.</p>
         </article>
         <article class="card">
           <div class="chip">Match</div>
-          <h3>Smart matching</h3>
-          <p class="muted">Our model compares your profile to thousands of roles and surfaces the best fits quickly.</p>
+          <h3>Precision matching</h3>
+          <p class="muted">We compare your profile to thousands of roles and surface the best fits quickly.</p>
         </article>
         <article class="card">
           <div class="chip">Apply</div>
-          <h3>One-click auto-apply</h3>
-          <p class="muted">Save time with secure, one-click applications and automatic tracking for every submission.</p>
+          <h3>One-click apply</h3>
+          <p class="muted">Submit applications in a click and track responses from a single dashboard.</p>
         </article>
+      </div>
+
+      <div class="cta">
+        <div>
+          <strong>Ready to start?</strong>
+          <div class="muted">Create your account and revamp your CV today.</div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <a class="btn" href="signup.html">Get started</a>
+          <a class="btn btn-outline" href="revamp.html">Revamp my CV</a>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- HOW IT WORKS -->
   <section class="section" style="padding-top:0">
     <div class="container">
       <h2>How it works</h2>
@@ -191,27 +174,28 @@ index.html
           <div class="num">1</div>
           <div>
             <strong>Create your account</strong>
-            <div class="muted">Under 60 seconds. Start free.</div>
+            <div class="muted">Takes under a minute. No hassle.</div>
           </div>
         </div>
         <div class="step">
           <div class="num">2</div>
           <div>
             <strong>Revamp your CV</strong>
-            <div class="muted">Upload your CV and get an ATS-aligned version.</div>
+            <div class="muted">Upload your current CV (and optional job spec) for an ATS-aligned version.</div>
           </div>
         </div>
         <div class="step">
           <div class="num">3</div>
           <div>
             <strong>Match & apply</strong>
-            <div class="muted">Pick roles, apply once, track everything inside the dashboard.</div>
+            <div class="muted">Find roles across SADC, apply quickly, and track outcomes in one place.</div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- FOOTER -->
   <footer class="footer">© 2025 Makwande Careers — All rights reserved.</footer>
 </body>
 </html>

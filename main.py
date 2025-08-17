@@ -1,276 +1,305 @@
-"""
-AutoApply Jobs API (Render-ready)
-
-Set these env vars on Render:
-  SNOWFLAKE_ACCOUNT=...
-  SNOWFLAKE_USER=...
-  SNOWFLAKE_PASSWORD=...
-  SNOWFLAKE_ROLE=ACCOUNTADMIN
-  SNOWFLAKE_WAREHOUSE=COMPUTE_WH
-  SNOWFLAKE_DATABASE=AUTOAPPLY_DB
-  SNOWFLAKE_SCHEMA=PUBLIC
-  JOBS_TABLE=JOBS
-
-  GITHUB_CSV_URL=https://raw.githubusercontent.com/<owner>/<repo>/main/jobs.csv
-  SYNC_TOKEN=<long_random_hex>                  # protects /sync/github
-  RECRUITER_API_KEY=<optional_api_key>          # protects POST /jobs (if set)
-  CORS_ALLOW_ORIGINS=https://autoapply-makwandecareers.co.za,https://www.autoapply-makwandecareers.co.za
-"""
-
+# main.py
 import os
-import csv
 import io
+import csv
 import hashlib
-from typing import List, Optional, Dict, Any
+import datetime
+from typing import List, Optional
 
-import httpx
-import snowflake.connector
-from fastapi import FastAPI, Header, HTTPException, Query, Request
+import requests
+from fastapi import FastAPI, HTTPException, Query, Header
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, HttpUrl
 
-# ============== ENV ==============
-SNOWFLAKE_ACCOUNT   = os.getenv("SNOWFLAKE_ACCOUNT", "")
-SNOWFLAKE_USER      = os.getenv("SNOWFLAKE_USER", "")
-SNOWFLAKE_PASSWORD  = os.getenv("SNOWFLAKE_PASSWORD", "")
-SNOWFLAKE_ROLE      = os.getenv("SNOWFLAKE_ROLE", "ACCOUNTADMIN")
+# ----------------------------
+# Environment
+# ----------------------------
+SYNC_TOKEN = os.getenv("SYNC_TOKEN", "")
+GITHUB_CSV_URL = os.getenv("GITHUB_CSV_URL", "")
+
+SNOWFLAKE_ACCOUNT   = os.getenv("SNOWFLAKE_ACCOUNT")
+SNOWFLAKE_USER      = os.getenv("SNOWFLAKE_USER")
+SNOWFLAKE_PASSWORD  = os.getenv("SNOWFLAKE_PASSWORD")
 SNOWFLAKE_WAREHOUSE = os.getenv("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH")
-SNOWFLAKE_DATABASE  = os.getenv("SNOWFLAKE_DATABASE", "AUTOAPPLY_DB")
+SNOWFLAKE_DATABASE  = os.getenv("SNOWFLAKE_DATABASE", "AUTOAPPLY")
 SNOWFLAKE_SCHEMA    = os.getenv("SNOWFLAKE_SCHEMA", "PUBLIC")
-JOBS_TABLE          = os.getenv("JOBS_TABLE", "JOBS")
 
-GITHUB_CSV_URL      = os.getenv("GITHUB_CSV_URL", "")
-SYNC_TOKEN          = os.getenv("SYNC_TOKEN", "")
-RECRUITER_API_KEY   = os.getenv("RECRUITER_API_KEY", "")
+USE_SNOWFLAKE = all([SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, SNOWFLAKE_PASSWORD])
 
-CORS_ALLOW = [o.strip() for o in os.getenv("CORS_ALLOW_ORIGINS", "*").split(",") if o.strip()]
+# In-memory fallback store if Snowflake is not configured
+JOBS_MEM: List[dict] = []
 
-# ============== APP ==============
+# ----------------------------
+# FastAPI app + CORS
+# ----------------------------
 app = FastAPI(title="AutoApply Jobs API")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=CORS_ALLOW or ["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-# Do NOT mount StaticFiles at "/" (static lives on a Render Static Site)
+cors_origins_env = os.getenv("CORS_ALLOW_ORIGINS", "")
+cors_origins = [o.strip() for o in cors_origins_env.split(",") if o.strip()]
+if cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-# ============== MODELS ==============
-class Job(BaseModel):
-    id: str
-    title: str
-    company: str
-    location: str
-    country: Optional[str] = ""
-    remote: bool = False
-    description: str
-    apply_url: HttpUrl
-    closing_date: Optional[str] = ""
-    posted_at: Optional[str] = None
+# ----------------------------
+# Helpers
+# ----------------------------
+def _row_hash(title: str, company: str, apply_url: str) -> str:
+    raw = f"{(title or '').lower()}|{(company or '').lower()}|{(apply_url or '').lower()}"
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
-# ============== SNOWFLAKE HELPERS ==============
-def _snow():
+def _parse_bool(v):
+    if v is None:
+        return None
+    s = str(v).strip().lower()
+    return s in ("1", "true", "yes", "y")
+
+def _parse_date(v):
+    if not v:
+        return None
+    try:
+        # allow ISO date or datetime
+        if "t" in str(v).lower():
+            return datetime.datetime.fromisoformat(str(v).replace("Z", ""))
+        return datetime.date.fromisoformat(str(v))
+    except Exception:
+        return None
+
+REQUIRED_HEADERS = {
+    "title",
+    "company",
+    "location",
+    "description",
+    "apply_url",
+    "country",
+    "remote",
+    "closing_date",
+    "posted_at",
+}
+
+def _csv_to_jobs(csv_text: str, source="github") -> List[dict]:
+    reader = csv.DictReader(io.StringIO(csv_text))
+    headers = {h.strip().lower() for h in (reader.fieldnames or [])}
+    if not REQUIRED_HEADERS.issubset(headers):
+        missing = sorted(list(REQUIRED_HEADERS - headers))
+        raise HTTPException(status_code=400, detail=f"CSV missing headers: {missing}")
+
+    out: List[dict] = []
+    for r in reader:
+        job = {
+            "title":        (r.get("title") or "").strip(),
+            "company":      (r.get("company") or "").strip(),
+            "location":     (r.get("location") or "").strip(),
+            "description":  (r.get("description") or "").strip(),
+            "apply_url":    (r.get("apply_url") or "").strip(),
+            "country":      ((r.get("country") or "").strip().upper() or None),
+            "remote":       _parse_bool(r.get("remote")),
+            "closing_date": _parse_date(r.get("closing_date")),
+            "posted_at":    _parse_date(r.get("posted_at")),
+            "source":       source,
+        }
+        job["hash"] = _row_hash(job["title"], job["company"], job["apply_url"])
+        out.append(job)
+    return out
+
+# ----------------------------
+# Snowflake helpers (lazy import)
+# ----------------------------
+def _sf_conn():
+    import snowflake.connector  # imported only if needed
     return snowflake.connector.connect(
         account=SNOWFLAKE_ACCOUNT,
         user=SNOWFLAKE_USER,
         password=SNOWFLAKE_PASSWORD,
-        role=SNOWFLAKE_ROLE,
         warehouse=SNOWFLAKE_WAREHOUSE,
         database=SNOWFLAKE_DATABASE,
         schema=SNOWFLAKE_SCHEMA,
     )
 
-def ensure_table():
-    sql = f"""
-    CREATE TABLE IF NOT EXISTS {JOBS_TABLE} (
-      ID STRING PRIMARY KEY,
-      TITLE STRING,
-      COMPANY STRING,
-      LOCATION STRING,
-      COUNTRY STRING,
-      REMOTE BOOLEAN,
-      DESCRIPTION STRING,
-      APPLY_URL STRING,
-      CLOSING_DATE STRING,
-      POSTED_AT TIMESTAMP_NTZ,
-      INGESTED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
-    );
-    """
-    with _snow() as con, con.cursor() as cur:
-        cur.execute(sql)
-
-def job_id_from(j: Dict[str, Any]) -> str:
-    key = f"{j.get('title','').strip().lower()}|{j.get('company','').strip().lower()}|{j.get('apply_url','').strip().lower()}"
-    return hashlib.sha256(key.encode("utf-8")).hexdigest()
-
-def _b(v: Any) -> bool:
-    return str(v).strip().lower() in {"true", "yes", "y", "1", "remote"}
-
-def normalize_row(row: Dict[str, Any]) -> Dict[str, Any]:
-    r = {(k or "").strip().lower(): (v or "") for k, v in row.items() if k is not None}
-    return {
-        "id": r.get("id") or job_id_from({
-            "title": r.get("title", ""),
-            "company": r.get("company", ""),
-            "apply_url": r.get("apply_url") or r.get("url") or r.get("link", "")
-        }),
-        "title": r.get("title", "").strip(),
-        "company": r.get("company", "").strip(),
-        "location": r.get("location", "").strip(),
-        "country": r.get("country", "").strip(),
-        "remote": _b(r.get("remote", "")),
-        "description": r.get("description") or r.get("desc", ""),
-        "apply_url": (r.get("apply_url") or r.get("url") or r.get("link", "")).strip(),
-        "closing_date": r.get("closing_date") or r.get("deadline", ""),
-        "posted_at": r.get("posted_at") or r.get("date", ""),
-    }
-
-def upsert_jobs(jobs: List[Dict[str, Any]]) -> int:
+def _sf_merge_jobs(jobs: List[dict]) -> int:
     if not jobs:
         return 0
-    ensure_table()
-    sql = f"""
-    MERGE INTO {JOBS_TABLE} t
-    USING (SELECT
-      %s AS ID,%s AS TITLE,%s AS COMPANY,%s AS LOCATION,%s AS COUNTRY,
-      %s AS REMOTE,%s AS DESCRIPTION,%s AS APPLY_URL,%s AS CLOSING_DATE,
-      TO_TIMESTAMP_NTZ(%s) AS POSTED_AT
-    ) s
-    ON t.ID = s.ID
-    WHEN MATCHED THEN UPDATE SET
-      TITLE=s.TITLE, COMPANY=s.COMPANY, LOCATION=s.LOCATION, COUNTRY=s.COUNTRY,
-      REMOTE=s.REMOTE, DESCRIPTION=s.DESCRIPTION, APPLY_URL=s.APPLY_URL,
-      CLOSING_DATE=s.CLOSING_DATE, POSTED_AT=s.POSTED_AT
-    WHEN NOT MATCHED THEN INSERT
-      (ID,TITLE,COMPANY,LOCATION,COUNTRY,REMOTE,DESCRIPTION,APPLY_URL,CLOSING_DATE,POSTED_AT)
-      VALUES (s.ID,s.TITLE,s.COMPANY,s.LOCATION,s.COUNTRY,s.REMOTE,s.DESCRIPTION,s.APPLY_URL,s.CLOSING_DATE,s.POSTED_AT);
-    """
-    with _snow() as con, con.cursor() as cur:
+    conn = _sf_conn()
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS JOBS (
+              ID STRING,
+              TITLE STRING,
+              COMPANY STRING,
+              LOCATION STRING,
+              DESCRIPTION STRING,
+              APPLY_URL STRING,
+              COUNTRY STRING,
+              REMOTE BOOLEAN,
+              CLOSING_DATE DATE,
+              POSTED_AT TIMESTAMP_NTZ,
+              SOURCE STRING,
+              HASH STRING,
+              CREATED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+            )
+            """
+        )
+        cur.execute("CREATE TEMP TABLE TMP_JOBS LIKE JOBS")
+
+        insert_sql = """
+            INSERT INTO TMP_JOBS
+              (ID, TITLE, COMPANY, LOCATION, DESCRIPTION, APPLY_URL,
+               COUNTRY, REMOTE, CLOSING_DATE, POSTED_AT, SOURCE, HASH)
+            SELECT :id, :title, :company, :location, :description, :apply_url,
+                   :country, :remote, :closing_date, :posted_at, :source, :hash
+        """
         for j in jobs:
-            cur.execute(sql, (
-                j["id"], j["title"], j["company"], j["location"], j["country"],
-                j["remote"], j["description"], j["apply_url"], j["closing_date"],
-                j["posted_at"] or None
-            ))
-    return len(jobs)
+            cur.execute(
+                insert_sql,
+                {
+                    "id": hashlib.md5(j["hash"].encode()).hexdigest(),
+                    "title": j["title"],
+                    "company": j["company"],
+                    "location": j["location"],
+                    "description": j["description"],
+                    "apply_url": j["apply_url"],
+                    "country": j["country"],
+                    "remote": j["remote"],
+                    "closing_date": j["closing_date"],
+                    "posted_at": j["posted_at"],
+                    "source": j["source"],
+                    "hash": j["hash"],
+                },
+            )
 
-def select_jobs(filters: Dict[str, Any]) -> List[Dict[str, Any]]:
-    ensure_table()
-    where, params = [], []
-    if filters.get("q"):
-        q = f"%{filters['q'].lower()}%"
-        where.append("(LOWER(TITLE) LIKE %s OR LOWER(COMPANY) LIKE %s OR LOWER(LOCATION) LIKE %s OR LOWER(DESCRIPTION) LIKE %s)")
-        params += [q, q, q, q]
-    for k, col in (("location", "LOCATION"), ("company", "COMPANY"), ("country", "COUNTRY")):
-        if filters.get(k):
-            where.append(f"{col} = %s")
-            params.append(filters[k])
-    if filters.get("remote") is not None:
-        where.append("REMOTE = %s")
-        params.append(filters["remote"])
-    sql = f"SELECT ID,TITLE,COMPANY,LOCATION,COUNTRY,REMOTE,DESCRIPTION,APPLY_URL,CLOSING_DATE,POSTED_AT FROM {JOBS_TABLE}"
-    if where:
-        sql += " WHERE " + " AND ".join(where)
-    sql += " ORDER BY POSTED_AT DESC NULLS LAST, INGESTED_AT DESC"
-    if filters.get("limit"):
-        sql += " LIMIT %s"
-        params.append(int(filters["limit"]))
-    with _snow() as con, con.cursor(snowflake.connector.DictCursor) as cur:
-        cur.execute(sql, params)
-        rows = cur.fetchall()
-    for r in rows:
-        if r.get("POSTED_AT"):
-            r["POSTED_AT"] = r["POSTED_AT"].isoformat()
-    return rows
+        cur.execute(
+            """
+            MERGE INTO JOBS t
+            USING TMP_JOBS s
+            ON t.HASH = s.HASH
+            WHEN MATCHED THEN UPDATE SET
+              TITLE=s.TITLE, COMPANY=s.COMPANY, LOCATION=s.LOCATION,
+              DESCRIPTION=s.DESCRIPTION, APPLY_URL=s.APPLY_URL,
+              COUNTRY=s.COUNTRY, REMOTE=s.REMOTE, CLOSING_DATE=s.CLOSING_DATE,
+              POSTED_AT=s.POSTED_AT, SOURCE=s.SOURCE
+            WHEN NOT MATCHED THEN INSERT
+              (ID, TITLE, COMPANY, LOCATION, DESCRIPTION, APPLY_URL,
+               COUNTRY, REMOTE, CLOSING_DATE, POSTED_AT, SOURCE, HASH)
+            VALUES
+              (s.ID, s.TITLE, s.COMPANY, s.LOCATION, s.DESCRIPTION, s.APPLY_URL,
+               s.COUNTRY, s.REMOTE, s.CLOSING_DATE, s.POSTED_AT, s.SOURCE, s.HASH)
+            """
+        )
+        cur.execute("SELECT COUNT(*) FROM TMP_JOBS")
+        count = int(cur.fetchone()[0])
+        conn.commit()
+        return count
+    finally:
+        try:
+            cur.close()
+        except Exception:
+            pass
+        try:
+            conn.close()
+        except Exception:
+            pass
 
-# ============== CSV SYNC ==============
-def run_github_sync() -> int:
-    if not GITHUB_CSV_URL:
-        return 0
-    with httpx.Client(timeout=60.0) as client:
-        r = client.get(GITHUB_CSV_URL, headers={"Accept": "text/csv"}, follow_redirects=True)
-        r.raise_for_status()
-        rows = list(csv.DictReader(io.StringIO(r.text)))
-    jobs = []
-    for row in rows:
-        j = normalize_row(row)
-        if j["title"] and j["company"] and j["location"] and j["apply_url"] and j["description"]:
-            jobs.append(j)
-    return upsert_jobs(jobs)
+def _sf_query_jobs(q: Optional[str], limit: int) -> List[dict]:
+    conn = _sf_conn()
+    cur = conn.cursor()
+    try:
+        base = """
+            SELECT TITLE, COMPANY, LOCATION, DESCRIPTION, APPLY_URL,
+                   COUNTRY, REMOTE, CLOSING_DATE, POSTED_AT, SOURCE
+            FROM JOBS
+        """
+        params = {}
+        if q:
+            base += " WHERE LOWER(TITLE) LIKE :q OR LOWER(COMPANY) LIKE :q OR LOWER(LOCATION) LIKE :q"
+            params["q"] = f"%{q.lower()}%"
+        base += " ORDER BY COALESCE(POSTED_AT, CREATED_AT) DESC LIMIT :lim"
+        params["lim"] = limit
+        cur.execute(base, params)
+        cols = [c[0].lower() for c in cur.description]
+        return [dict(zip(cols, row)) for row in cur.fetchall()]
+    finally:
+        try:
+            cur.close()
+        except Exception:
+            pass
+        try:
+            conn.close()
+        except Exception:
+            pass
 
-# ============== CORE ROUTES (no prefix) ==============
-@app.get("/health")
-def health_root():
-    return {"ok": True}
+# ----------------------------
+# Routes
+# ----------------------------
+@app.get("/")
+def root():
+    return {"ok": True, "snowflake": USE_SNOWFLAKE}
 
-@app.get("/jobs")
-def list_jobs_root(
-    q: Optional[str] = None,
-    location: Optional[str] = None,
-    company: Optional[str] = None,
-    country: Optional[str] = None,
-    remote: Optional[bool] = Query(default=None),
-    limit: Optional[int] = 500,
-):
-    rows = select_jobs({"q": q, "location": location, "company": company,
-                        "country": country, "remote": remote, "limit": limit})
-    return [{
-        "id": r["ID"], "title": r["TITLE"], "company": r["COMPANY"],
-        "location": r["LOCATION"], "country": r["COUNTRY"],
-        "remote": bool(r["REMOTE"]), "description": r["DESCRIPTION"],
-        "apply_url": r["APPLY_URL"], "closing_date": r["CLOSING_DATE"],
-        "posted_at": r["POSTED_AT"],
-    } for r in rows]
-
-@app.post("/jobs", response_model=Job)
-def create_job_root(job: Job, x_api_key: Optional[str] = Header(None)):
-    if RECRUITER_API_KEY and x_api_key != RECRUITER_API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid API key")
-    upsert_jobs([job.model_dump()])
-    return job
-
-def _require_sync_token(header_token: Optional[str], query_token: Optional[str]):
-    token = header_token or query_token
-    if SYNC_TOKEN and token != SYNC_TOKEN:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-@app.api_route("/sync/github", methods=["GET", "POST"])
-def sync_github_root(request: Request,
-                     x_sync_token: Optional[str] = Header(None),
-                     token: Optional[str] = None):
-    _require_sync_token(x_sync_token, token)
-    count = run_github_sync()
-    return {"synced": count, "source": GITHUB_CSV_URL, "method": request.method}
-
-# ============== COMPATIBILITY ALIASES (/api prefix) ==============
 @app.get("/api/health")
-def health_api():
-    return health_root()
+def health():
+    return {"ok": True, "snowflake": USE_SNOWFLAKE}
 
 @app.get("/api/jobs")
-def list_jobs_api(
-    q: Optional[str] = None,
-    location: Optional[str] = None,
-    company: Optional[str] = None,
-    country: Optional[str] = None,
-    remote: Optional[bool] = Query(default=None),
-    limit: Optional[int] = 500,
-):
-    return list_jobs_root(q=q, location=location, company=company, country=country, remote=remote, limit=limit)
+def get_jobs(q: Optional[str] = Query(None), limit: int = 200):
+    limit = max(1, min(int(limit), 1000))
+    if USE_SNOWFLAKE:
+        return _sf_query_jobs(q, limit)
 
-@app.post("/api/jobs", response_model=Job)
-def create_job_api(job: Job, x_api_key: Optional[str] = Header(None)):
-    return create_job_root(job, x_api_key)
+    # in-memory fallback
+    if q:
+        qq = q.lower()
+        data = [
+            j for j in JOBS_MEM
+            if qq in j["title"].lower()
+            or qq in j["company"].lower()
+            or qq in j["location"].lower()
+        ]
+        return data[:limit]
+    return JOBS_MEM[:limit]
 
-@app.api_route("/api/sync/github", methods=["GET", "POST"])
-def sync_github_api(request: Request,
-                    x_sync_token: Optional[str] = Header(None),
-                    token: Optional[str] = None):
-    return sync_github_root(request, x_sync_token, token)
+def _ingest_from_csv_text(csv_text: str) -> int:
+    jobs = _csv_to_jobs(csv_text, source="github")
+    if USE_SNOWFLAKE:
+        return _sf_merge_jobs(jobs)
+    else:
+        global JOBS_MEM
+        JOBS_MEM = jobs
+        return len(jobs)
 
-# ============== CLI one-off ==============
-if __name__ == "__main__":
-    print("Syncing from GitHub CSV...")
-    print("Synced:", run_github_sync())
+@app.get("/api/sync/github")
+def sync_github_get(token: str):
+    if token != SYNC_TOKEN:
+        raise HTTPException(status_code=401, detail="bad token")
+    if not GITHUB_CSV_URL:
+        raise HTTPException(status_code=400, detail="GITHUB_CSV_URL not set")
+    r = requests.get(GITHUB_CSV_URL, timeout=30)
+    r.raise_for_status()
+    n = _ingest_from_csv_text(r.text)
+    return {"synced": n, "source": "Snowflake" if USE_SNOWFLAKE else "memory", "method": "GET"}
+
+@app.post("/api/sync/github")
+def sync_github_post(x_sync_token: Optional[str] = Header(None), token: Optional[str] = Query(None)):
+    # accept either header "X-Sync-Token" or query ?token=
+    t = x_sync_token or token or ""
+    if t != SYNC_TOKEN:
+        raise HTTPException(status_code=401, detail="bad token")
+    if not GITHUB_CSV_URL:
+        raise HTTPException(status_code=400, detail="GITHUB_CSV_URL not set")
+    r = requests.get(GITHUB_CSV_URL, timeout=30)
+    r.raise_for_status()
+    n = _ingest_from_csv_text(r.text)
+    return {"synced": n, "source": "Snowflake" if USE_SNOWFLAKE else "memory", "method": "POST"}
+
+# ----------------------------
+# Uvicorn entrypoint
+# ----------------------------
+if _name_ == "_main_":
+    import uvicorn
+    port = int(os.getenv("PORT", "8000"))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
+
+

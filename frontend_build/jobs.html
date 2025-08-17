@@ -1,472 +1,197 @@
 <!doctype html>
 <html lang="en">
-  <script>
-    /* ========= CONFIG ========= */
-    // Replace with your real backend URL
-    const API_BASE = "https://YOUR-BACKEND.onrender.com";
-  
-    /* ========= STATE / DOM ========= */
-    const $ = (s) => document.querySelector(s);
-    const jobsListEl = $("#jobsList");
-    const emptyStateEl = $("#emptyState");
-    const locationFilter = $("#locationFilter");
-    const companyFilter = $("#companyFilter");
-    const remoteOnly = $("#remoteOnly");
-    const searchInput = $("#searchInput");
-    const lastUpdated = $("#lastUpdated");
-    let JOBS = [];
-  
-    // (Your other helpers: unique(), renderFilters(), renderJobs(), etc.)
-  
-    /* ========= REPLACE OR ADD THIS FUNCTION ========= */
-    async function loadJobs() {
-      const url = `${API_BASE.replace(/\/$/,"")}/api/jobs?limit=1000&ts=${Date.now()}`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("API " + res.status);
-  
-      JOBS = await res.json();
-      renderFilters(JOBS);
-      renderJobs();
-      lastUpdated.textContent = "Last updated: " + new Date().toLocaleString();
-    }
-  
-    // Wire filters to re-render
-    [searchInput, locationFilter, companyFilter, remoteOnly]
-      .forEach(el => el.addEventListener("input", renderJobs));
-  
-    // Kick things off
-    document.addEventListener("DOMContentLoaded", loadJobs);
-  </script>
-  
-  <!-- keep this after your script block -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  
-  
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Makwande Careers — Jobs</title>
 
-  <!-- Your existing global stylesheet (adjust filename/path if needed) -->
-  <link rel="stylesheet" href="styles.css">
-
-  <!-- Bootstrap 5 (for layout/utilities; your CSS will override looks) -->
+  <!-- Bootstrap 5 (CSS + JS) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <meta name="description" content="Browse and add jobs for the Auto Apply App by Makwande Careers." />
   <style>
-    /* Gentle touches; your styles.css should take precedence */
-    body { background:#f8f9fa; }
-    .job-card { transition: box-shadow .2s ease; }
-    .job-card:hover { box-shadow: 0 10px 24px rgba(0,0,0,.08); }
+    body { background:#f7f8fa; }
+    .navbar-brand { font-weight:700; }
+    .job-card .card-title { line-height:1.2; }
+    .job-card .truncate { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .badge-remote { background:#16a34a; }
+    .small-muted { color:#6b7280; font-size:.9rem; }
   </style>
 </head>
 <body>
+  <!-- Top Nav -->
+  <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Makwande Careers</a>
+      <div class="ms-auto small-muted">
+        <span id="lastUpdated">Loading…</span>
+      </div>
+    </div>
+  </nav>
 
-<header class="bg-white border-bottom">
-  <div class="container d-flex align-items-center justify-content-between py-3">
-    <a class="navbar-brand fw-bold text-decoration-none" href="index.html">Makwande Careers</a>
-    <nav class="d-flex gap-3">
-      <a class="text-decoration-none" href="jobs.html">Jobs</a>
-      <a class="text-decoration-none" href="revamp.html">CV Revamp</a>
-      <a class="text-decoration-none" href="dashboard.html">Dashboard</a>
-      <a class="btn btn-primary" href="login.html">Login</a>
-    </nav>
-  </div>
-</header>
-
-<section class="py-4">
-  <div class="container">
-
-    <!-- Controls -->
-    <div class="card border-0 shadow-sm mb-3">
-      <div class="card-body">
-        <div class="row g-3 align-items-end">
-          <div class="col-12 col-md-4">
-            <label class="form-label">Search</label>
-            <input id="searchInput" class="form-control" placeholder="Title, company, keyword...">
-          </div>
-          <div class="col-6 col-md-3">
-            <label class="form-label">Location</label>
-            <select id="locationFilter" class="form-select"><option value="">All</option></select>
-          </div>
-          <div class="col-6 col-md-3">
-            <label class="form-label">Company</label>
-            <select id="companyFilter" class="form-select"><option value="">All</option></select>
-          </div>
-          <div class="col-6 col-md-2">
-            <label class="form-label d-block">Remote</label>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="remoteOnly">
-              <label class="form-check-label" for="remoteOnly">Remote only</label>
-            </div>
-          </div>
-
-          <div class="col-12 d-flex gap-2 justify-content-end">
-            <!-- CSV Import -->
-            <input id="csvFile" type="file" accept=".csv" class="d-none">
-            <button id="importBtn" class="btn btn-outline-secondary">Import CSV</button>
-
-            <!-- CSV Export -->
-            <button id="exportFilteredBtn" class="btn btn-outline-primary">Export CSV (filtered)</button>
-            <button id="exportAllBtn" class="btn btn-outline-primary">Export CSV (all)</button>
-
-            <!-- Add Job -->
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addJobModal">
-              + Add Job
-            </button>
-          </div>
-
-          <div class="col-12 text-end">
-            <small class="text-muted">
-              CSV headers (case-insensitive): <code>title,company,location,country,remote,description,apply_url,closing_date</code>
-            </small>
-          </div>
+  <!-- Page -->
+  <main class="container py-4">
+    <!-- Search -->
+    <div class="row g-3 align-items-center mb-3">
+      <div class="col-12 col-md-8">
+        <label for="q" class="form-label mb-1 fw-semibold">Search jobs</label>
+        <input id="q" type="search" class="form-control form-control-lg"
+               placeholder="Title, company, or location…" autocomplete="off">
+      </div>
+      <div class="col-12 col-md-4">
+        <label class="form-label mb-1 fw-semibold">API</label>
+        <input id="apiBase" type="url" class="form-control"
+               placeholder="https://autoapply-api.onrender.com (optional override)">
+        <div class="form-text">
+          You can override the API for testing. Leave empty for default.
         </div>
       </div>
     </div>
 
+    <!-- Status / Errors -->
+    <div id="status" class="alert d-none" role="alert"></div>
+
     <!-- Jobs list -->
-    <div id="jobsList" class="row g-3"></div>
+    <div id="jobsList" class="row gy-3"></div>
 
     <!-- Empty state -->
     <div id="emptyState" class="text-center text-muted py-5 d-none">
-      <p class="mb-2">No jobs found.</p>
-      <p class="small">Try clearing filters or add a job.</p>
+      <h5 class="mb-1">No jobs found</h5>
+      <p class="mb-0">Try a different search.</p>
     </div>
-  </div>
-</section>
+  </main>
 
-<!-- Add Job Modal -->
-<div class="modal fade" id="addJobModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <form id="addJobForm">
-        <div class="modal-header">
-          <h5 class="modal-title">Add a Job</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Job Title *</label>
-              <input required name="title" class="form-control" placeholder="e.g. Data Analyst">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Company *</label>
-              <input required name="company" class="form-control" placeholder="e.g. Acme Ltd">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Location *</label>
-              <input required name="location" class="form-control" placeholder="e.g. Johannesburg">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Country</label>
-              <input name="country" class="form-control" placeholder="e.g. South Africa">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Closing Date</label>
-              <input type="date" name="closing_date" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Apply URL *</label>
-              <input required type="url" name="apply_url" class="form-control" placeholder="https://...">
-            </div>
-            <div class="col-12">
-              <label class="form-label">Description *</label>
-              <textarea required name="description" rows="5" class="form-control" placeholder="Key responsibilities, requirements..."></textarea>
-            </div>
-            <div class="col-12">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="remote" id="remoteInput">
-                <label class="form-check-label" for="remoteInput">Remote role</label>
-              </div>
-            </div>
-
-            <!-- Optional: backend POST -->
-            <div class="col-12">
-              <details class="mt-2">
-                <summary class="small text-muted">Optional: Send to backend (if enabled)</summary>
-                <div class="row g-2 mt-1">
-                  <div class="col-md-8">
-                    <input id="apiBase" class="form-control" placeholder="API base (e.g. https://api.autoapply-...co.za)">
-                  </div>
-                  <div class="col-md-4">
-                    <input id="apiKey" class="form-control" placeholder="X-API-Key (optional)">
-                  </div>
-                </div>
-              </details>
-            </div>
-
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Job</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- PapaParse for robust CSV parsing -->
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
-  // ===== Minimal config =====
-  // If/when you have a backend, set it here or in the modal field.
-  let API_BASE = ""; // e.g. "https://api.autoapply-makwandecareers.co.za"
+(() => {
+  // ---------- Config ----------
+  const DEFAULT_API = 'https://autoapply-api.onrender.com';
+  const qs = new URLSearchParams(location.search);
+  const savedApi = localStorage.getItem('api_base') || '';
+  const API_BASE_INPUT = document.getElementById('apiBase');
+  API_BASE_INPUT.value = qs.get('api') || savedApi;
 
-  const $ = (sel) => document.querySelector(sel);
-  const jobsListEl = $("#jobsList");
-  const emptyStateEl = $("#emptyState");
-  const locationFilter = $("#locationFilter");
-  const companyFilter = $("#companyFilter");
-  const remoteOnly = $("#remoteOnly");
-  const searchInput = $("#searchInput");
+  const API_BASE = () => (API_BASE_INPUT.value.trim() || DEFAULT_API).replace(/\/+$/,'');
+  const JOBS_URL = (q) => API_BASE() + '/api/jobs' + (q ? ('?q=' + encodeURIComponent(q)) : '');
 
-  // Seed a couple of example jobs on first visit
-  const SEED = [
-    {
-      id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now())+"-1",
-      title: "Data Analyst",
-      company: "Makwande Careers",
-      location: "Johannesburg",
-      country: "South Africa",
-      remote: false,
-      description: "Analyze job market data and deliver insights to product.",
-      apply_url: "https://example.com/apply/1",
-      closing_date: ""
-    },
-    {
-      id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now())+"-2",
-      title: "Frontend Engineer",
-      company: "AutoApply",
-      location: "Cape Town",
-      country: "South Africa",
-      remote: true,
-      description: "Build delightful UI for our Auto Apply web app.",
-      apply_url: "https://example.com/apply/2",
-      closing_date: ""
-    }
-  ];
+  // ---------- Elements ----------
+  const qInput = document.getElementById('q');
+  const listEl = document.getElementById('jobsList');
+  const emptyEl = document.getElementById('emptyState');
+  const statusEl = document.getElementById('status');
+  const lastUpdated = document.getElementById('lastUpdated');
 
-  function getJobs() {
-    const raw = localStorage.getItem("jobs");
-    if (!raw) {
-      localStorage.setItem("jobs", JSON.stringify(SEED));
-      return SEED.slice();
-    }
-    try { return JSON.parse(raw); } catch { return []; }
-  }
+  let DEBOUNCE = null;
 
-  function saveJobs(list) { localStorage.setItem("jobs", JSON.stringify(list)); }
+  // ---------- Utils ----------
+  const escapeHTML = (s) => (s || '').replace(/[&<>"']/g, m =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
-  function unique(list, key) {
-    return [...new Set(list.map(x => (x[key] || "").trim()).filter(Boolean))].sort();
-  }
+  const fmtDate = (d) => {
+    if (!d) return '';
+    try {
+      const dt = typeof d === 'string' ? new Date(d) : d;
+      if (!isFinite(dt)) return '';
+      return dt.toLocaleDateString();
+    } catch { return ''; }
+  };
 
-  function renderFilters(jobs) {
-    const locs = unique(jobs, "location");
-    const comps = unique(jobs, "company");
-    locationFilter.innerHTML = `<option value="">All</option>` + locs.map(v=>`<option>${v}</option>`).join("");
-    companyFilter.innerHTML = `<option value="">All</option>` + comps.map(v=>`<option>${v}</option>`).join("");
-  }
+  const relTime = (d) => {
+    try {
+      const dt = new Date(d);
+      const diff = (Date.now() - dt.getTime()) / 1000;
+      if (isNaN(diff)) return '';
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+      if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+      return Math.floor(diff/86400) + 'd ago';
+    } catch { return ''; }
+  };
 
-  function jobMatchesFilters(job) {
-    const q = searchInput.value.toLowerCase().trim();
-    const loc = locationFilter.value;
-    const comp = companyFilter.value;
-    const remote = remoteOnly.checked;
+  const setStatus = (msg, type='info') => {
+    statusEl.className = alert alert-${type};
+    statusEl.textContent = msg;
+    statusEl.classList.toggle('d-none', !msg);
+  };
 
-    if (q) {
-      const hay = `${job.title} ${job.company} ${job.location} ${job.country} ${job.description}`.toLowerCase();
-      if (!hay.includes(q)) return false;
-    }
-    if (loc && job.location !== loc) return false;
-    if (comp && job.company !== comp) return false;
-    if (remote && !job.remote) return false;
-    return true;
-  }
+  const setUpdated = () => {
+    lastUpdated.textContent = 'Last updated: ' + new Date().toLocaleString();
+  };
 
-  function renderJobs() {
-    const jobs = getJobs();
-    const filtered = jobs.filter(jobMatchesFilters);
+  // ---------- Render ----------
+  function renderJobs(jobs) {
+    listEl.innerHTML = '';
+    emptyEl.classList.toggle('d-none', jobs.length !== 0);
 
-    jobsListEl.innerHTML = "";
-    if (!filtered.length) {
-      emptyStateEl.classList.remove("d-none");
-      return;
-    }
-    emptyStateEl.classList.add("d-none");
+    const frag = document.createDocumentFragment();
 
-    for (const job of filtered) {
-      const badge = job.remote ? `<span class="badge text-bg-success ms-2">Remote</span>` : "";
-      const closing = job.closing_date ? `<span class="small text-muted"> • Closes ${job.closing_date}</span>` : "";
-      const desc = (job.description || "");
-      const card = document.createElement("div");
-      card.className = "col-12";
-      card.innerHTML = `
-        <div class="card job-card border-0 shadow-sm">
-          <div class="card-body d-flex flex-column flex-md-row justify-content-between">
-            <div class="me-3">
-              <h5 class="mb-1">${job.title} ${badge}</h5>
-              <div class="text-muted mb-2">${job.company} • ${job.location}${closing}</div>
-              <p class="mb-0">${desc.slice(0,220)}${desc.length>220?"…":""}</p>
+    jobs.forEach(j => {
+      const title = escapeHTML(j.title || '');
+      const company = escapeHTML(j.company || '');
+      const location = escapeHTML(j.location || '');
+      const desc = escapeHTML(j.description || '');
+      const apply = j.apply_url || '#';
+      const remote = j.remote ? '<span class="badge badge-remote">Remote</span>' : '';
+      const posted = j.posted_at ? relTime(j.posted_at) : '';
+      const closeOn = j.closing_date ? (' • closes ' + fmtDate(j.closing_date)) : '';
+
+      const col = document.createElement('div');
+      col.className = 'col-12';
+
+      col.innerHTML = `
+        <div class="card job-card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <h5 class="card-title mb-0">${title}</h5>
+              ${remote}
             </div>
-            <div class="text-md-end mt-3 mt-md-0">
-              <a class="btn btn-primary" target="_blank" rel="noopener noreferrer" href="${job.apply_url}">Apply</a>
+            <div class="small-muted mb-2">${company}${location ? ' • ' + location : ''}</div>
+            <p class="card-text truncate">${desc}</p>
+            <div class="d-flex align-items-center gap-3">
+              <a class="btn btn-primary" href="${apply}" target="_blank" rel="noopener">Apply</a>
+              <span class="small-muted">${posted ? 'Posted ' + posted : ''}${closeOn}</span>
+              <span class="small-muted ms-auto">${j.country ? escapeHTML(j.country) : ''}</span>
             </div>
           </div>
         </div>`;
-      jobsListEl.appendChild(card);
-    }
-  }
-
-  [searchInput, locationFilter, companyFilter, remoteOnly].forEach(el => el.addEventListener("input", renderJobs));
-
-  // Add Job form
-  document.getElementById("addJobForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const job = {
-      id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()),
-      title: String(fd.get("title")||"").trim(),
-      company: String(fd.get("company")||"").trim(),
-      location: String(fd.get("location")||"").trim(),
-      country: String(fd.get("country")||"").trim(),
-      remote: !!fd.get("remote"),
-      closing_date: String(fd.get("closing_date")||"").trim(),
-      apply_url: String(fd.get("apply_url")||"").trim(),
-      description: String(fd.get("description")||"").trim()
-    };
-
-    // Save locally
-    const list = getJobs();
-    list.unshift(job);
-    saveJobs(list);
-    renderFilters(list);
-    renderJobs();
-
-    // Optional: POST to backend if provided
-    const modalApi = document.getElementById("apiBase").value.trim();
-    const apiBase = modalApi || API_BASE;
-    const apiKey = document.getElementById("apiKey").value.trim();
-    if (apiBase) {
-      try {
-        await fetch(`${apiBase.replace(/\/$/,"")}/api/jobs`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", ...(apiKey?{"X-API-Key":apiKey}:{}) },
-          body: JSON.stringify(job)
-        });
-      } catch (err) {
-        console.warn("POST to backend failed (ignored):", err);
-      }
-    }
-
-    // Close modal & reset
-    const modalEl = document.getElementById('addJobModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    modal.hide();
-    e.target.reset();
-  });
-
-  // ===== CSV Import =====
-  const csvFile = document.getElementById('csvFile');
-  document.getElementById('importBtn').addEventListener('click', ()=> csvFile.click());
-
-  csvFile.addEventListener('change', () => {
-    const file = csvFile.files[0];
-    if (!file) return;
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const rows = results.data;
-        const list = getJobs();
-        for (const row of rows) {
-          // normalize keys: lower-case + trimmed
-          const norm = {};
-          Object.keys(row).forEach(k => norm[k ? k.toLowerCase().trim() : ""] = row[k]);
-
-          const get = (k) => norm[k] ?? "";
-          const remoteRaw = String(get("remote")).trim().toLowerCase();
-          const job = {
-            id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now())+"-"+Math.random(),
-            title: String(get("title")).trim(),
-            company: String(get("company")).trim(),
-            location: String(get("location")).trim(),
-            country: String(get("country")).trim(),
-            remote: ["true","yes","y","1"].includes(remoteRaw),
-            description: String(get("description")).trim(),
-            apply_url: String(get("apply_url")).trim(),
-            closing_date: String(get("closing_date")).trim()
-          };
-          if (job.title && job.company && job.location && job.apply_url && job.description) {
-            list.unshift(job);
-          }
-        }
-        saveJobs(list);
-        renderFilters(list);
-        renderJobs();
-        csvFile.value = "";
-        alert("CSV import complete.");
-      },
-      error: (err) => {
-        console.error(err);
-        alert("CSV import failed.");
-      }
+      frag.appendChild(col);
     });
-  });
 
-  // ===== CSV Export =====
-  function getFilteredJobsList() {
-    const jobs = getJobs();
-    return jobs.filter(jobMatchesFilters);
+    listEl.appendChild(frag);
   }
-  function csvEscape(val) {
-    if (val === null || val === undefined) return "";
-    const s = String(val);
-    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-  }
-  function buildCSV(rows) {
-    const headers = ["id","title","company","location","country","remote","description","apply_url","closing_date"];
-    const out = [headers.join(",")];
-    for (const r of rows) {
-      const line = headers.map(h => csvEscape(r[h] ?? "")).join(",");
-      out.push(line);
+
+  // ---------- Data ----------
+  async function fetchJobs(q='') {
+    const url = JOBS_URL(q);
+    setStatus('');
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('API ' + res.status);
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error('Bad API shape');
+      renderJobs(data);
+      setUpdated();
+    } catch (err) {
+      console.error(err);
+      renderJobs([]);
+      setStatus('Could not load jobs (' + (err.message || err) + '). Check API/CSV and try again.', 'warning');
     }
-    // BOM for Excel compatibility
-    return "\uFEFF" + out.join("\n");
   }
-  function downloadCSV(rows, filename = "jobs.csv") {
-    if (!rows.length) { alert("No jobs to export."); return; }
-    const blob = new Blob([buildCSV(rows)], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-  document.getElementById("exportAllBtn").addEventListener("click", () => {
-    downloadCSV(getJobs(), "jobs_all.csv");
-  });
-  document.getElementById("exportFilteredBtn").addEventListener("click", () => {
-    downloadCSV(getFilteredJobsList(), "jobs_filtered.csv");
+
+  // ---------- Events ----------
+  qInput.addEventListener('input', () => {
+    clearTimeout(DEBOUNCE);
+    DEBOUNCE = setTimeout(() => fetchJobs(qInput.value.trim()), 250);
   });
 
-  // Init
-  document.addEventListener("DOMContentLoaded", () => {
-    const jobs = getJobs();
-    renderFilters(jobs);
-    renderJobs();
+  API_BASE_INPUT.addEventListener('change', () => {
+    const v = API_BASE_INPUT.value.trim();
+    if (v) localStorage.setItem('api_base', v); else localStorage.removeItem('api_base');
+    fetchJobs(qInput.value.trim());
   });
+
+  // Initial load
+  fetchJobs('');
+})();
 </script>
-
-<!-- Bootstrap bundle (Popper included) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

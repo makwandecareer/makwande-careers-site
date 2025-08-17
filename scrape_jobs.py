@@ -1,72 +1,50 @@
-name: run-scraper
+import csv, argparse, sys, datetime as dt
 
-on:
-  schedule:
-    - cron: "0 4 * * *"        # daily 04:00 UTC
-  workflow_dispatch:           # allow manual run
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", default="jobs.csv")
+    args = ap.parse_args()
 
-permissions:
-  contents: write
+    # TODO: replace this with your real scraping logic.
+    # For now we produce a tiny sample so the pipeline proves out.
+    rows = [
+        {
+            "title": "Software Engineer",
+            "company": "Example Corp",
+            "location": "Remote",
+            "description": "Build and ship things.",
+            "apply_url": "https://example.com/jobs/1",
+            "country": "ZA",
+            "remote": "true",
+            "closing_date": "",
+            "posted_at": dt.datetime.utcnow().isoformat(timespec="seconds"),
+        },
+        {
+            "title": "Data Analyst",
+            "company": "Sample Ltd",
+            "location": "Johannesburg",
+            "description": "Analyze data and create dashboards.",
+            "apply_url": "https://example.com/jobs/2",
+            "country": "ZA",
+            "remote": "false",
+            "closing_date": "",
+            "posted_at": dt.datetime.utcnow().isoformat(timespec="seconds"),
+        },
+    ]
 
-jobs:
-  scrape-and-sync:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@v4
+    headers = ["title","company","location","description","apply_url",
+               "country","remote","closing_date","posted_at"]
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+    with open(args.out, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=headers)
+        w.writeheader()
+        for r in rows:
+            w.writerow(r)
 
-      - name: Install dependencies
-        run: |
-          python -m pip install -U pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    print(f"Wrote {len(rows)} rows to {args.out}")
+    return 0
 
-      # If you use Selenium, keep your Chrome step; otherwise remove it.
-      # - name: Install Chrome for Selenium
-      #   uses: browser-actions/setup-chrome@v1
+if __name__ == "__main__":
+    sys.exit(main())
 
-      # 👇 Run YOUR scraper script — adjust this command to your real entrypoint
-      - name: Run scraper -> jobs.csv
-        run: |
-          python scraper.py --out jobs.csv
-
-      # Show a bit of output for debugging
-      - name: Show head and count
-        run: |
-          head -n 20 jobs.csv || true
-          wc -l jobs.csv || true
-
-      # Commit only if changed
-      - name: Commit CSV if changed
-        run: |
-          if [[ -n "$(git status --porcelain jobs.csv)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add jobs.csv
-            git commit -m "chore: update jobs.csv (auto)"
-            git push
-          else
-            echo "No changes to jobs.csv"
-          fi
-
-      # Trigger your backend to ingest the RAW CSV from GitHub -> Snowflake
-      - name: Trigger backend sync
-        env:
-          SYNC_URL: https://autoapply-api.onrender.com/api/sync/github
-          SYNC_TOKEN: ${{ secrets.BACKEND_SYNC_TOKEN }}
-        run: |
-          # Try POST, fall back to GET with ?token=
-          curl -fsSL -X POST "$SYNC_URL" -H "X-Sync-Token: $SYNC_TOKEN" \
-          || curl -fsSL "$SYNC_URL?token=$SYNC_TOKEN"
-
-      # Attach the produced CSV so you can download and verify the rows
-      - name: Upload CSV artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: jobs.csv
-          path: jobs.csv
-          if-no-files-found: error
 

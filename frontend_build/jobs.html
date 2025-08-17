@@ -1,5 +1,47 @@
 <!doctype html>
 <html lang="en">
+  <script>
+    /* ========= CONFIG ========= */
+    // Replace with your real backend URL
+    const API_BASE = "https://YOUR-BACKEND.onrender.com";
+  
+    /* ========= STATE / DOM ========= */
+    const $ = (s) => document.querySelector(s);
+    const jobsListEl = $("#jobsList");
+    const emptyStateEl = $("#emptyState");
+    const locationFilter = $("#locationFilter");
+    const companyFilter = $("#companyFilter");
+    const remoteOnly = $("#remoteOnly");
+    const searchInput = $("#searchInput");
+    const lastUpdated = $("#lastUpdated");
+    let JOBS = [];
+  
+    // (Your other helpers: unique(), renderFilters(), renderJobs(), etc.)
+  
+    /* ========= REPLACE OR ADD THIS FUNCTION ========= */
+    async function loadJobs() {
+      const url = `${API_BASE.replace(/\/$/,"")}/api/jobs?limit=1000&ts=${Date.now()}`;
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("API " + res.status);
+  
+      JOBS = await res.json();
+      renderFilters(JOBS);
+      renderJobs();
+      lastUpdated.textContent = "Last updated: " + new Date().toLocaleString();
+    }
+  
+    // Wire filters to re-render
+    [searchInput, locationFilter, companyFilter, remoteOnly]
+      .forEach(el => el.addEventListener("input", renderJobs));
+  
+    // Kick things off
+    document.addEventListener("DOMContentLoaded", loadJobs);
+  </script>
+  
+  <!-- keep this after your script block -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />

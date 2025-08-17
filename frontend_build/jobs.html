@@ -1,161 +1,318 @@
 <!doctype html>
 <html lang="en">
-  <p class="lead">Filter by country, company and minimum match score.</p>
-  <link rel="stylesheet" href="assets/light-green.css">
-
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AutoApply — Jobs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>body{background:#fff;color:#0b1f17;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale} .nav,.card,.filter-card,.hero-card,.side,.map-card,.tip{background:#fff;border:1px solid #e6f4ec;box-shadow:0 10px 24px rgba(2,110,77,.1)} .links a{color:#6a7f74} .links a:hover{color:#0b1f17} .btn{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:0} .btn-outline{background:#fff;color:#16a34a;border:1px solid #16a34a} input,select,textarea{background:#fff;color:#0b1f17;border:1px solid #e6f4ec} .chip,.badge-sm{background:#f0fdf4;border:1px solid #d1fae5;color:#065f46}</style>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Makwande Careers — Jobs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    :root{
-      --bg:#07150f; --bg2:#0a2016; --panel:#0d2419; --card:#0f2a1e; --text:#ecfdf5; --muted:#a7f3d0;
-      --brand:#22c55e; --brand2:#16a34a; --border:rgba(34,197,94,.28); --ring:#34d399;
-      --shadow:0 18px 40px rgba(0,0,0,.45); --radius:20px; --gap:22px;
-    }
-    *{box-sizing:border-box} html,body{height:100%}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;color:var(--text);
-      background:radial-gradient(900px 600px at 15% -10%,rgba(34,197,94,.25),transparent 60%),
-                 radial-gradient(900px 600px at 110% -20%,rgba(5,150,105,.25),transparent 60%),
-                 linear-gradient(180deg,var(--bg),var(--bg2) 40%, #07140e)}
-    a{color:inherit;text-decoration:none}
-    .container{max-width:1160px;margin:0 auto;padding:0 24px}
-    .nav{position:sticky;top:0;z-index:40;backdrop-filter:saturate(150%) blur(8px);
-         background:rgba(7,20,15,.7);border-bottom:1px solid var(--border)}
-    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-    .badge{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:var(--shadow)}
-    .links{display:flex;gap:24px;align-items:center}
-    .links a{color:var(--muted);font-weight:600}.links a:hover{color:#fff}
-    .btn{display:inline-block;padding:12px 16px;border-radius:14px;font-weight:800;letter-spacing:.2px;
-      background:linear-gradient(135deg,var(--brand),var(--brand2));color:#062117;border:1px solid rgba(255,255,255,.06);box-shadow:var(--shadow)}
-    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none}
-    .btn-outline:hover{border-color:rgba(52,211,153,.55)}
-    .hero{padding:60px 0 28px;border-bottom:1px solid var(--border)}
-    .title{font-size:36px;margin:0 0 8px;font-weight:800}
-    .lead{color:var(--muted);margin:0}
-    .filter-card{margin:22px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
-    .form-grid{display:grid;grid-template-columns:2fr 1.2fr 1.2fr 1.2fr 1fr;gap:14px}
-    label{display:block;margin:6px 0 6px;font-weight:600}
-    input,select{width:100%;padding:12px 12px;border-radius:12px;border:1px solid var(--border);background:#0b1e16;color:var(--text)}
-    input::placeholder{color:#76e1b8}
-    .results{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0 48px}
-    .job{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
-    .job h3{margin:4px 0 6px;font-size:18px}
-    .muted{color:var(--muted)}
-    .meta{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 10px}
-    .chip{font-size:12px;padding:5px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(52,211,153,.08)}
-    .footer{padding:24px 0;color:var(--muted);border-top:1px solid var(--border);text-align:center}
-    @media (max-width: 1000px){
-      .results{grid-template-columns:1fr}
-      .form-grid{grid-template-columns:1fr 1fr;grid-auto-rows:minmax(0,auto)}
-    }
+    body { background:#f8f9fa; }
+    .job-card { transition: box-shadow .2s ease; }
+    .job-card:hover { box-shadow: 0 10px 24px rgba(0,0,0,.08); }
   </style>
 </head>
 <body>
-  <header class="nav">
-    <div class="container nav-inner">
-      <a class="brand" href="index.html"><span class="badge"></span> AutoApply</a>
-      <nav class="links">
-        <a href="revamp.html">CV Revamp</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a class="btn-outline btn" href="login.html">Sign in</a>
-        <a class="btn" href="signup.html">Get started</a>
-      </nav>
+<nav class="navbar navbar-expand-lg bg-white border-bottom">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">Makwande Careers</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
+        <li class="nav-item"><a class="nav-link" href="revamp.html">CV Revamp</a></li>
+        <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="btn btn-primary ms-lg-3" href="login.html">Login</a></li>
+      </ul>
     </div>
-  </header>
+  </div>
+</nav>
 
-  <section class="hero">
-    <div class="container">
-      <h1 class="title">Browse jobs</h1>
-      <p class="lead">Filter by country, company and minimum match score. (HTML form submits to your backend.)</p>
-    </div>
-  </section>
+<section class="py-4">
+  <div class="container">
 
-  <main class="container">
-    <!-- Replace 'action' with your real search endpoint (e.g., /jobs or /api/jobs/html) -->
-    <form class="filter-card" method="get" action="/jobs">
-      <div class="form-grid">
-        <div>
-          <label for="q">Keywords</label>
-          <input id="q" name="q" type="text" placeholder="e.g., data analyst, accountant">
-        </div>
-        <div>
-          <label for="country">Country</label>
-          <select id="country" name="country">
-            <option value="">Any</option>
-            <option>South Africa</option>
-            <option>Lesotho</option>
-            <option>Mozambique</option>
-            <option>Zimbabwe</option>
-            <option>Namibia</option>
-            <option>Botswana</option>
-            <option>Eswatini</option>
-            <option>Zambia</option>
-            <option>Malawi</option>
-            <option>DR Congo</option>
-          </select>
-        </div>
-        <div>
-          <label for="company">Company</label>
-          <input id="company" name="company" type="text" placeholder="Company name">
-        </div>
-        <div>
-          <label for="score">Min. match score</label>
-          <select id="score" name="min_score">
-            <option value="">Any</option>
-            <option>50</option><option>60</option><option>70</option><option>80</option><option>90</option>
-          </select>
-        </div>
-        <div style="align-self:end">
-          <button class="btn" type="submit" style="width:100%">Search</button>
+    <!-- Controls -->
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-md-4">
+            <label class="form-label">Search</label>
+            <input id="searchInput" class="form-control" placeholder="Title, company, keyword...">
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label">Location</label>
+            <select id="locationFilter" class="form-select"><option value="">All</option></select>
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label">Company</label>
+            <select id="companyFilter" class="form-select"><option value="">All</option></select>
+          </div>
+          <div class="col-6 col-md-2">
+            <label class="form-label d-block">Remote</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="remoteOnly">
+              <label class="form-check-label" for="remoteOnly">Remote only</label>
+            </div>
+          </div>
+          <div class="col-12 col-md-12 text-end">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addJobModal">
+              + Add Job
+            </button>
+          </div>
         </div>
       </div>
-    </form>
+    </div>
 
-    <!-- Server-rendered job results go here. The cards below are placeholders. -->
-    <section class="results">
-      <article class="job">
-        <div class="chip">South Africa</div>
-        <h3>Data Analyst — AutoApply Labs</h3>
-        <div class="meta">
-          <span class="chip">Match: 86%</span>
-          <span class="chip">Johannesburg</span>
-          <span class="chip">Full-time</span>
+    <!-- Jobs list -->
+    <div id="jobsList" class="row g-3"></div>
+
+    <!-- Empty state -->
+    <div id="emptyState" class="text-center text-muted py-5 d-none">
+      <p class="mb-2">No jobs found.</p>
+      <p class="small">Try clearing filters or add a job.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Add Job Modal -->
+<div class="modal fade" id="addJobModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <form id="addJobForm">
+        <div class="modal-header">
+          <h5 class="modal-title">Add a Job</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <p class="muted">Drive insights using SQL and Python. Experience with BI tools required.</p>
-        <a class="btn" href="/apply/123">Apply</a>
-      </article>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Job Title *</label>
+              <input required name="title" class="form-control" placeholder="e.g. Data Analyst">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Company *</label>
+              <input required name="company" class="form-control" placeholder="e.g. Acme Ltd">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Location *</label>
+              <input required name="location" class="form-control" placeholder="e.g. Johannesburg">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Country</label>
+              <input name="country" class="form-control" placeholder="e.g. South Africa">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Closing Date</label>
+              <input type="date" name="closing_date" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Apply URL *</label>
+              <input required type="url" name="apply_url" class="form-control" placeholder="https://...">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Description *</label>
+              <textarea required name="description" rows="5" class="form-control" placeholder="Key responsibilities, requirements..."></textarea>
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="remote">
+                <label class="form-check-label">Remote role</label>
+              </div>
+            </div>
 
-      <article class="job">
-        <div class="chip">Zambia</div>
-        <h3>Mechanical Engineer — GreenGrid</h3>
-        <div class="meta">
-          <span class="chip">Match: 79%</span>
-          <span class="chip">Lusaka</span>
-          <span class="chip">On-site</span>
+            <!-- Optional: backend POST -->
+            <div class="col-12">
+              <details class="mt-2">
+                <summary class="small text-muted">Optional: Send to backend (if enabled)</summary>
+                <div class="row g-2 mt-1">
+                  <div class="col-md-8">
+                    <input id="apiBase" class="form-control" placeholder="API base (e.g. https://api.autoapply-...co.za)">
+                  </div>
+                  <div class="col-md-4">
+                    <input id="apiKey" class="form-control" placeholder="X-API-Key (optional)">
+                  </div>
+                </div>
+              </details>
+            </div>
+
+          </div>
         </div>
-        <p class="muted">Plant optimization and reliability. Degree + 3 years experience.</p>
-        <a class="btn" href="/apply/124">Apply</a>
-      </article>
-
-      <article class="job">
-        <div class="chip">Mozambique</div>
-        <h3>Finance Manager — Coastal Foods</h3>
-        <div class="meta">
-          <span class="chip">Match: 74%</span>
-          <span class="chip">Maputo</span>
-          <span class="chip">Hybrid</span>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Job</button>
         </div>
-        <p class="muted">Lead FP&amp;A and audits. FMCG background preferred.</p>
-        <a class="btn" href="/apply/125">Apply</a>
-      </article>
-    </section>
-  </main>
+      </form>
+    </div>
+  </div>
+</div>
 
-  <footer class="footer">© 2025 Makwande Careers — All rights reserved.</footer>
+<script>
+  // ===== Minimal config =====
+  // If you later have a backend, put it here or in the modal field.
+  let API_BASE = ""; // e.g. "https://api.autoapply-makwandecareers.co.za"
+
+  const $ = (sel) => document.querySelector(sel);
+  const jobsListEl = $("#jobsList");
+  const emptyStateEl = $("#emptyState");
+  const locationFilter = $("#locationFilter");
+  const companyFilter = $("#companyFilter");
+  const remoteOnly = $("#remoteOnly");
+  const searchInput = $("#searchInput");
+
+  // Seed a few sample jobs on first visit
+  const SEED = [
+    {
+      id: crypto.randomUUID(), title: "Data Analyst", company: "Makwande Careers",
+      location: "Johannesburg", country: "South Africa", remote: false,
+      description: "Analyze job market data and deliver insights to product.",
+      apply_url: "https://example.com/apply/1", closing_date: ""
+    },
+    {
+      id: crypto.randomUUID(), title: "Frontend Engineer", company: "AutoApply",
+      location: "Cape Town", country: "South Africa", remote: true,
+      description: "Build delightful UI for our Auto Apply web app.",
+      apply_url: "https://example.com/apply/2", closing_date: ""
+    },
+    {
+      id: crypto.randomUUID(), title: "Recruitment Consultant", company: "Makwande Careers",
+      location: "Durban", country: "South Africa", remote: false,
+      description: "Source candidates and manage client relationships.",
+      apply_url: "https://example.com/apply/3", closing_date: ""
+    }
+  ];
+
+  function getJobs() {
+    const raw = localStorage.getItem("jobs");
+    if (!raw) {
+      localStorage.setItem("jobs", JSON.stringify(SEED));
+      return SEED.slice();
+    }
+    try { return JSON.parse(raw); } catch { return []; }
+  }
+
+  function saveJobs(list) {
+    localStorage.setItem("jobs", JSON.stringify(list));
+  }
+
+  function unique(list, key) {
+    return [...new Set(list.map(x => (x[key] || "").trim()).filter(Boolean))].sort();
+  }
+
+  function renderFilters(jobs) {
+    const locs = unique(jobs, "location");
+    const comps = unique(jobs, "company");
+    locationFilter.innerHTML = `<option value="">All</option>` + locs.map(v=>`<option>${v}</option>`).join("");
+    companyFilter.innerHTML = `<option value="">All</option>` + comps.map(v=>`<option>${v}</option>`).join("");
+  }
+
+  function jobMatchesFilters(job) {
+    const q = searchInput.value.toLowerCase().trim();
+    const loc = locationFilter.value;
+    const comp = companyFilter.value;
+    const remote = remoteOnly.checked;
+
+    if (q) {
+      const hay = `${job.title} ${job.company} ${job.location} ${job.country} ${job.description}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (loc && job.location !== loc) return false;
+    if (comp && job.company !== comp) return false;
+    if (remote && !job.remote) return false;
+    return true;
+  }
+
+  function renderJobs() {
+    const jobs = getJobs();
+    const filtered = jobs.filter(jobMatchesFilters);
+
+    jobsListEl.innerHTML = "";
+    if (!filtered.length) {
+      emptyStateEl.classList.remove("d-none");
+      return;
+    }
+    emptyStateEl.classList.add("d-none");
+
+    for (const job of filtered) {
+      const badge = job.remote ? `<span class="badge text-bg-success ms-2">Remote</span>` : "";
+      const closing = job.closing_date ? `<span class="small text-muted"> • Closes ${job.closing_date}</span>` : "";
+      const card = document.createElement("div");
+      card.className = "col-12";
+      card.innerHTML = `
+        <div class="card job-card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column flex-md-row justify-content-between">
+            <div class="me-3">
+              <h5 class="mb-1">${job.title} ${badge}</h5>
+              <div class="text-muted mb-2">${job.company} • ${job.location}${closing}</div>
+              <p class="mb-0">${(job.description || "").slice(0,220)}${job.description.length>220?"…":""}</p>
+            </div>
+            <div class="text-md-end mt-3 mt-md-0">
+              <a class="btn btn-primary" target="_blank" rel="noopener" href="${job.apply_url}">Apply</a>
+            </div>
+          </div>
+        </div>`;
+      jobsListEl.appendChild(card);
+    }
+  }
+
+  // Filters live-update
+  [searchInput, locationFilter, companyFilter, remoteOnly].forEach(el => el.addEventListener("input", renderJobs));
+
+  // Add Job form
+  $("#addJobForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const job = {
+      id: crypto.randomUUID(),
+      title: fd.get("title").trim(),
+      company: fd.get("company").trim(),
+      location: fd.get("location").trim(),
+      country: fd.get("country").trim(),
+      remote: !!fd.get("remote"),
+      closing_date: fd.get("closing_date") || "",
+      apply_url: fd.get("apply_url").trim(),
+      description: fd.get("description").trim()
+    };
+
+    // Save locally (works immediately)
+    const list = getJobs();
+    list.unshift(job);
+    saveJobs(list);
+    renderFilters(list);
+    renderJobs();
+
+    // Optional: try POST to backend if provided
+    const modalApi = document.getElementById("apiBase").value.trim();
+    const apiBase = modalApi || API_BASE;
+    const apiKey = document.getElementById("apiKey").value.trim();
+    if (apiBase) {
+      try {
+        await fetch(`${apiBase.replace(/\/$/,"")}/api/jobs`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(apiKey ? {"X-API-Key": apiKey} : {})
+          },
+          body: JSON.stringify(job)
+        });
+      } catch (err) {
+        console.warn("POST to backend failed (ignored):", err);
+      }
+    }
+
+    // close modal + reset
+    const modalEl = document.getElementById('addJobModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    modal.hide();
+    e.target.reset();
+  });
+
+  // Init
+  document.addEventListener("DOMContentLoaded", () => {
+    const jobs = getJobs();
+    renderFilters(jobs);
+    renderJobs();
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

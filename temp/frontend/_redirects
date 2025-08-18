@@ -1,0 +1,4 @@
+/* /index.html 200
+/signup   https://autoapply-api.onrender.com/signup   200
+/login    https://autoapply-api.onrender.com/login    200
+/api/*    https://autoapply-api.onrender.com/:splat   200

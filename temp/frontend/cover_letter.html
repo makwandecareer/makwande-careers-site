@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Makwande Careers — Cover Letter</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html">Makwande <span>Careers</span></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="jobs.html">Jobs</a>
+      <a class="active" href="cover.html">Cover letter</a>
+    </nav>
+  </div>
+</header>
+
+<main class="section">
+  <div class="container" style="max-width:900px">
+    <h1>Cover letter builder</h1>
+
+    <div class="card">
+      <div class="grid-3" style="grid-template-columns:1fr 1fr">
+        <div>
+          <div class="field"><label for="company">Company</label><input id="company" placeholder="Company name" /></div>
+          <div class="field"><label for="role">Role</label><input id="role" placeholder="Job title" /></div>
+          <div class="field"><label for="highlights">Your highlights</label><textarea id="highlights" style="height:140px" placeholder="3–5 bullets of your impact…"></textarea></div>
+          <div class="actions">
+            <button id="btnDraft" class="btn btn-primary">Generate draft</button>
+            <button id="btnSave" class="btn btn-ghost">Download .txt</button>
+          </div>
+        </div>
+        <div>
+          <label>Draft</label>
+          <textarea id="draft" style="height:260px"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>© <span id="year"></span> Makwande Careers</p>
+    <nav class="footer-links">
+      <a href="index.html">Home</a><a href="jobs.html">Jobs</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const y=document.getElementById('year'); if (y) y.textContent=new Date().getFullYear();
+  const draft=document.getElementById('draft');
+  document.getElementById('btnDraft')?.addEventListener('click', ()=>{
+    const prof=JSON.parse(localStorage.getItem('mk_profile')||'{}');
+    const who=prof.name||'Applicant';
+    const comp=(document.getElementById('company').value||'your company');
+    const role=(document.getElementById('role').value||'the role');
+    const hi=(document.getElementById('highlights').value||'').split('\n').filter(Boolean).map(s=>• ${s}).join('\n');
+
+    draft.value =
+`Dear Hiring Team at ${comp},
+
+I’m excited to apply for ${role}. My recent experience aligns closely with your needs, and I enjoy delivering work that shows measurable impact.
+
+Highlights:
+${hi || '• Delivered results across several projects with clear, quantified outcomes.'}
+
+I value collaboration, clear communication, and continuous learning. I’d be grateful for the opportunity to contribute to ${comp}.
+
+Sincerely,
+${who}`;
+  });
+
+  document.getElementById('btnSave')?.addEventListener('click', ()=>{
+    const blob=new Blob([document.getElementById('draft').value||''],{type:'text/plain'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cover_letter.txt'; a.click();
+    URL.revokeObjectURL(a.href);
+  });
+});
+</script>
+</body>
+</html>

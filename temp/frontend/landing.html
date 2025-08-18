@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Makwande Careers — Africa Landing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --brand-600:#16a34a;  /* primary emerald */
+      --brand-500:#22c55e;  /* gradient mate */
+      --text:#0b1f17;       /* deep neutral */
+      --muted:#6a7f74;      /* secondary text */
+      --surface:#ffffff;    /* cards/panels */
+      --bg:#ffffff;         /* page */
+      --border:#e6f4ec;     /* soft green border */
+      --ring:#86efac;       /* focus ring */
+      --shadow:0 10px 24px rgba(2,110,77,.10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font:400 16px/1.55 Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 12% -10%, rgba(34,197,94,.06), transparent 60%),
+        radial-gradient(700px 400px at 110% -20%, rgba(16,185,129,.06), transparent 60%),
+        var(--bg);
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1160px;margin:0 auto;padding:0 24px}
+
+    /* Nav (inline, light) */
+    .nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border)}
+    .nav-inner{height:68px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+    .badge{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand-600),var(--brand-500));box-shadow:var(--shadow)}
+    .links{display:flex;gap:22px;align-items:center}
+    .links a{color:#6b7f75;font-weight:600}
+    .links a:hover{color:#0b1f17}
+
+    /* Buttons */
+    .btn{display:inline-block;padding:12px 16px;border-radius:14px;font-weight:800;letter-spacing:.2px;color:#fff;
+         background:linear-gradient(135deg,var(--brand-600),var(--brand-500));border:0;box-shadow:var(--shadow)}
+    .btn-outline{background:#fff;color:var(--brand-600);border:1px solid var(--brand-600)}
+    .btn-outline:hover{background:#f0fdf4}
+    a:focus,button:focus{outline:3px solid var(--ring);outline-offset:2px;border-radius:12px}
+
+    /* Hero */
+    .hero{min-height:calc(100vh - 68px);display:grid;align-items:center}
+    .grid{display:grid;grid-template-columns:1.05fr 1fr;gap:36px;align-items:center}
+    .logo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
+    .logo{width:280px;height:auto;max-width:100%;display:block}
+    .title{font-size:42px;line-height:1.08;margin:12px 0 10px;font-weight:900}
+    .lead{color:var(--muted);margin:0 0 18px}
+
+    /* Map panel */
+    .map-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:20px;box-shadow:var(--shadow)}
+    .map-frame{border:1px solid var(--border);border-radius:16px;background:#fff;padding:18px}
+    .map{width:100%;height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(34,197,94,.18))}
+    .caption{margin-top:10px;color:var(--muted);font-size:14px;text-align:center}
+
+    /* Footer */
+    .footer{padding:24px 0;color:#6b7280;border-top:1px solid var(--border);text-align:center}
+
+    /* Responsive */
+    @media (max-width: 1020px){ .grid{grid-template-columns:1fr;gap:24px} .title{font-size:34px} .logo{width:220px} }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand"><span class="badge" aria-hidden="true"></span> Makwande Careers</div>
+      <nav class="links">
+        <a href="index.html">Home</a>
+        <a href="jobs.html">Jobs</a>
+        <a href="revamp.html">CV Revamp</a>
+        <a class="btn-outline" href="login.html">Sign in</a>
+        <a class="btn" href="signup.html">Get started</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="hero">
+    <div class="container grid">
+      <!-- Left: Logo + copy -->
+      <section class="logo-card">
+        <img class="logo"
+             src="assets/logo.png"
+             srcset="assets/logo.png 1x, assets/logo@2x.png 2x"
+             width="280" height="84" alt="Makwande Careers logo">
+        <h1 class="title">Get shortlisted faster.</h1>
+        <p class="lead">Professional CV revamps, precise matching, and one-click applications across Africa.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+          <a class="btn" href="signup.html">Create account</a>
+          <a class="btn btn-outline" href="jobs.html">Browse jobs</a>
+        </div>
+      </section>
+
+      <!-- Right: Africa map -->
+      <aside class="map-card" aria-label="Africa map">
+        <div class="map-frame">
+          <img class="map"
+               src="assets/africa-map.png"
+               srcset="assets/africa-map.png 1x, assets/africa-map@2x.png 2x"
+               width="520" height="520" loading="lazy" alt="Map of Africa">
+        </div>
+        <div class="caption">Serving jobseekers across the SADC region.</div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">© 2025 Makwande Careers — All rights reserved.</footer>
+</body>
+</html>

@@ -1,0 +1,71 @@
+/* Light Emerald professional theme overrides (pure CSS) */
+:root{
+    --bg:#ffffff;
+    --bg-2:#ffffff;
+    --panel:#ffffff;
+    --card:#ffffff;
+    --text:#0b1f17;        /* deep neutral for body text */
+    --muted:#647a70;       /* soft neutral for secondary text */
+    --brand:#16a34a;       /* green-600 (primary) */
+    --brand-2:#22c55e;     /* emerald-500 (gradient mate) */
+    --border:#e6f4ec;      /* mint border */
+    --ring:#86efac;        /* focus ring */
+    --shadow:0 10px 24px rgba(2,110,77,.10);
+    --radius:16px;
+  }
+  
+  /* Base */
+  body{
+    color:var(--text) !important;
+    background:
+      radial-gradient(900px 500px at 15% -10%, rgba(34,197,94,.06), transparent 60%),
+      radial-gradient(700px 400px at 110% -20%, rgba(16,185,129,.06), transparent 60%),
+      #ffffff !important;
+  }
+  
+  /* Navbar */
+  .nav{ background:#fff !important; border-bottom:1px solid var(--border) !important; }
+  .links a{ color:#6b7f75 !important; }
+  .links a:hover{ color:#0b1f17 !important; }
+  
+  /* Cards / panels / sidebars */
+  .card, .filter-card, .hero-card, .side, .map-card, .tip{
+    background:#fff !important;
+    border:1px solid var(--border) !important;
+    box-shadow:var(--shadow) !important;
+  }
+  
+  /* Map frame */
+  .map-frame{ background:#fff !important; }
+  
+  /* Inputs */
+  input, select, textarea{
+    background:#fff !important;
+    color:var(--text) !important;
+    border:1px solid var(--border) !important;
+  }
+  input::placeholder, textarea::placeholder{ color:#889e94 !important; }
+  
+  /* Buttons */
+  .btn{
+    color:#fff !important;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2)) !important;
+    border:none !important;
+  }
+  .btn-outline{
+    background:#fff !important;
+    color:var(--brand) !important;
+    border:1px solid var(--brand) !important;
+  }
+  .btn-outline:hover{ background:#f0fdf4 !important; }
+  
+  /* Chips / badges */
+  .chip, .badge-sm{
+    background:#f0fdf4 !important;
+    border:1px solid #d1fae5 !important;
+    color:#065f46 !important;
+  }
+  
+  /* Footer */
+  .footer{ border-top:1px solid var(--border) !important; color:#64748b !important; }
+  

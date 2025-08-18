@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Post Job - AutoApply</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">AutoApply</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="recruiter.html">Recruiter Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="employer_signup.html">Employer Signup</a></li>
+          <li class="nav-item"><a class="nav-link" href="applicants.html">View Applicants</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Post Job Form -->
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow">
+          <div class="card-body">
+            <h3 class="card-title text-center mb-4">Post a New Job</h3>
+            <form action="/post-job" method="post">
+              <div class="mb-3">
+                <label for="jobTitle" class="form-label">Job Title</label>
+                <input type="text" class="form-control" id="jobTitle" name="jobTitle" required>
+              </div>
+              <div class="mb-3">
+                <label for="companyName" class="form-label">Company Name</label>
+                <input type="text" class="form-control" id="companyName" name="companyName" required>
+              </div>
+              <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input type="text" class="form-control" id="location" name="location" required>
+              </div>
+              <div class="mb-3">
+                <label for="jobDescription" class="form-label">Job Description</label>
+                <textarea class="form-control" id="jobDescription" name="jobDescription" rows="5" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="requirements" class="form-label">Requirements</label>
+                <textarea class="form-control" id="requirements" name="requirements" rows="4"></textarea>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Post Job</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-light text-center mt-5 py-3">
+    <div class="container">
+      <span class="text-muted">&copy; 2025 AutoApply App. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+<!-- header.html -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Makwande Careers App - Auto Apply for Jobs</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Makwande Careers App helps job seekers automatically apply for jobs, revamp CVs, and create tailored cover letters. Serving 10 SADC countries.">
+  <meta name="keywords" content="Makwande Careers, Auto Apply, Job Application Automation, CV Revamp, Cover Letter Generator, SADC Jobs">
+  <meta name="author" content="Makwande Careers">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph (Facebook, LinkedIn) -->
+  <meta property="og:title" content="Makwande Careers App - Auto Apply for Jobs">
+  <meta property="og:description" content="Automate your job applications, revamp your CV, and generate cover letters instantly.">
+  <meta property="og:image" content="https://yourdomain.com/static/logo.png">
+  <meta property="og:url" content="https://yourdomain.com">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap JavaScript Bundle (with Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX'); // Replace with your GA ID
+  </script>
+
+  <!-- Optional Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+</html>

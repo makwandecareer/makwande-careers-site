@@ -1,79 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Makwande Careers Site — Recruiter</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css">
-<script defer src="js/config.js"></script>
-
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top border-0">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="index.html">
-      <img src="assets/img/logo.png" alt="Makwande Careers" height="28" class="me-2">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navContent">
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-        <li class="nav-item"><a class="nav-link" href="revamp.html">CV Revamp</a></li>
-        <li class="nav-item"><a class="nav-link" href="cover_letter.html">Cover Letter</a></li>
-        <li class="nav-item"><a class="nav-link" href="autoapply.html">AutoApply</a></li>
-        <li class="nav-item"><a class="nav-link" href="recruiter.html">Recruiter</a></li>
-        <li class="nav-item"><a class="nav-link" href="employer.html">Employer</a></li>
-        <li class="nav-item"><a class="btn btn-success-soft ms-lg-2" href="login.html">Login</a></li>
-        <li class="nav-item"><a class="btn btn-success ms-lg-2" href="signup.html">Sign up</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-  <main class="container py-5" style="max-width:900px;">
-    <div class="soft-card p-4">
-      <h2 class="fw-bold">Post a job (Recruiter)</h2>
-      <p class="text-muted">Share your role to reach verified candidates across SADC.</p>
-      <form id="recruiterForm" class="row g-3">
-        <div class="col-md-6"><label class="form-label">Job Title</label><input class="form-control" name="title" required></div>
-        <div class="col-md-6"><label class="form-label">Company</label><input class="form-control" name="company" required></div>
-        <div class="col-md-6"><label class="form-label">Location</label><input class="form-control" name="location" required></div>
-        <div class="col-md-6"><label class="form-label">Apply URL or Email</label><input class="form-control" name="apply_link" required></div>
-        <div class="col-12"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="6" required></textarea></div>
-        <div class="col-md-6"><label class="form-label">Closing Date</label><input class="form-control" name="closing_date" placeholder="YYYY-MM-DD"></div>
-        <div class="col-md-6"><label class="form-label">Salary (optional)</label><input class="form-control" name="salary"></div>
-        <div class="col-12 d-grid d-md-flex gap-2"><button class="btn btn-success" type="submit">Post Job</button></div>
-      </form>
-      <div id="recruiterOut" class="mt-3 small text-muted"></div>
-    </div>
-  </main>
-
-<footer class="footer mt-5 py-4 border-0 bg-white">
-  <div class="container d-flex justify-content-between flex-wrap gap-3">
-    <div>
-      <div class="d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="Makwande Careers" height="20" class="me-2">
-      </div>
-      <small class="text-muted">Apply smarter. Land faster.</small>
-    </div>
-    <div class="d-flex gap-3">
-      <a class="link-success" href="index.html">Home</a>
-      <a class="link-success" href="jobs.html">Jobs</a>
-      <a class="link-success" href="revamp.html">Revamp</a>
-      <a class="link-success" href="pay.html">Pricing</a>
-    </div>
-  </div>
-</footer>
-
-  <script type="module" src="js/recruiter.js"></script>
-</body>
-</html>
+<!doctype html><html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Recruiters — Makwande Careers</title>
+  <link rel="stylesheet" href="/assets/css/app.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  </head><body>
+  <div class="nav"><div class="container nav-row">
+    <a class="brand" href="/index.html"><span class="brand-logo">MC</span><span>Makwande Careers</span></a>
+    <div class="nav-links"><a href="/jobs.html">Jobs</a><a href="/recruiters.html">Recruiters</a><a href="/employers.html">Employers</a></div>
+    <div class="nav-cta"><a class="btn btn-primary" href="/post-job.html">Post a job</a></div>
+  </div></div>
+  
+  <header class="hero-lite"><div class="container">
+    <span class="badge">For recruiters</span>
+    <h1 class="page-title">Source and manage top talent</h1>
+    <p class="section-lead">Post roles, review applicants, and collaborate with employers.</p>
+  </div></header>
+  
+  <section><div class="container grid grid-3">
+    <div class="card"><h3>Post jobs</h3><p>Get your openings in front of qualified candidates fast.</p><a class="btn btn-ghost" href="/post-job.html">Create a job</a></div>
+    <div class="card"><h3>Applicant tracking</h3><p>Review, shortlist, and move candidates through stages.</p><a class="btn btn-ghost" href="/recruiter-dashboard.html">Open dashboard</a></div>
+    <div class="card"><h3>Employer partnership</h3><p>Invite hiring managers and collaborate in one place.</p><a class="btn btn-ghost" href="/employers.html">For employers</a></div>
+  </div></section>
+  
+  <footer>…same as index…</footer>
+  <script src="/assets/js/app.js"></script>
+  </body></html>
+  

@@ -1,0 +1,22 @@
+:root{
+  --green:#2ecc71;
+  --green-600:#22c55e;
+  --green-soft:#eafaf1;
+  --ink:#1f2937;
+  --muted:#6b7280;
+  --bg:#f8fafb;
+}
+*{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+body{background:var(--bg);color:var(--ink);}
+.btn-success{background:var(--green-600);border-color:var(--green-600);border-radius:14px;}
+.btn-success:hover{filter:brightness(0.95);}
+.btn-success-soft{background:var(--green-soft);color:var(--green-600);border:1px solid #d3f2df;border-radius:14px;}
+.navbar .btn{border-radius:14px;}
+.hero-section{background: radial-gradient(1200px 400px at -10% -10%, #eafff1 0, transparent 60%), radial-gradient(800px 300px at 110% 0%, #ecfff6 0, transparent 60%);}
+.soft-card{border:1px solid #e6f5ec;background:#fff;border-radius:16px;}
+.card{border:1px solid #e6f5ec;border-radius:16px;}
+.link-success{color:var(--green-600);}
+.footer{background:#fff;}
+.bg-quiet{background:#f7fdf9;}
+#jobsList .card{transition:transform .12s ease;}
+#jobsList .card:hover{transform:translateY(-3px);}

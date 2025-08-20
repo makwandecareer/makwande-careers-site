@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Components — Makwande Careers UI</title>
+    <link rel="stylesheet" href="/assets/css/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    </head><body>
+    <div class="nav"><div class="container nav-row">
+      <a class="brand" href="/index.html"><span class="brand-logo">MC</span><span>Makwande Careers</span></a>
+      <div class="nav-links"><a href="/jobs.html">Jobs</a><a href="/components.html">Components</a></div>
+      <div class="nav-cta"><a class="btn btn-primary" href="/signup.html">Create account</a></div>
+    </div></div>
+    
+    <header class="hero-lite"><div class="container">
+      <span class="badge">Design System</span>
+      <h1 class="page-title">UI components</h1>
+      <p class="section-lead">Cards, tables, badges, inputs, and patterns used across the app.</p>
+    </div></header>
+    
+    <section><div class="container grid grid-3">
+      <div class="card stat"><span class="stat-label">Stat label</span><span class="stat-value">1,234</span></div>
+      <div class="card"><h3>Default card</h3><p>Use <code>.card</code> for structured content.</p></div>
+      <div class="card"><h3>Actions</h3><div class="row"><button class="btn btn-primary">Primary</button><button class="btn btn-ghost">Ghost</button><button class="btn btn-outline">Outline</button></div></div>
+    </div></section>
+    
+    <section><div class="container">
+      <h2 class="section-title">Badges</h2>
+      <div class="row"><span class="badge">Default</span><span class="badge success">Success</span><span class="badge info">Info</span><span class="badge warn">Warning</span></div>
+    </div></section>
+    
+    <section><div class="container">
+      <h2 class="section-title">Table</h2>
+      <table class="table"><thead><tr><th>Column</th><th>Column</th><th>Column</th></tr></thead>
+        <tbody><tr><td>Row A</td><td>Value</td><td>Meta</td></tr><tr><td>Row B</td><td>Value</td><td>Meta</td></tr></tbody></table>
+    </div></section>
+    
+    <section><div class="container grid grid-2">
+      <div class="card stack">
+        <h3>Inputs</h3>
+        <input class="input" placeholder="Text input">
+        <select class="input"><option>Select</option></select>
+        <textarea class="input" rows="4" placeholder="Textarea"></textarea>
+      </div>
+      <div class="card">
+        <h3>API helper</h3>
+        <p class="section-lead">Use <code>app.fetchJson(path, options)</code> and <code>app.setApiBase(url)</code>. Current: <code id="apiBase"></code></p>
+        <button class="btn btn-ghost" data-api-base>Change API Base</button>
+      </div>
+    </div></section>
+    
+    <footer>
+      <div class="container foot-grid">
+        <div><div class="brand"><span class="brand-logo">MC</span><span>Makwande Careers</span></div><p class="section-lead" style="margin:.8rem 0 0">Design tokens live in <code>/assets/css/app.css</code>.</p></div>
+        <div class="foot-col"><h4>Docs</h4><a href="/components.html">Components</a><a href="/investors.html">Investors</a></div>
+        <div class="foot-col"><h4>Utilities</h4><a href="#" data-api-base>Set API Base</a></div>
+        <div class="foot-col"><h4>Legal</h4><a href="#">Terms</a></div>
+      </div>
+      <div class="container copyright">© <span id="year"></span> Makwande Careers.</div>
+    </footer>
+    
+    <script src="/assets/js/app.js"></script>
+    <script>document.getElementById('apiBase').textContent = window.API_BASE;</script>
+    </body></html>
+    

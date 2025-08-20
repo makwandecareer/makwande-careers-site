@@ -1,136 +1,160 @@
-/* ===============================
-   Makwande Careers Global Styles
-   =============================== */
-   :root {
-    --primary: #0066cc;
-    --primary-dark: #004c99;
-    --secondary: #00b894;
-    --accent: #ff9800;
-    --light: #f9f9fb;
-    --dark: #1c1c1c;
-    --muted: #6c757d;
-    --border: #e0e0e0;
-    --radius: 12px;
-    --shadow: 0 4px 12px rgba(0,0,0,0.08);
-    --transition: 0.3s ease-in-out;
-    font-size: 16px;
+/* ===========
+   GLOBAL STYLES
+   =========== */
+   body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+    margin: 0;
+    padding: 0;
   }
   
-  /* ========== Base ========== */
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: "Inter", "Segoe UI", sans-serif;
-    background: var(--light);
-    color: var(--dark);
-    line-height: 1.6;
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: #212529;
   }
-  a { color: var(--primary); text-decoration: none; transition: var(--transition); }
-  a:hover { color: var(--primary-dark); }
   
-  /* ========== Navbar ========== */
+  a {
+    text-decoration: none;
+    color: #28a745;
+  }
+  a:hover {
+    color: #34c759;
+  }
+  
+  /* ===========
+     NAVBAR
+     =========== */
   .navbar {
-    background: #fff;
-    box-shadow: var(--shadow);
-    padding: 1rem 2rem;
-    display: flex; justify-content: space-between; align-items: center;
-    position: sticky; top: 0; z-index: 100;
+    font-weight: 500;
   }
-  .navbar a { margin-left: 1.2rem; font-weight: 500; }
-  .navbar .brand { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+  .navbar-brand {
+    font-weight: 700;
+    color: #28a745 !important;
+  }
+  .nav-link {
+    color: #212529 !important;
+  }
+  .nav-link:hover {
+    color: #28a745 !important;
+  }
+  .navbar .btn-primary {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+  }
   
-  /* ========== Hero / Banner ========== */
+  /* ===========
+     BUTTONS
+     =========== */
+  .btn-primary {
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+  .btn-primary:hover {
+    background-color: #34c759;
+    border-color: #34c759;
+  }
+  .btn-outline-success {
+    border-color: #28a745;
+    color: #28a745;
+  }
+  .btn-outline-success:hover {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+  /* ===========
+     HERO SECTION
+     =========== */
   .hero {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: #fff; text-align: center;
+    background-color: #f8f9fa;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: relative;
+  }
+  .hero-overlay {
+    background: rgba(255, 255, 255, 0.9);
     padding: 5rem 2rem;
-    border-radius: 0 0 var(--radius) var(--radius);
   }
-  .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
-  .hero p { font-size: 1.2rem; margin-bottom: 2rem; }
-  .hero .btn { padding: 0.8rem 2rem; font-size: 1rem; }
-  
-  /* ========== Buttons ========== */
-  .btn {
-    display: inline-block;
-    background: var(--primary);
-    color: #fff;
-    padding: 0.7rem 1.5rem;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    transition: var(--transition);
+  .hero h1 {
+    color: #212529;
   }
-  .btn:hover { background: var(--primary-dark); }
-  .btn-secondary { background: var(--secondary); }
-  .btn-accent { background: var(--accent); }
+  .hero p {
+    color: #6c757d;
+  }
   
-  /* ========== Cards ========== */
+  /* ===========
+     CARDS
+     =========== */
   .card {
-    background: #fff;
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin: 1rem 0;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .card:hover { transform: translateY(-4px); }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+  .card h5 {
+    color: #28a745;
+  }
+  .card .btn-sm {
+    margin-top: 0.5rem;
+  }
   
-  /* ========== Tables ========== */
-  .table {
-    width: 100%; border-collapse: collapse; margin: 2rem 0;
+  /* ===========
+     BADGES & TAGS
+     =========== */
+  .badge-success {
+    background-color: #28a745;
   }
-  .table th, .table td {
-    padding: 1rem; border-bottom: 1px solid var(--border);
-    text-align: left;
-  }
-  .table th { background: var(--light); font-weight: 600; }
-  
-  /* ========== Badges ========== */
-  .badge {
-    display: inline-block;
-    padding: 0.3rem 0.6rem;
-    border-radius: var(--radius);
+  .badge-outline {
+    border: 1px solid #28a745;
+    color: #28a745;
+    background-color: transparent;
     font-size: 0.8rem;
-    font-weight: 600;
-    margin-right: 0.3rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
   }
-  .badge-success { background: #d4edda; color: #155724; }
-  .badge-warning { background: #fff3cd; color: #856404; }
-  .badge-danger { background: #f8d7da; color: #721c24; }
-  .badge-info { background: #d1ecf1; color: #0c5460; }
   
-  /* ========== Sections ========== */
-  .section { padding: 4rem 2rem; }
-  .section h2 { text-align: center; margin-bottom: 2rem; }
-  
-  /* ========== CTA Band ========== */
-  .cta {
-    background: var(--primary-dark);
+  /* ===========
+     TABLES
+     =========== */
+  .table thead {
+    background-color: #28a745;
     color: #fff;
-    text-align: center;
-    padding: 3rem 2rem;
   }
-  .cta .btn { margin-top: 1rem; }
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f1fdf4;
+  }
   
-  /* ========== Footer ========== */
-  .footer {
-    background: var(--dark);
-    color: #ddd;
-    text-align: center;
-    padding: 2rem;
-    margin-top: 4rem;
+  /* ===========
+     FOOTER
+     =========== */
+  footer {
+    background-color: #111;
+    color: #aaa;
+    padding: 2rem 0;
   }
-  .footer a { color: #fff; margin: 0 0.8rem; }
+  footer a {
+    color: #28a745;
+  }
+  footer a:hover {
+    color: #34c759;
+  }
   
-  /* ========== Forms ========== */
-  .form-control {
-    width: 100%; padding: 0.8rem;
-    margin: 0.6rem 0;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
+  /* ===========
+     CTA SECTION
+     =========== */
+  .bg-success {
+    background-color: #28a745 !important;
   }
-  .form-control:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(0,102,204,0.15);
+  .bg-success h2, 
+  .bg-success p {
+    color: #fff;
+  }
+  .bg-success .btn-light {
+    font-weight: 600;
   }
   

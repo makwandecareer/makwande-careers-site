@@ -1,4 +1,16 @@
-<!doctype html><html lang="en"><head>
+<!doctype html>
+<html lang="en">
+  <main>
+    <div class="container">
+      <!-- PAGE TITLE -->
+      <h1 class="section-title display-6 mb-3">Find your next role</h1>
+      <p class="lead mb-4">Filter by country, company, and match score. Click a role to view & apply.</p>
+  
+      <!-- your filters / table / cards go here -->
+    </div>
+  </main>
+  
+  <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Learners — Bursaries & Support | Makwande Careers</title>
     <link rel="stylesheet" href="/assets/css/app.css">
@@ -43,5 +55,65 @@
     </footer>
     
     <script src="/assets/js/app.js"></script>
-    </body></html>
+    </body><nav class="navbar navbar-expand-lg sticky-top">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">Makwande Careers</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="nav" class="collapse navbar-collapse">
+          <ul class="navbar-nav ms-auto align-items-lg-center">
+            <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
+            <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
+            <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
+            <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
+            <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
+            <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
+            <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <footer class="py-5 mt-5">
+      <div class="container text-center">
+        <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
+        <small>
+          <a href="partnerships.html">Partnerships</a> ·
+          <a href="investors.html">Investors</a> ·
+          <a href="collaborations.html">Brand Collaborations</a>
+        </small>
+      </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+      // One-time: set backend URL for all pages
+      (function(){
+        var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
+        ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
+      })();
+    </script>
+    
+    </html>
+    <footer class="py-5 mt-5">
+      <div class="container text-center">
+        <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
+        <small>
+          <a href="partnerships.html">Partnerships</a> ·
+          <a href="investors.html">Investors</a> ·
+          <a href="collaborations.html">Brand Collaborations</a>
+        </small>
+      </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+      // One-time: set backend URL for all pages
+      (function(){
+        var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
+        ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
+      })();
+    </script>
     

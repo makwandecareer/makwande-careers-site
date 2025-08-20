@@ -1,5 +1,5 @@
 // Backend base URL (set to your Render FastAPI URL, no trailing slash)
-window.API_BASE = window.API_BASE || "https://autoapplyapp-mobile.onrender.com";
+window.API_BASE = "https://autoapplyapp.onrender.com";
 
 // JSON helper
 window.fetchJSON = async (url, opts={}) => {

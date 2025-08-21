@@ -1,123 +1,169 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <main>
-    <div class="container">
-      <!-- PAGE TITLE -->
-      <h1 class="section-title display-6 mb-3">Find your next role</h1>
-      <p class="lead mb-4">Filter by country, company, and match score. Click a role to view & apply.</p>
-  
-      <!-- your filters / table / cards go here -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investors – Makwande Careers</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ===== Navbar ===== -->
+<nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">Makwande Careers</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
+        <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
+        <li class="nav-item"><a class="nav-link" href="candidates.html">Candidates</a></li>
+        <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
+        <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
+        <li class="nav-item"><a class="nav-link active" href="investors.html">Investors</a></li>
+      </ul>
     </div>
-  </main>
-  
-  <head>
-    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Investors — Makwande Careers</title>
-    <link rel="stylesheet" href="/assets/css/app.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <meta name="description" content="Key traction, metrics, and contact for investor relations.">
-    </head><body>
-    <div class="nav"><div class="container nav-row">
-      <a class="brand" href="/index.html"><span class="brand-logo">MC</span><span>Makwande Careers</span></a>
-      <div class="nav-links"><a href="/investors.html">Investors</a><a href="/partnerships.html">Partnerships</a></div>
-      <div class="nav-cta"><a class="btn btn-primary" href="mailto:invest@makwandecareers.com">Contact IR</a></div>
-    </div></div>
-    
-    <header class="hero-lite"><div class="container">
-      <span class="badge info">Investor Relations</span>
-      <h1 class="page-title">Traction & KPIs</h1>
-      <p class="section-lead">Automatically populated from our public metrics endpoint.</p>
-    </div></header>
-    
-    <section><div class="container" id="metrics">
-      <!-- Filled by /api/public/metrics -->
-    </div></section>
-    
-    <section><div class="container grid grid-2">
-      <div class="card">
-        <h3>Cap table (summary)</h3>
-        <table class="table">
-          <thead><tr><th>Holder</th><th>Shares</th><th>Ownership</th></tr></thead>
-          <tbody id="cap-table-body"><tr><td colspan="3">Loading…</td></tr></tbody>
-        </table>
+  </div>
+</nav>
+
+<!-- ===== Header ===== -->
+<header class="py-5 text-center bg-light shadow-sm">
+  <div class="container">
+    <h1 class="fw-bold">Investor Relations</h1>
+    <p class="lead text-muted">Partner with us to transform careers across Africa.</p>
+  </div>
+</header>
+
+<!-- ===== Why Invest Section ===== -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-6">
+        <h2 class="fw-bold">Why Invest in Makwande Careers?</h2>
+        <p>
+          We are building Africa’s most advanced AI-driven career platform. 
+          With our growing user base, employer partnerships, and innovative features like auto job applications, 
+          we are well positioned to lead the job-tech industry across the continent.
+        </p>
+        <ul class="list-unstyled">
+          <li>✔ Rapidly growing jobseeker base</li>
+          <li>✔ Trusted by recruiters and employers</li>
+          <li>✔ Expanding into 10 SADC countries</li>
+          <li>✔ Scalable AI-powered backend</li>
+        </ul>
       </div>
-      <div class="card">
-        <h3>Notes</h3>
-        <p class="section-lead">We’re building the leading AI job platform across SADC with transparent economics and strong unit metrics.</p>
-        <div class="row" style="margin-top:.6rem"><span class="badge">R300/mo</span><span class="badge success">MRR Growing</span><span class="badge warn">Raising</span></div>
+      <div class="col-lg-6 text-center">
+        <img src="assets/img/investment.svg" class="img-fluid" alt="Investment Growth">
       </div>
-    </div></section>
-    
-    <footer>
-      <div class="container foot-grid">
-        <div><div class="brand"><span class="brand-logo">MC</span><span>Makwande Careers</span></div><p class="section-lead" style="margin:.8rem 0 0">Data auto-refreshes daily.</p></div>
-        <div class="foot-col"><h4>Company</h4><a href="/candidates.html">Candidates</a><a href="/recruiters.html">Recruiters</a></div>
-        <div class="foot-col"><h4>Contact</h4><a href="mailto:invest@makwandecareers.com">invest@makwandecareers.com</a></div>
-        <div class="foot-col"><h4>Settings</h4><a href="#" data-api-base>Set API Base</a></div>
-      </div>
-      <div class="container copyright">© <span id="year"></span> Makwande Careers.</div>
-    </footer>
-    
-    <script src="/assets/js/app.js"></script>
-    </body><nav class="navbar navbar-expand-lg sticky-top">
-      <div class="container">
-        <a class="navbar-brand" href="index.html">Makwande Careers</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div id="nav" class="collapse navbar-collapse">
-          <ul class="navbar-nav ms-auto align-items-lg-center">
-            <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-            <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-            <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
-            <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
-            <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-            <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-            <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
-          </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Metrics Section ===== -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-4">Key Metrics</h2>
+    <div class="row g-4 text-center">
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h3 class="fw-bold text-primary">300K+</h3>
+            <p>Active Jobseekers</p>
+          </div>
         </div>
       </div>
-    </nav>
-    <footer class="py-5 mt-5">
-      <div class="container text-center">
-        <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-        <small>
-          <a href="partnerships.html">Partnerships</a> ·
-          <a href="investors.html">Investors</a> ·
-          <a href="collaborations.html">Brand Collaborations</a>
-        </small>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h3 class="fw-bold text-primary">1,200+</h3>
+            <p>Recruiter Accounts</p>
+          </div>
+        </div>
       </div>
-    </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      document.getElementById('year').textContent = new Date().getFullYear();
-      // One-time: set backend URL for all pages
-      (function(){
-        var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-        ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-      })();
-    </script>
-    
-    </html>
-    <footer class="py-5 mt-5">
-      <div class="container text-center">
-        <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-        <small>
-          <a href="partnerships.html">Partnerships</a> ·
-          <a href="investors.html">Investors</a> ·
-          <a href="collaborations.html">Brand Collaborations</a>
-        </small>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h3 class="fw-bold text-primary">10</h3>
+            <p>Countries Served</p>
+          </div>
+        </div>
       </div>
-    </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      document.getElementById('year').textContent = new Date().getFullYear();
-      // One-time: set backend URL for all pages
-      (function(){
-        var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-        ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-      })();
-    </script>
-    
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h3 class="fw-bold text-primary">R300/month</h3>
+            <p>Stable Subscription Revenue</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Investor Contact Form ===== -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-4">Investor Enquiries</h2>
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <form action="/api/investors/enquire" method="POST" class="card shadow-sm p-4">
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Investment Interest</label>
+            <select class="form-select" name="interest">
+              <option value="seed">Seed Funding</option>
+              <option value="series-a">Series A</option>
+              <option value="partnership">Strategic Partnership</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea class="form-control" name="message" rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Submit Interest</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="py-4 bg-light mt-auto">
+  <div class="container text-center">
+    <p class="mb-1">© 2025 Makwande Careers. All Rights Reserved.</p>
+    <small>
+      <a href="partnerships.html">Partnerships</a> · 
+      <a href="marketing.html">Marketing</a> · 
+      <a href="brand-collaborations.html">Brand Collaborations</a>
+    </small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<footer class="bg-dark text-light text-center py-4 mt-5">
+  <div class="container">
+    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
+    <p class="small">
+      Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
+    </p>
+  </div>
+</footer>
+
+<script>
+  // auto-update year
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

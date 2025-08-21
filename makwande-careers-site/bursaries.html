@@ -1,275 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-  <main>
-    <div class="container">
-      <!-- PAGE TITLE -->
-      <h1 class="section-title display-6 mb-3">Find your next role</h1>
-      <p class="lead mb-4">Filter by country, company, and match score. Click a role to view & apply.</p>
-  
-      <!-- your filters / table / cards go here -->
-    </div>
-  </main>
-  
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Bursaries — Makwande Careers</title>
-  <meta name="description" content="Search and apply for bursaries across SADC."/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/app.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bursaries – Makwande Careers</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">Makwande Careers</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div id="nav" class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
-          <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-          <li class="nav-item"><a class="nav-link active" href="bursaries.html">Bursaries</a></li>
-          <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
-          <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
-          <li class="nav-item ms-lg-2"><a class="btn btn-light text-primary" href="login.html">Login</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
 
-  <!-- Hero -->
-  <section class="py-5 text-center bg-light border-bottom">
-    <div class="container">
-      <h1 class="fw-bold">Find a Bursary That Fits You</h1>
-      <p class="lead">Filter by country, field of study, amount and deadline — then apply online in minutes.</p>
-      <div>
-        <button id="setApiBase" class="btn btn-outline-primary btn-sm">Set API Base</button>
-        <small class="text-muted ms-2">Current: <span id="apiBaseTxt"></span></small>
-      </div>
-    </div>
-  </section>
-
-  <!-- Filters -->
-  <section class="py-4">
-    <div class="container">
-      <form id="filterForm" class="row g-2 align-items-end">
-        <div class="col-lg-4">
-          <label class="form-label">Search</label>
-          <input id="q" class="form-control" placeholder="Title or provider (e.g. Women in Tech)"/>
-        </div>
-        <div class="col-6 col-lg-3">
-          <label class="form-label">Country</label>
-          <input id="country" class="form-control" placeholder="e.g. South Africa"/>
-        </div>
-        <div class="col-6 col-lg-3">
-          <label class="form-label">Field of Study</label>
-          <input id="field" class="form-control" placeholder="e.g. Engineering"/>
-        </div>
-        <div class="col-6 col-lg-2">
-          <label class="form-label">Min Amount (R)</label>
-          <input id="minAmount" type="number" min="0" class="form-control" placeholder="0"/>
-        </div>
-        <div class="col-6 col-lg-2 d-grid mt-2 mt-lg-0">
-          <button class="btn btn-primary" type="submit">Filter</button>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <!-- Results -->
-  <section class="pb-5">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="mb-0">Available Bursaries</h5>
-            <span id="resultMeta" class="text-muted small"></span>
-          </div>
-          <div class="table-responsive">
-            <table class="table align-middle mb-0">
-              <thead class="table-light">
-                <tr>
-                  <th>Title</th>
-                  <th>Provider</th>
-                  <th>Country</th>
-                  <th>Field</th>
-                  <th>Amount</th>
-                  <th>Deadline</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="tbody">
-                <tr><td colspan="7" class="text-muted">Loading…</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Help tip -->
-      <div class="text-muted small mt-2">
-        Tip: Use broad keywords first (“Engineering”, “Health”) then refine.
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="py-5 bg-primary text-white text-center">
-    <div class="container">
-      <h2 class="fw-bold">Ready to apply?</h2>
-      <p class="mb-3">Create a free account to prefill applications and track status.</p>
-      <a class="btn btn-light text-primary" href="signup.html">Create Account</a>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-light py-4">
-    <div class="container text-center">
-      <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-      <small class="text-secondary">Building futures across Africa.</small>
-    </div>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // ---------- Config ----------
-    const API_DEFAULT = "http://127.0.0.1:8000";
-    const getApiBase = () => localStorage.getItem("API_BASE") || API_DEFAULT;
-    const setApiBase = (url) => localStorage.setItem("API_BASE", url);
-
-    // ---------- Utils ----------
-    const $ = (id) => document.getElementById(id);
-    const money = (v) => {
-      try { return "R" + Number(v).toLocaleString(); } catch { return "R" + v; }
-    };
-    async function fetchJson(url, opts = {}) {
-      const res = await fetch(url, { headers: { "Content-Type": "application/json" }, ...opts });
-      if (!res.ok) throw new Error(await res.text());
-      return res.json();
-    }
-
-    // ---------- Render ----------
-    function renderRows(rows) {
-      const tbody = $("tbody");
-      const meta = $("resultMeta");
-      if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-muted">No bursaries found. Try broadening your filters.</td></tr>`;
-        meta.textContent = "";
-        return;
-      }
-      tbody.innerHTML = rows.map(b => `
-        <tr>
-          <td class="fw-semibold">${b.title}</td>
-          <td>${b.provider}</td>
-          <td><span class="badge bg-info-subtle text-info-emphasis">${b.country}</span></td>
-          <td><span class="badge bg-secondary-subtle text-secondary-emphasis">${b.field_of_study}</span></td>
-          <td>${money(b.amount)}</td>
-          <td><span class="badge bg-warning-subtle text-warning-emphasis">${b.deadline}</span></td>
-          <td><a class="btn btn-outline-primary btn-sm" href="bursary-apply.html?id=${encodeURIComponent(b.id)}">Apply</a></td>
-        </tr>
-      `).join("");
-      meta.textContent = `${rows.length} bursar${rows.length === 1 ? "y" : "ies"} found`;
-    }
-
-    // ---------- Load ----------
-    async function loadBursaries() {
-      const q = $("q").value.trim();
-      const country = $("country").value.trim();
-      const field = $("field").value.trim();
-      const minAmount = $("minAmount").value.trim();
-
-      const params = new URLSearchParams({
-        q, country, field, min_amount: minAmount
-      }).toString();
-
-      $("tbody").innerHTML = `<tr><td colspan="7" class="text-muted">Loading…</td></tr>`;
-      try {
-        const rows = await fetchJson(`${getApiBase()}/api/public/bursaries?${params}`);
-        renderRows(rows);
-      } catch (e) {
-        console.error(e);
-        $("tbody").innerHTML = `<tr><td colspan="7" class="text-danger">Error loading bursaries.</td></tr>`;
-        $("resultMeta").textContent = "";
-      }
-    }
-
-    // ---------- Events ----------
-    $("filterForm").addEventListener("submit", (e) => { e.preventDefault(); loadBursaries(); });
-    ["q","country","field","minAmount"].forEach(id => {
-      $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") loadBursaries(); });
-      $(id).addEventListener("change", loadBursaries);
-    });
-
-    $("setApiBase").addEventListener("click", () => {
-      const next = prompt("Set API base URL", getApiBase());
-      if (next) { setApiBase(next); $("apiBaseTxt").textContent = next; loadBursaries(); }
-    });
-
-    // ---------- Init ----------
-    $("year").textContent = new Date().getFullYear();
-    $("apiBaseTxt").textContent = getApiBase();
-    loadBursaries();
-  </script>
-</body>
-<nav class="navbar navbar-expand-lg sticky-top">
+<!-- ====== Navbar ====== -->
+<nav class="navbar navbar-expand-lg sticky-top shadow-sm">
   <div class="container">
-    <a class="navbar-brand" href="index.html">Makwande Careers</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+    <a class="navbar-brand fw-bold" href="index.html">Makwande Careers</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div id="nav" class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto align-items-lg-center">
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-        <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-        <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
+        <li class="nav-item"><a class="nav-link active" href="bursaries.html">Bursaries</a></li>
+        <li class="nav-item"><a class="nav-link" href="candidates.html">Candidates</a></li>
         <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
         <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-        <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-        <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
+        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
       </ul>
     </div>
   </div>
 </nav>
-<footer class="py-5 mt-5">
+
+<!-- ====== Header ====== -->
+<header class="py-5 text-center bg-light shadow-sm">
+  <div class="container">
+    <h1 class="fw-bold">Bursary Opportunities</h1>
+    <p class="lead text-muted">Supporting learners and students across Africa with funding for education.</p>
+  </div>
+</header>
+
+<!-- ====== Bursaries List ====== -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4" id="bursaries-list">
+      <!-- Example bursary card -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title fw-bold">Standard Bank Bursary</h5>
+            <p class="card-text">For students pursuing Finance, Accounting, or Economics at accredited universities.</p>
+            <p><span class="badge bg-primary">Closes: 30 Sept 2025</span></p>
+            <a href="#apply" class="btn btn-outline-primary btn-sm">Apply Now</a>
+          </div>
+        </div>
+      </div>
+      <!-- More bursaries injected dynamically -->
+    </div>
+  </div>
+</section>
+
+<!-- ====== Application Form ====== -->
+<section id="apply" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="fw-bold mb-4 text-center">Apply for a Bursary</h2>
+    <form class="row g-3 shadow-sm p-4 bg-white rounded">
+      <div class="col-md-6">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Phone Number</label>
+        <input type="text" class="form-control">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">University</label>
+        <select class="form-select" required>
+          <option selected disabled>Select University</option>
+          <option>University of Cape Town</option>
+          <option>University of Johannesburg</option>
+          <option>University of Lagos</option>
+          <option>University of Nairobi</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Motivation Letter</label>
+        <textarea class="form-control" rows="5" placeholder="Tell us why you deserve this bursary..." required></textarea>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Upload Documents (CV, Transcripts)</label>
+        <input type="file" class="form-control" multiple required>
+      </div>
+      <div class="col-12 d-grid">
+        <button type="submit" class="btn btn-primary btn-lg">Submit Application</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ====== Footer ====== -->
+<footer class="py-4 bg-light mt-auto">
   <div class="container text-center">
-    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
+    <p class="mb-1">© 2025 Makwande Careers. All Rights Reserved.</p>
     <small>
-      <a href="partnerships.html">Partnerships</a> ·
-      <a href="investors.html">Investors</a> ·
-      <a href="collaborations.html">Brand Collaborations</a>
+      <a href="investors.html">Investors</a> · 
+      <a href="partnerships.html">Partnerships</a> · 
+      <a href="contact.html">Contact Us</a>
     </small>
   </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-  // One-time: set backend URL for all pages
-  (function(){
-    var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-    ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-  })();
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Bursaries page loaded. Hook API endpoints for bursary data & submissions.");
+});
 </script>
+<footer class="bg-dark text-light text-center py-4 mt-5">
+  <div class="container">
+    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
+    <p class="small">
+      Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
+    </p>
+  </div>
+</footer>
 
+</body>
 </html>
-<footer class="py-5 mt-5">
-  <div class="container text-center">
+<footer class="bg-dark text-light text-center py-4 mt-5">
+  <div class="container">
     <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-    <small>
-      <a href="partnerships.html">Partnerships</a> ·
-      <a href="investors.html">Investors</a> ·
-      <a href="collaborations.html">Brand Collaborations</a>
-    </small>
+    <p class="small">
+      Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
+    </p>
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-  // One-time: set backend URL for all pages
-  (function(){
-    var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-    ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-  })();
+  // auto-update year
+  document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+

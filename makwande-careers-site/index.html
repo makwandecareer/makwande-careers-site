@@ -1,527 +1,115 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <main>
-    <div class="container">
-      <!-- PAGE TITLE -->
-      <h1 class="section-title display-6 mb-3">Find your next role</h1>
-      <p class="lead mb-4">Filter by country, company, and match score. Click a role to view & apply.</p>
-  
-      <!-- your filters / table / cards go here -->
-    </div>
-  </main>
-  
 <head>
-HEAD
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Makwande Careers — Africa’s Career Platform</title>
-  <meta name="description" content="Makwande Careers Auto Apply App — Automating job applications, bursaries, and employer solutions across Africa."/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="assets/css/app.css"/>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .navbar-brand {
-      color: #28a745 !important;
-    }
-    .btn-primary {
-      background-color: #28a745;
-      border-color: #28a745;
-    }
-    .btn-primary:hover {
-      background-color: #34c759;
-      border-color: #34c759;
-    }
-    .hero {
-      background: url('assets/img/africa-map-light.png') no-repeat center/contain;
-      background-color: #f8f9fa;
-      position: relative;
-    }
-    .hero-overlay {
-      background: rgba(255,255,255,0.9);
-      padding: 5rem 2rem;
-    }
-    .card h5 {
-      color: #28a745;
-    }
-    .trust-row img {
-      max-height: 40px;
-      opacity: 0.8;
-      margin: 0 15px;
-    }
-    footer {
-      background: #111;
-      color: #aaa;
-    }
-    footer a {
-      color: #28a745;
-      text-decoration: none;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Makwande Careers – Empowering African Talent</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">Makwande Careers</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div id="nav" class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
-          <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-          <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-          <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
-          <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-          <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-          <li class="nav-item"><a class="btn btn-primary ms-lg-3" href="signup.html">Get Started</a></li>
-        </ul>
-=======
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Makwande Careers — Auto Apply App</title>
-  <meta name="description" content="Modern job search automation for Africa. Match, revamp, and auto-apply with one click." />
-  <meta property="og:title" content="Makwande Careers — Auto Apply App" />
-  <meta property="og:description" content="Modern job search automation for Africa. Match, revamp, and auto-apply with one click." />
-  <meta name="theme-color" content="#0f766e" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    /*
-      ==========================================
-      Auto Apply App – Minimal Design System
-      Inspired by the calm, professional Paystack vibe
-      Tweak brand tokens below to match your palette.
-      ==========================================
-    */
-    :root{
-      /* Brand */
-      --brand: #0f766e;           /* primary */
-      --brand-700: #0b5d58;       /* hover */
-      --brand-50: #e9fbf7;        /* subtle backgrounds */
-      --accent: #22c55e;          /* success accent */
-      --ink: #0b1f2a;             /* main text */
-      --muted: #5b6b77;           /* secondary text */
-      --line: #e6eef2;            /* hairline */
-      --surface: #ffffff;
-      --bg: #f5fcf9;              /* page background */
 
-      /* Radii & shadows */
-      --radius-lg: 20px;
-      --radius-md: 14px;
-      --shadow-sm: 0 1px 2px rgba(16,24,40,.06), 0 1px 1px rgba(16,24,40,.04);
-      --shadow-md: 0 8px 24px rgba(16,24,40,.08);
-
-      /* Typography */
-      --font: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
-      --h1: clamp(2.2rem, 3.5vw + 1rem, 4rem);
-      --h2: clamp(1.6rem, 1.5vw + 1rem, 2.2rem);
-      --h3: clamp(1.15rem, .6vw + .9rem, 1.35rem);
-      --lead: clamp(1rem, .6vw + .9rem, 1.2rem);
-
-      /* Spacing */
-      --space: 1rem; /* 16px */
-    }
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family:var(--font); color:var(--ink); background:var(--bg);
-      line-height:1.55; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-    }
-    a{color:inherit; text-decoration:none}
-    .container{width:min(1120px, calc(100% - 2rem)); margin-inline:auto}
-
-    /* Top Nav */
-    .nav{position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.5) blur(8px);
-      background:rgba(255,255,255,.7); border-bottom:1px solid var(--line)}
-    .nav-row{display:flex; align-items:center; justify-content:space-between; padding:.85rem 0}
-    .brand{display:flex; gap:.6rem; align-items:center; font-weight:800; letter-spacing:.2px}
-    .brand-logo{width:28px;height:28px; display:grid; place-items:center; border-radius:9px; background:linear-gradient(135deg, var(--brand), #22d3ee); color:#fff}
-    .nav-links{display:flex; gap:1.2rem; align-items:center}
-    .nav-links a{font-weight:500; color:#1f2a37}
-    .nav-cta{display:flex; gap:.6rem}
-
-    /* Buttons */
-    .btn{display:inline-flex; align-items:center; justify-content:center; gap:.5rem; border-radius:999px; padding:.7rem 1rem; font-weight:600; border:1px solid transparent; cursor:pointer; transition:all .2s ease}
-    .btn-lg{padding: .9rem 1.2rem; font-size:1rem}
-    .btn-primary{background:var(--brand); color:#fff}
-    .btn-primary:hover{background:var(--brand-700)}
-    .btn-ghost{background:transparent; color:var(--ink); border-color:var(--line)}
-    .btn-ghost:hover{background:#fff; box-shadow:var(--shadow-sm)}
-
-    /* Hero */
-    .hero{
-      position:relative; overflow:hidden; background:radial-gradient(1200px 600px at 80% 30%, var(--brand-50), transparent 60%);
-    }
-    .hero::before{
-      /* dotted world-ish pattern */
-      content:""; position:absolute; inset:-10%; opacity:.35; pointer-events:none;
-      background-image: radial-gradient(currentColor 1px, transparent 1px);
-      background-size: 14px 14px; color:#8fe3d5; transform:rotate(-8deg);
-    }
-    .hero .container{display:grid; grid-template-columns:1.1fr .9fr; gap:2rem; padding:4.8rem 0 3.8rem}
-    @media (max-width: 900px){.hero .container{grid-template-columns:1fr; padding:3.8rem 0 2.8rem}}
-
-    .eyebrow{display:inline-flex; align-items:center; gap:.5rem; font-weight:600; padding:.35rem .7rem; border-radius:999px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow-sm); color:var(--brand)}
-    .hero h1{font-size:var(--h1); letter-spacing:-.02em; margin:.9rem 0 .6rem}
-    .lead{font-size:var(--lead); color:var(--muted); max-width:48ch}
-    .hero-cta{display:flex; gap:.8rem; margin-top:1.2rem; flex-wrap:wrap}
-
-    .hero-card{background:#fff; border:1px solid var(--line); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); padding:1.2rem}
-    .hero-card h3{font-size:var(--h3); margin:.3rem 0 .4rem}
-    .hero-card p{color:var(--muted); margin:0}
-
-    /* Trusted row */
-    .trusted{padding:1rem 0 3rem; color:#6b7a88}
-    .trusted .row{display:flex; flex-wrap:wrap; gap:1.4rem; align-items:center}
-    .trusted img{height:22px; filter:grayscale(100%); opacity:.8}
-
-    /* Sections */
-    section{padding:4rem 0}
-    .section-title{font-size:var(--h2); letter-spacing:-.01em; margin:0 0 .6rem}
-    .section-lead{color:var(--muted); max-width:62ch}
-
-    /* Feature cards */
-    .grid{display:grid; gap:1.2rem}
-    .grid-3{grid-template-columns:repeat(3,1fr)}
-    @media (max-width: 900px){.grid-3{grid-template-columns:1fr}}
-    .card{background:#fff; border:1px solid var(--line); border-radius:var(--radius-md); padding:1.25rem; box-shadow:var(--shadow-sm)}
-    .card h3{font-size:1.1rem; margin:.4rem 0 .35rem}
-    .card p{color:var(--muted); margin:0}
-    .icon{display:inline-grid; place-items:center; width:42px; height:42px; border-radius:12px; background:var(--brand-50); color:var(--brand)}
-
-    /* CTA band */
-    .cta{background:linear-gradient(180deg, rgba(34, 197, 94,.08), rgba(15,118,110,.08)); border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
-    .cta .band{display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1.6rem 0}
-    @media (max-width: 800px){.cta .band{flex-direction:column; text-align:center}}
-
-    /* Footer */
-    footer{background:#fff; border-top:1px solid var(--line)}
-    .foot-grid{display:grid; grid-template-columns:1.3fr repeat(3,1fr); gap:1.2rem; padding:2.2rem 0}
-    @media (max-width: 900px){.foot-grid{grid-template-columns:1fr;}}
-    .foot-col h4{margin:0 0 .6rem; font-size:1rem}
-    .foot-col a{color:#3a4956; display:block; padding:.25rem 0}
-    .copyright{padding:1rem 0; color:#6b7a88; border-top:1px solid var(--line); font-size:.95rem}
-  </style>
-</head>
-<body>
-  <!-- NAV -->
-  <div class="nav" role="navigation" aria-label="Primary">
-    <div class="container nav-row">
-      <a class="brand" href="/index.html" aria-label="Makwande Careers home">
-        <span class="brand-logo" aria-hidden="true">MC</span>
-        <span>Makwande Careers</span>
-      </a>
-      <div class="nav-links" role="menubar">
-        <a href="/jobs.html" role="menuitem">Jobs</a>
-        <a href="/revamp.html" role="menuitem">CV Revamp</a>
-        <a href="/dashboard.html" role="menuitem">Dashboard</a>
-        <a href="/pricing.html" role="menuitem">Pricing</a>
-        <a href="/pay.html" role="menuitem">Subscribe</a>
-      </div>
-      <div class="nav-cta">
-        <a class="btn btn-ghost" href="/login.html" aria-label="Log in">Log in</a>
-        <a class="btn btn-primary" href="/signup.html" aria-label="Create account">Create account</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- HERO -->
-  <header class="hero">
-    <div class="container">
-      <div>
-        <span class="eyebrow">Auto Apply App • Africa-first</span>
-        <h1>Modern job search automation for Africa</h1>
-        <p class="lead">We help jobseekers get matched, revamp their CVs to ATS standards, generate tailored cover letters, and auto‑apply — all in one sleek platform.</p>
-        <div class="hero-cta">
-          <a href="/signup.html" class="btn btn-primary btn-lg">Get started free</a>
-          <a href="/pay.html" class="btn btn-ghost btn-lg">See subscription</a>
-        </div>
-        <div class="trusted container" aria-label="Trusted by">
-          <div class="row">
-            <span>Trusted by professionals across SADC</span>
-            <img src="https://dummyimage.com/120x24/eee/aaa&text=MTN" alt="MTN"/>
-            <img src="https://dummyimage.com/120x24/eee/aaa&text=Bolt" alt="Bolt"/>
-            <img src="https://dummyimage.com/120x24/eee/aaa&text=AXA" alt="AXA"/>
-            <img src="https://dummyimage.com/120x24/eee/aaa&text=Chemin" alt="Chemin"/>
-          </div>
-        </div>
->>>>>>> b4234e30394050c9b39f75637b57b264348d3922
-      </div>
-      <aside class="hero-card" aria-label="Highlights">
-        <h3>Why candidates choose us</h3>
-        <p>• AI CV Revamp with ATS score</p>
-        <p>• Smart job matching across 10 SADC countries</p>
-        <p>• One‑click auto applications & tracking</p>
-        <p>• Secure payments via Paystack</p>
-      </aside>
-    </div>
-  </nav>
-
-  HEAD
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-overlay text-center">
-      <div class="container">
-        <h1 class="fw-bold display-5 text-dark">Africa’s Career Ecosystem</h1>
-        <p class="lead text-secondary mb-4">Automated job applications, bursaries, employer tools, and recruiter solutions — all in one platform.</p>
-        <a href="signup.html" class="btn btn-primary btn-lg px-4">Create Free Account</a>
-        <a href="jobs.html" class="btn btn-outline-success btn-lg ms-3 px-4">Browse Jobs</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Trust row -->
-  <section class="py-4 bg-light text-center trust-row">
-    <div class="container">
-      <small class="text-uppercase text-muted">Trusted by Professionals & Employers</small>
-      <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-        <img src="assets/img/linkedin.png" alt="LinkedIn"/>
-        <img src="assets/img/paystack.png" alt="Paystack"/>
-        <img src="assets/img/google.png" alt="Google"/>
-        <img src="assets/img/ibm.png" alt="IBM"/>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section class="py-5">
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="fw-bold">For Jobseekers</h5>
-              <p class="text-muted">Find jobs across Africa, auto-apply, revamp your CV, and generate cover letters with AI.</p>
-              <a href="candidates.html" class="stretched-link text-success">Learn more →</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="fw-bold">For Employers</h5>
-              <p class="text-muted">Post jobs, manage applicants, and access a talent pool of pre-vetted professionals.</p>
-              <a href="employers.html" class="stretched-link text-success">Learn more →</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="fw-bold">For Recruiters</h5>
-              <p class="text-muted">Streamline hiring with tools to shortlist, interview, and track candidates seamlessly.</p>
-              <a href="recruiters.html" class="stretched-link text-success">Learn more →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row g-4 mt-2">
-        <div class="col-md-6">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="fw-bold">Bursaries & Universities</h5>
-              <p class="text-muted">Explore bursaries, scholarships, and connect directly to leading African universities.</p>
-              <a href="bursaries.html" class="btn btn-primary btn-sm">Apply Now</a>
-              <a href="universities.html" class="btn btn-outline-success btn-sm ms-2">Universities</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="fw-bold">Investors & Collaborations</h5>
-              <p class="text-muted">Partner with Makwande Careers to scale African talent. Collaborate on brand initiatives and social impact projects.</p>
-              <a href="investors.html" class="btn btn-primary btn-sm">Invest</a>
-              <a href="collaborations.html" class="btn btn-outline-success btn-sm ms-2">Collaborate</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="py-5 bg-success text-white text-center">
-    <div class="container">
-      <h2 class="fw-bold">Join 260,000+ Professionals</h2>
-      <p class="mb-3">Empowering careers, skills, and opportunities across Africa.</p>
-      <a class="btn btn-light text-success px-4" href="signup.html">Get Started Now</a>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="py-4">
-    <div class="container text-center">
-      <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-      <small>Made in Africa • Powered by Innovation</small><br>
-      <a href="partnerships.html">Partnerships</a> · <a href="investors.html">Investors</a> · <a href="collaborations.html">Collaborations</a>
-    </div>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
-=======
-  <!-- FEATURES -->
-  <section id="features">
-    <div class="container">
-      <h2 class="section-title">Simple, powerful features</h2>
-      <p class="section-lead">Everything you need to go from job search to interview call, faster.</p>
-      <div class="grid grid-3" style="margin-top:1.2rem">
-        <div class="card">
-          <div class="icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 10V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9h-7z" stroke="currentColor" stroke-width="1.6"/><path d="M14 3v7h7" stroke="currentColor" stroke-width="1.6"/></svg>
-          </div>
-          <h3>ATS‑ready CVs</h3>
-          <p>Revamp your CV with structured sections, skills extraction, and a transparent ATS compliance score.</p>
-        </div>
-        <div class="card">
-          <div class="icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h18M12 3v18" stroke="currentColor" stroke-width="1.6"/></svg>
-          </div>
-          <h3>Deep job matching</h3>
-          <p>Semantic matching explains <em>why</em> a job fits your CV, including strengths and gaps.</p>
-        </div>
-        <div class="card">
-          <div class="icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12l4 4L19 6" stroke="currentColor" stroke-width="1.6"/></svg>
-          </div>
-          <h3>One‑click apply</h3>
-          <p>Autofill forms on supported boards and track every application in a clean dashboard.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section id="how">
-    <div class="container">
-      <h2 class="section-title">How it works</h2>
-      <div class="grid grid-3" style="margin-top:1.2rem">
-        <div class="card"><h3>1. Create your account</h3><p>Start with a free profile. Upload your CV or paste your work history.</p></div>
-        <div class="card"><h3>2. Match & revamp</h3><p>We score your CV vs job specs, then generate an ATS‑optimized version and cover letter.</p></div>
-        <div class="card"><h3>3. Auto‑apply & track</h3><p>Apply in one click and monitor responses across companies and countries.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA BAND -->
-  <div class="cta">
-    <div class="container band">
-      <div>
-        <h3 style="margin:0">Ready to accelerate your job search?</h3>
-        <p style="margin:.2rem 0 0; color:var(--muted)">Join thousands using Auto Apply App to land interviews faster.</p>
-      </div>
-      <div>
-        <a href="/signup.html" class="btn btn-primary btn-lg">Create free account</a>
-        <a href="/login.html" class="btn btn-ghost btn-lg">Log in</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="container foot-grid">
-      <div>
-        <div class="brand">
-          <span class="brand-logo" aria-hidden="true">MC</span>
-          <span>Makwande Careers</span>
-        </div>
-        <p class="section-lead" style="margin:.8rem 0 0">Building Africa's most effective job search platform.</p>
-      </div>
-      <div class="foot-col">
-        <h4>Product</h4>
-        <a href="/jobs.html">Jobs</a>
-        <a href="/revamp.html">CV Revamp</a>
-        <a href="/dashboard.html">Dashboard</a>
-        <a href="/pricing.html">Pricing</a>
-      </div>
-      <div class="foot-col">
-        <h4>Company</h4>
-        <a href="#">About</a>
-        <a href="#">Press</a>
-        <a href="#">Careers</a>
-        <a href="#">Contact</a>
-      </div>
-      <div class="foot-col">
-        <h4>Legal</h4>
-        <a href="#">Terms</a>
-        <a href="#">Privacy</a>
-        <a href="#">Cookies</a>
-      </div>
-    </div>
-    <div class="container copyright">
-      © <span id="year"></span> Makwande Careers. All rights reserved.
-    </div>
-  </footer>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
->>>>>>> b4234e30394050c9b39f75637b57b264348d3922
-</body>
-<nav class="navbar navbar-expand-lg sticky-top">
+<!-- ====== Navbar ====== -->
+<nav class="navbar navbar-expand-lg sticky-top shadow-sm">
   <div class="container">
     <a class="navbar-brand" href="index.html">Makwande Careers</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div id="nav" class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto align-items-lg-center">
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
         <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-        <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
+        <li class="nav-item"><a class="nav-link" href="candidates.html">Candidates</a></li>
         <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
         <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
         <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-        <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
+        <li class="nav-item"><a class="nav-link" href="partnerships.html">Partnerships</a></li>
+        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+        <li class="nav-item ms-lg-3">
+          <a class="btn btn-primary" href="signup.html">Sign Up</a>
+        </li>
       </ul>
     </div>
   </div>
 </nav>
-<footer class="py-5 mt-5">
+
+<!-- ====== Hero ====== -->
+<section class="hero text-center text-dark">
+  <div class="hero-overlay">
+    <div class="container">
+      <h1 class="display-4 fw-bold">Connecting African Talent to Global Opportunities</h1>
+      <p class="lead">Jobs, bursaries, and partnerships built for LinkedIn professionals and ambitious learners.</p>
+      <a href="jobs.html" class="btn btn-primary btn-lg mt-3">Find Jobs</a>
+      <a href="bursaries.html" class="btn btn-outline-primary btn-lg mt-3 ms-2">Apply for Bursaries</a>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Features ====== -->
+<section class="py-5">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 p-4">
+          <h4 class="fw-bold">For Candidates</h4>
+          <p class="text-muted">Upload your CV, match with jobs instantly, and apply with one click.</p>
+          <a href="candidates.html" class="btn btn-outline-primary">Learn More</a>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 p-4">
+          <h4 class="fw-bold">For Employers</h4>
+          <p class="text-muted">Post jobs, manage applications, and find top-tier African talent.</p>
+          <a href="employers.html" class="btn btn-outline-primary">Start Hiring</a>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 p-4">
+          <h4 class="fw-bold">For Learners</h4>
+          <p class="text-muted">Apply for bursaries and scholarships that shape your future.</p>
+          <a href="bursaries.html" class="btn btn-outline-primary">Apply Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CTA ====== -->
+<section class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="fw-bold">Grow your career with Makwande Careers</h2>
+    <p class="lead">Trusted by professionals, recruiters, and employers across Africa.</p>
+    <a href="signup.html" class="btn btn-primary btn-lg mt-2">Join Today</a>
+  </div>
+</section>
+
+<!-- ====== Footer ====== -->
+<footer class="py-4 mt-5">
   <div class="container text-center">
-    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
+    <p class="mb-1">© 2025 Makwande Careers. All Rights Reserved.</p>
     <small>
-      <a href="partnerships.html">Partnerships</a> ·
-      <a href="investors.html">Investors</a> ·
-      <a href="collaborations.html">Brand Collaborations</a>
+      <a href="marketing.html">Marketing</a> · 
+      <a href="brand-collaborations.html">Brand Collaborations</a> · 
+      <a href="contact.html">Contact Us</a>
     </small>
   </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<footer class="bg-dark text-light text-center py-4 mt-5">
+  <div class="container">
+    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
+    <p class="small">
+      Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
+    </p>
+  </div>
+</footer>
+
 <script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-  // One-time: set backend URL for all pages
-  (function(){
-    var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-    ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-  })();
+  // auto-update year
+  document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 
+</body>
 </html>
-<footer class="py-5 mt-5">
-  <div class="container text-center">
-    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-    <small>
-      <a href="partnerships.html">Partnerships</a> ·
-      <a href="investors.html">Investors</a> ·
-      <a href="collaborations.html">Brand Collaborations</a>
-    </small>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-  // One-time: set backend URL for all pages
-  (function(){
-    var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-    ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-  })();
-</script>

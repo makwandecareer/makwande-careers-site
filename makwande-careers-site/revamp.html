@@ -1,116 +1,66 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <main>
+<head>
+  <meta charset="UTF-8">
+  <title>CV Revamp | Makwande Careers</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top bg-white shadow-sm">
     <div class="container">
-      <!-- PAGE TITLE -->
-      <h1 class="section-title display-6 mb-3">Find your next role</h1>
-      <p class="lead mb-4">Filter by country, company, and match score. Click a role to view & apply.</p>
-  
-      <!-- your filters / table / cards go here -->
+      <a class="navbar-brand" href="index.html">Makwande Careers</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a href="jobs.html" class="nav-link">Jobs</a></li>
+          <li class="nav-item"><a href="cv-revamp.html" class="nav-link active">CV Revamp</a></li>
+          <li class="nav-item"><a href="cover-letter.html" class="nav-link">Cover Letter</a></li>
+          <li class="nav-item"><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        </ul>
+      </div>
     </div>
+  </nav>
+
+  <main class="container py-5" style="margin-top:5rem;">
+    <h2 class="mb-4">AI-Powered CV Revamp</h2>
+    <p class="lead">Upload your CV and let our AI optimize it for ATS, recruiters, and hiring managers.</p>
+
+    <form id="cvRevampForm" class="card p-4">
+      <div class="mb-3">
+        <label class="form-label">Upload CV (PDF/DOCX)</label>
+        <input type="file" class="form-control" id="cvFile" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Revamp My CV</button>
+    </form>
+
+    <div id="revampResult" class="mt-4"></div>
   </main>
-  
-  <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>CV Revamp — Makwande Careers</title>
-  <link rel="stylesheet" href="/assets/css/app.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  </head><body>
-  
-  <!-- NAV (same) -->
-  <div class="nav"><div class="container nav-row">
-    <a class="brand" href="/index.html"><span class="brand-logo">MC</span><span>Makwande Careers</span></a>
-    <div class="nav-links"><a href="/jobs.html">Jobs</a><a href="/revamp.html">CV Revamp</a><a href="/dashboard.html">Dashboard</a>
-      <a href="/pricing.html">Pricing</a><a href="/subscription.html">Subscribe</a><a href="/recruiters.html">Recruiters</a><a href="/employers.html">Employers</a></div>
-    <div class="nav-cta"><a class="btn btn-ghost" href="/login.html">Log in</a><a class="btn btn-primary" href="/signup.html">Create account</a></div>
-  </div></div>
-  
-  <header class="hero-lite"><div class="container">
-    <span class="badge">ATS-ready</span>
-    <h1 class="page-title">Revamp your CV</h1>
-    <p class="section-lead">Upload your CV for instant ATS compliance scoring and structured improvements.</p>
-  </div></header>
-  
-  <section><div class="container grid grid-2">
-    <div class="card stack">
-      <label>Upload CV (PDF/DOCX)</label>
-      <input type="file" class="input" accept=".pdf,.doc,.docx">
-      <label>Target job link (optional)</label>
-      <input class="input" placeholder="Paste a job post URL">
-      <button class="btn btn-primary">Analyze & Revamp</button>
-    </div>
-    <div class="card">
-      <h3>Results</h3>
-      <p class="section-lead">Your ATS score, key skills, and suggested changes will appear here.</p>
-      <div class="grid" style="margin-top:.6rem">
-        <div class="badge">ATS Score: 86%</div>
-        <div class="badge">Keywords: SQL • Python • ETL</div>
-      </div>
-      <div style="margin-top:1rem"><a class="btn btn-ghost" href="#">Download revamped CV</a></div>
-    </div>
-  </div></section>
-  
-  <footer>…same as index…</footer>
-  <script src="/assets/js/app.js"></script>
-  </body>
-  <nav class="navbar navbar-expand-lg sticky-top">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">Makwande Careers</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div id="nav" class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
-          <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-          <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-          <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
-          <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
-          <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-          <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-          <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <nav class="navbar navbar-expand-lg sticky-top">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">Makwande Careers</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div id="nav" class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
-          <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-          <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-          <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
-          <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
-          <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-          <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-          <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-  
-  </html>
-  <footer class="py-5 mt-5">
-    <div class="container text-center">
-      <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-      <small>
-        <a href="partnerships.html">Partnerships</a> ·
-        <a href="investors.html">Investors</a> ·
-        <a href="collaborations.html">Brand Collaborations</a>
-      </small>
-    </div>
+
+  <footer class="text-center py-4">
+    <p>&copy; 2025 Makwande Careers</p>
   </footer>
-  
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    // One-time: set backend URL for all pages
-    (function(){
-      var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-      ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-    })();
+    document.getElementById("cvRevampForm").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const resultBox=document.getElementById("revampResult");
+      resultBox.innerHTML="<div class='alert alert-info'>Revamping in progress...</div>";
+      setTimeout(()=>{resultBox.innerHTML="<div class='alert alert-success'>✅ CV successfully revamped. Download available soon.</div>";},2000);
+    });
   </script>
-  
+</body>
+</html>
+<footer class="bg-dark text-light text-center py-4 mt-5">
+  <div class="container">
+    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
+    <p class="small">
+      Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
+    </p>
+  </div>
+</footer>
+
+<script>
+  // auto-update year
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>

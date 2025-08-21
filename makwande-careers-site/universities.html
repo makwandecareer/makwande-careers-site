@@ -1,238 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-  <main>
-    <div class="container">
-      <!-- PAGE TITLE -->
-      <h1 class="section-title display-6 mb-3">Find your next role</h1>
-      <p class="lead mb-4">Filter by country, company, and match score. Click a role to view & apply.</p>
-  
-      <!-- your filters / table / cards go here -->
-    </div>
-  </main>
-  
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Universities & Bursaries - Makwande Careers</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="assets/css/app.css" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>Universities | Makwande Careers</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">Makwande Careers</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-          <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-          <li class="nav-item"><a class="nav-link active" href="universities.html">Universities</a></li>
-          <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
-          <li class="nav-item"><a class="btn btn-light text-primary ms-2" href="login.html">Login</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Hero -->
-  <section class="py-5 text-center bg-light border-bottom">
-    <div class="container">
-      <h1 class="fw-bold">Partner Universities & Their Bursaries</h1>
-      <p class="lead">Explore top institutions and the bursary opportunities they provide.</p>
-    </div>
-  </section>
-
-  <!-- Search + Filter -->
-  <section class="py-4">
-    <div class="container">
-      <form id="searchForm" class="row g-2 align-items-end">
-        <div class="col-md-5">
-          <label class="form-label">Search by Name</label>
-          <input type="text" id="searchQuery" class="form-control" placeholder="e.g. Cape Town" />
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Country</label>
-          <input type="text" id="searchCountry" class="form-control" placeholder="e.g. South Africa" />
-        </div>
-        <div class="col-md-3 d-grid">
-          <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <!-- Results -->
-  <section class="py-4">
-    <div class="container">
-      <div id="results" class="row g-4"></div>
-    </div>
-  </section>
-
-  <!-- Modal for Bursaries -->
-  <div class="modal fade" id="bursaryModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">University Bursaries</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div id="bursaryList"></div>
+  <main class="container py-5">
+    <h2 class="mb-4 text-center">Partner Universities</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+          <h5>University of Cape Town</h5>
+          <p>Programs Supported: Bursaries, Internships</p>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-light py-4 mt-5">
-    <div class="container text-center">
-      <p class="mb-1">&copy; 2025 Makwande Careers. All Rights Reserved.</p>
-      <small class="text-secondary">Building futures across Africa.</small>
-    </div>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const API_BASE = localStorage.getItem("API_BASE") || "http://127.0.0.1:8000";
-
-    async function fetchUniversities(query = "", country = "") {
-      let url = `${API_BASE}/api/universities?`;
-      if (query) url += `q=${encodeURIComponent(query)}&`;
-      if (country) url += `country=${encodeURIComponent(country)}&`;
-
-      const res = await fetch(url);
-      return res.json();
-    }
-
-    async function fetchBursaries(universityId) {
-      const res = await fetch(`${API_BASE}/api/universities/${universityId}/bursaries`);
-      return res.json();
-    }
-
-    function renderUniversities(unis) {
-      const results = document.getElementById("results");
-      results.innerHTML = "";
-      if (unis.length === 0) {
-        results.innerHTML = `<p class="text-muted">No universities found.</p>`;
-        return;
-      }
-      unis.forEach(u => {
-        const col = document.createElement("div");
-        col.className = "col-md-6 col-lg-4";
-        col.innerHTML = `
-          <div class="card shadow-sm h-100">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">${u.name}</h5>
-              <span class="badge bg-info mb-2">${u.country}</span>
-              <p class="card-text small flex-grow-1">${u.description || ""}</p>
-              <div class="d-grid gap-2">
-                <a href="${u.website}" target="_blank" class="btn btn-outline-primary btn-sm">Visit Website</a>
-                <button class="btn btn-primary btn-sm" onclick="showBursaries('${u.id}', '${u.name}')">View Bursaries</button>
-              </div>
-            </div>
-          </div>
-        `;
-        results.appendChild(col);
-      });
-    }
-
-    async function showBursaries(universityId, uniName) {
-      const list = document.getElementById("bursaryList");
-      list.innerHTML = `<p class="text-muted">Loading...</p>`;
-      const bursaries = await fetchBursaries(universityId);
-      if (bursaries.length === 0) {
-        list.innerHTML = `<p class="text-muted">No bursaries listed for ${uniName}.</p>`;
-      } else {
-        list.innerHTML = bursaries.map(b =>
-          `<div class="border rounded p-3 mb-3">
-             <h6 class="fw-bold">${b.title}</h6>
-             <p class="mb-1"><span class="badge bg-secondary">${b.field_of_study}</span> | Amount: R${b.amount}</p>
-             <p class="small">Deadline: ${b.deadline}</p>
-             <p class="small text-muted">Provider: ${b.provider}</p>
-           </div>`
-        ).join("");
-      }
-      const modal = new bootstrap.Modal(document.getElementById("bursaryModal"));
-      modal.show();
-    }
-
-    // Search form
-    document.getElementById("searchForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      const q = document.getElementById("searchQuery").value;
-      const c = document.getElementById("searchCountry").value;
-      const unis = await fetchUniversities(q, c);
-      renderUniversities(unis);
-    });
-
-    // Initial load
-    (async () => {
-      const unis = await fetchUniversities();
-      renderUniversities(unis);
-    })();
-  </script>
+  </main>
 </body>
-<nav class="navbar navbar-expand-lg sticky-top">
-  <div class="container">
-    <a class="navbar-brand" href="index.html">Makwande Careers</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="nav" class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto align-items-lg-center">
-        <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-        <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-        <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
-        <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
-        <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-        <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-        <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-<nav class="navbar navbar-expand-lg sticky-top">
-  <div class="container">
-    <a class="navbar-brand" href="index.html">Makwande Careers</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="nav" class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto align-items-lg-center">
-        <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-        <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-        <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
-        <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
-        <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-        <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-        <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
 </html>
-<footer class="py-5 mt-5">
-  <div class="container text-center">
+<footer class="bg-dark text-light text-center py-4 mt-5">
+  <div class="container">
     <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-    <small>
-      <a href="partnerships.html">Partnerships</a> ·
-      <a href="investors.html">Investors</a> ·
-      <a href="collaborations.html">Brand Collaborations</a>
-    </small>
+    <p class="small">
+      Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
+    </p>
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-  // One-time: set backend URL for all pages
-  (function(){
-    var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-    ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-  })();
+  // auto-update year
+  document.getElementById("year").textContent = new Date().getFullYear();
 </script>
-
-

@@ -1,154 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-  <main>
-    <div class="container">
-      <!-- PAGE TITLE -->
-      <h1 class="section-title display-6 mb-3">Find your next role</h1>
-      <p class="lead mb-4">Filter by country, company, and match score. Click a role to view & apply.</p>
-  
-      <!-- your filters / table / cards go here -->
-    </div>
-  </main>
-  
 <head>
-  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Makwande Careers Site — Cover Letter</title>
-
+  <meta charset="UTF-8">
+  <title>Cover Letter Generator | Makwande Careers</title>
+  <link rel="stylesheet" href="assets/css/app.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css">
-  <script defer src="js/config.js"></script>
-
 </head>
-
 <body>
-
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top border-0">
+  <nav class="navbar navbar-expand-lg fixed-top bg-white shadow-sm">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="index.html">
-        <img src="assets/img/logo.png" alt="Makwande Careers" height="28" class="me-2">
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-          <li class="nav-item"><a class="nav-link" href="revamp.html">CV Revamp</a></li>
-          <li class="nav-item"><a class="nav-link" href="cover_letter.html">Cover Letter</a></li>
-          <li class="nav-item"><a class="nav-link" href="autoapply.html">AutoApply</a></li>
-          <li class="nav-item"><a class="nav-link" href="recruiter.html">Recruiter</a></li>
-          <li class="nav-item"><a class="nav-link" href="employer.html">Employer</a></li>
-          <li class="nav-item"><a class="btn btn-success-soft ms-lg-2" href="login.html">Login</a></li>
-          <li class="nav-item"><a class="btn btn-success ms-lg-2" href="signup.html">Sign up</a></li>
+      <a class="navbar-brand" href="index.html">Makwande Careers</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a href="jobs.html" class="nav-link">Jobs</a></li>
+          <li class="nav-item"><a href="cv-revamp.html" class="nav-link">CV Revamp</a></li>
+          <li class="nav-item"><a href="cover-letter.html" class="nav-link active">Cover Letter</a></li>
+          <li class="nav-item"><a href="dashboard.html" class="nav-link">Dashboard</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <main class="container py-5" style="max-width:900px;">
-    <div class="soft-card p-4">
-      <h2 class="fw-bold">Cover Letter Generator</h2>
-      <form id="coverForm" class="row g-3">
-        <div class="col-12"><label class="form-label">Resume Text</label><textarea class="form-control"
-            name="resume_text" rows="8" required></textarea></div>
-        <div class="col-md-6"><label class="form-label">Job Title</label><input class="form-control" name="job_title"
-            required></div>
-        <div class="col-md-6"><label class="form-label">Company</label><input class="form-control" name="company"
-            required></div>
-        <div class="col-12"><label class="form-label">Job Description (optional)</label><textarea class="form-control"
-            name="job_description" rows="6"></textarea></div>
-        <div class="col-12 d-grid d-md-flex gap-2"><button class="btn btn-success" type="submit">Generate
-            Letter</button></div>
-      </form>
-      <hr>
-      <h5 class="fw-bold">Result</h5>
-      <pre id="coverOut" class="bg-white p-3 rounded-3" style="white-space:pre-wrap;"></pre>
-    </div>
+  <main class="container py-5" style="margin-top:5rem;">
+    <h2 class="mb-4">AI Cover Letter Generator</h2>
+    <p class="lead">Generate a tailored cover letter for your target job.</p>
+
+    <form id="coverForm" class="card p-4">
+      <div class="mb-3">
+        <label class="form-label">Job Title</label>
+        <input type="text" class="form-control" id="jobTitle" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Company</label>
+        <input type="text" class="form-control" id="company" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Job Description</label>
+        <textarea class="form-control" id="jobDesc" rows="4" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Generate Cover Letter</button>
+    </form>
+
+    <div id="coverResult" class="mt-4"></div>
   </main>
 
-  <footer class="footer mt-5 py-4 border-0 bg-white">
-    <div class="container d-flex justify-content-between flex-wrap gap-3">
-      <div>
-        <div class="d-flex align-items-center">
-          <img src="assets/img/logo.png" alt="Makwande Careers" height="20" class="me-2">
-        </div>
-        <small class="text-muted">Apply smarter. Land faster.</small>
-      </div>
-      <div class="d-flex gap-3">
-        <a class="link-success" href="index.html">Home</a>
-        <a class="link-success" href="jobs.html">Jobs</a>
-        <a class="link-success" href="revamp.html">Revamp</a>
-        <a class="link-success" href="pay.html">Pricing</a>
-      </div>
-    </div>
+  <footer class="text-center py-4">
+    <p>&copy; 2025 Makwande Careers</p>
   </footer>
 
-  <script type="module" src="js/ai.js"></script>
+  <script>
+    document.getElementById("coverForm").addEventListener("submit",(e)=>{
+      e.preventDefault();
+      const resultBox=document.getElementById("coverResult");
+      resultBox.innerHTML="<div class='alert alert-info'>Generating cover letter...</div>";
+      setTimeout(()=>{resultBox.innerHTML="<div class='alert alert-success'><h5>✅ Cover Letter Generated</h5><p>Dear Hiring Manager, ...</p></div>";},2000);
+    });
+  </script>
+    <footer class="bg-dark text-light text-center py-4 mt-5">
+      <div class="container">
+        <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
+        <p class="small">
+          Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
+        </p>
+      </div>
+    </footer>
+  
+ 
 </body>
-<nav class="navbar navbar-expand-lg sticky-top">
-  <div class="container">
-    <a class="navbar-brand" href="index.html">Makwande Careers</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="nav" class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto align-items-lg-center">
-        <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-        <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-        <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
-        <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
-        <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-        <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-        <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-<footer class="py-5 mt-5">
-  <div class="container text-center">
-    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-    <small>
-      <a href="partnerships.html">Partnerships</a> ·
-      <a href="investors.html">Investors</a> ·
-      <a href="collaborations.html">Brand Collaborations</a>
-    </small>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-  // One-time: set backend URL for all pages
-  (function () {
-    var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-    ["API_BASE", "apiBase"].forEach(function (k) { if (!localStorage.getItem(k)) localStorage.setItem(k, url); });
-  })();
-</script>
-
 </html>
-<footer class="py-5 mt-5">
-  <div class="container text-center">
+<footer class="bg-dark text-light text-center py-4 mt-5">
+  <div class="container">
     <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-    <small>
-      <a href="partnerships.html">Partnerships</a> ·
-      <a href="investors.html">Investors</a> ·
-      <a href="collaborations.html">Brand Collaborations</a>
-    </small>
+    <p class="small">
+      Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
+    </p>
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-  // One-time: set backend URL for all pages
-  (function(){
-    var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-    ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-  })();
-</script>
+
+
+

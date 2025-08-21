@@ -1,108 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <main>
+<head>
+  <meta charset="UTF-8">
+  <title>Employer Dashboard | Makwande Careers</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
     <div class="container">
-      <!-- PAGE TITLE -->
-      <h1 class="section-title display-6 mb-3">Find your next role</h1>
-      <p class="lead mb-4">Filter by country, company, and match score. Click a role to view & apply.</p>
-  
-      <!-- your filters / table / cards go here -->
+      <a class="navbar-brand" href="index.html">Makwande Careers</a>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a href="post-job.html" class="nav-link">Post Job</a></li>
+        <li class="nav-item"><a href="candidates.html" class="nav-link">Candidates</a></li>
+        <li class="nav-item"><a href="employer-dashboard.html" class="nav-link active">Dashboard</a></li>
+      </ul>
     </div>
-  </main>
-  
-  <head>
-    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Employer Dashboard — Makwande Careers</title>
-    <link rel="stylesheet" href="/assets/css/app.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    </head><body>
-    <div class="nav"><div class="container nav-row">
-      <a class="brand" href="/index.html"><span class="brand-logo">MC</span><span>Makwande Careers</span></a>
-      <div class="nav-links"><a href="/post-job.html">Post job</a></div>
-      <div class="nav-cta"><a class="btn btn-ghost" href="/login.html">Log out</a></div>
-    </div></div>
-    
-    <header class="hero-lite"><div class="container">
-      <span class="badge">Employer</span>
-      <h1 class="page-title">Company hiring overview</h1>
-    </div></header>
-    
-    <section><div class="container grid grid-2">
-      <div class="card">
-        <h3>Active jobs</h3>
-        <table class="table"><thead><tr><th>Role</th><th>Owner</th><th>Status</th></tr></thead>
-          <tbody><tr><td>Data Engineer</td><td>Recruiter: L. Dube</td><td>Open</td></tr>
-                 <tr><td>QA Analyst</td><td>Recruiter: T. Moyo</td><td>Interview</td></tr></tbody></table>
-      </div>
-      <div class="card">
-        <h3>Upcoming interviews</h3>
-        <table class="table"><thead><tr><th>Candidate</th><th>Role</th><th>Date</th></tr></thead>
-          <tbody><tr><td>Sibongile M.</td><td>QA Analyst</td><td>Aug 28</td></tr></tbody></table>
-      </div>
-    </div></section>
-    
-    <footer>…same as index…</footer>
-    <script src="/assets/js/app.js"></script>
-    </body>
-    <nav class="navbar navbar-expand-lg sticky-top">
+  </nav>
+
+  <main class="container" style="margin-top:5rem;">
+    <h2 class="mb-4">Employer Dashboard</h2>
+    <div class="row g-
+    <footer class="bg-dark text-light text-center py-4 mt-5">
       <div class="container">
-        <a class="navbar-brand" href="index.html">Makwande Careers</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div id="nav" class="collapse navbar-collapse">
-          <ul class="navbar-nav ms-auto align-items-lg-center">
-            <li class="nav-item"><a class="nav-link" href="jobs.html">Jobs</a></li>
-            <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-            <li class="nav-item"><a class="nav-link" href="universities.html">Universities</a></li>
-            <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
-            <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-            <li class="nav-item"><a class="nav-link" href="investors.html">Investors</a></li>
-            <li class="nav-item ms-lg-2"><a class="btn btn-primary" href="signup.html">Get Started</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <footer class="py-5 mt-5">
-      <div class="container text-center">
         <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-        <small>
-          <a href="partnerships.html">Partnerships</a> ·
-          <a href="investors.html">Investors</a> ·
-          <a href="collaborations.html">Brand Collaborations</a>
-        </small>
+        <p class="small">
+          Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
+        </p>
       </div>
     </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
     <script>
-      document.getElementById('year').textContent = new Date().getFullYear();
-      // One-time: set backend URL for all pages
-      (function(){
-        var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-        ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-      })();
+      // auto-update year
+      document.getElementById("year").textContent = new Date().getFullYear();
     </script>
-    
-    </html>
-    <footer class="py-5 mt-5">
-      <div class="container text-center">
-        <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-        <small>
-          <a href="partnerships.html">Partnerships</a> ·
-          <a href="investors.html">Investors</a> ·
-          <a href="collaborations.html">Brand Collaborations</a>
-        </small>
-      </div>
-    </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      document.getElementById('year').textContent = new Date().getFullYear();
-      // One-time: set backend URL for all pages
-      (function(){
-        var url = "https://autoapplyapp.onrender.com"; // <-- your backend URL
-        ["API_BASE","apiBase"].forEach(function(k){ if(!localStorage.getItem(k)) localStorage.setItem(k, url); });
-      })();
-    </script>
-    
+  

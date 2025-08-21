@@ -1,30 +1,36 @@
-# Makwande Careers Site (Frontend)
+AutoApplyApp: Empowering Job Seekers in the SADC Region
 
-A polished, green-themed static frontend integrated with your FastAPI backend.
+Our Vision
 
-## Configure
-- Edit `js/config.js` and set:
-  ```js
-  window.API_BASE = "https://<your-backend-on-render>";
-  ```
-- In `js/pay.js`, replace Paystack public key.
+AutoApplyApp is designed to transform access to employment opportunities across the Southern African Development Community (SADC) region. We aim to bridge the gap between job seekers and employers by removing barriers, automating applications, and ensuring fair, consistent access to opportunities.
 
-## Deploy (Static Site)
-- Upload the ZIP to Render Static Sites (or Vercel/Netlify).
+What We Offer
 
-## Monorepo Deploy (Backend + Frontend)
-- Put this folder at repo root as `makwande-careers-site/`.
-- Place `render.yaml` at repo root with `staticPublishPath: makwande-careers-site`.
-- Connect repo to Render → it will create both services.
+Automated Job Applications
+The platform applies for opportunities on behalf of job seekers, ensuring no opportunity is missed due to time or resource limitations.
 
-## Pages
-- `/login.html`, `/signup.html`
-- `/jobs.html`, `/autoapply.html`
-- `/revamp.html`, `/cover_letter.html`
-- `/recruiter.html`, `/employer.html`
-- `/dashboard.html`, `/pay.html`
+AI-Driven Matching
+Smart recommendations connect applicants with jobs that fit their skills, experience, and aspirations.
+
+Regional Coverage
+Tailored to the realities of 10 SADC member countries, the system supports cross-border access to opportunities and regional mobility of skills.
+
+Transparency & Tracking
+Every application submitted is tracked, giving job seekers full visibility into progress and outcomes.
+
+Support for Organizations
+Employers and institutions gain access to a structured, ready-to-engage pool of candidates, reducing recruitment inefficiencies.
 
 
+Why It Matters
 
-### Preview
-![Preview](assets/img/preview.gif)
+For Job Seekers: Increases chances of securing meaningful employment, reduces application fatigue, and improves career alignment.
+
+For Employers: Streamlines hiring processes and promotes equitable access to qualified talent.
+
+For the Region: Advances economic growth by improving employment outcomes and enhancing labor mobility within SADC.
+
+
+Our Commitment
+
+AutoApplyApp is built on a foundation of fairness, transparency, and empowerment. By combining innovation with social impact, we aim to make the job search process easier, smarter, and more inclusive for every job seeker in the region.

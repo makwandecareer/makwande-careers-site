@@ -1,101 +1,187 @@
-<!DOCTYPE html>
+<!-- jobs.html -->
+<!doctype html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="assets/css/app.css">
-
-  <meta charset="UTF-8">
-  <title>Post Job | Makwande Careers</title>
-  <link rel="stylesheet" href="assets/css/app.css">
+  <meta charset="utf-8" />
+  <title>Live Jobs | Makwande Careers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .job-card{border-radius:16px}
+    .truncate-3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  </style>
 </head>
-<script>
-  // ====== BASIC API CLIENT (paste once per page that needs API) ======
-  window.API_BASE = "https://autoapplyapp-mobile.onrender.com";  // FastAPI base
-  const TOKEN_KEY = "mc_token";
-  
-  // Auth helpers
-  function setToken(t){ localStorage.setItem(TOKEN_KEY, t); }
-  function getToken(){ return localStorage.getItem(TOKEN_KEY); }
-  function authHeaders(h={}) {
-    const t = getToken();
-    return t ? {...h, Authorization: `Bearer ${t}`} : h;
-  }
-  
-  // API helper (GET/POST/etc)
-  async function api(path, {method="GET", body, headers} = {}) {
-    const res = await fetch(`${API_BASE}${path}`, {
-      method,
-      headers: authHeaders({
-        "Content-Type": "application/json",
-        ...(headers||{})
-      }),
-      body: body ? JSON.stringify(body) : undefined
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.status === 204 ? null : res.json();
-  }
-  </script>
-  <script>
-    // ====== BASIC API CLIENT (paste once per page that needs API) ======
-    window.API_BASE = "https://autoapplyapp-mobile.onrender.com";  // FastAPI base
-    const TOKEN_KEY = "mc_token";
-    
-    // Auth helpers
-    function setToken(t){ localStorage.setItem(TOKEN_KEY, t); }
-    function getToken(){ return localStorage.getItem(TOKEN_KEY); }
-    function authHeaders(h={}) {
-      const t = getToken();
-      return t ? {...h, Authorization: `Bearer ${t}`} : h;
-    }
-    
-    // API helper (GET/POST/etc)
-    async function api(path, {method="GET", body, headers} = {}) {
-      const res = await fetch(`${API_BASE}${path}`, {
-        method,
-        headers: authHeaders({
-          "Content-Type": "application/json",
-          ...(headers||{})
-        }),
-        body: body ? JSON.stringify(body) : undefined
-      });
-      if (!res.ok) throw new Error(await res.text());
-      return res.status === 204 ? null : res.json();
-    }
-    </script>
-    
-<body>
-  <main class="container py-5">
-    <h2 class="mb-4 text-center">Post a New Job</h2>
-    <div class="card p-4 shadow-sm mx-auto" style="max-width:700px;">
-      <form>
-        <div class="mb-3">
-          <label class="form-label">Job Title</label>
-          <input type="text" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Company</label>
-          <input type="text" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Description</label>
-          <textarea class="form-control" rows="4" required></textarea>
-        </div>
-        <button class="btn btn-primary w-100">Submit</button>
-      </form>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">Makwande Careers</a>
+      <span class="badge text-bg-success">LIVE</span>
     </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Search</label>
+        <input id="q" class="form-control" placeholder="title, description, company…">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Country</label>
+        <input id="country" class="form-control" placeholder="South Africa">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Location</label>
+        <input id="location" class="form-control" placeholder="Johannesburg">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Company</label>
+        <input id="company" class="form-control" placeholder="PNet, Vodacom">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Min Score</label>
+        <input id="min_score" type="number" step="0.01" min="0" max="100" class="form-control" placeholder="e.g. 70">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Posted From</label>
+        <input id="date_from" type="date" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Posted To</label>
+        <input id="date_to" type="date" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Sort</label>
+        <select id="sort" class="form-select">
+          <option value="post_date_desc">Newest</option>
+          <option value="post_date_asc">Oldest</option>
+          <option value="score_desc">Score: High → Low</option>
+          <option value="score_asc">Score: Low → High</option>
+        </select>
+      </div>
+      <div class="col-md-3 d-grid">
+        <button id="applyFilters" class="btn btn-primary">Apply Filters</button>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div id="meta" class="small text-muted"></div>
+      <div class="btn-group">
+        <button id="prev" class="btn btn-outline-secondary">Prev</button>
+        <button id="next" class="btn btn-outline-secondary">Next</button>
+      </div>
+    </div>
+
+    <div id="jobs" class="row g-3 mt-1"></div>
   </main>
+
+  <script>
+    // ====== CONFIG ======
+    const API_BASE = "https://YOUR-RENDER-APP.onrender.com"; // <-- change to your FastAPI base
+
+    let page = 1, pageSize = 20;
+    const els = {
+      q:        document.getElementById('q'),
+      country:  document.getElementById('country'),
+      location: document.getElementById('location'),
+      company:  document.getElementById('company'),
+      minScore: document.getElementById('min_score'),
+      dateFrom: document.getElementById('date_from'),
+      dateTo:   document.getElementById('date_to'),
+      sort:     document.getElementById('sort'),
+      apply:    document.getElementById('applyFilters'),
+      jobs:     document.getElementById('jobs'),
+      meta:     document.getElementById('meta'),
+      prev:     document.getElementById('prev'),
+      next:     document.getElementById('next'),
+    };
+
+    function params() {
+      const p = new URLSearchParams();
+      if (els.q.value)        p.set('q', els.q.value);
+      if (els.country.value)  p.set('country', els.country.value);
+      if (els.location.value) p.set('location', els.location.value);
+      if (els.company.value)  p.set('company', els.company.value);
+      if (els.minScore.value) p.set('min_score', els.minScore.value);
+      if (els.dateFrom.value) p.set('date_from', els.dateFrom.value);
+      if (els.dateTo.value)   p.set('date_to', els.dateTo.value);
+      if (els.sort.value)     p.set('sort', els.sort.value);
+      p.set('page', page);
+      p.set('page_size', pageSize);
+      return p.toString();
+    }
+
+    async function loadJobs() {
+      els.jobs.innerHTML = `<div class="text-center py-5">Loading jobs…</div>`;
+      try {
+        const res = await fetch(`${API_BASE}/api/jobs?${params()}`);
+        const json = await res.json();
+        if (!json.ok) throw new Error('API not ok');
+        const { data, meta } = json;
+
+        // meta
+        els.meta.textContent = `Showing page ${meta.page} of ${meta.total_pages} • ${meta.total} jobs`;
+
+        // pagination
+        els.prev.disabled = meta.page <= 1;
+        els.next.disabled = meta.page >= meta.total_pages;
+
+        if (!data.length) {
+          els.jobs.innerHTML = `<div class="text-center py-5 text-muted">No jobs match your filters.</div>`;
+          return;
+        }
+
+        // render
+        els.jobs.innerHTML = data.map(job => {
+          const d = new Date(job.POST_DATE || job.post_date);
+          const posted = isNaN(d.getTime()) ? '' : d.toLocaleDateString();
+          const score = (job.MATCH_SCORE ?? job.match_score ?? 0) * ( (job.MATCH_SCORE ?? job.match_score ?? 0) <= 1 ? 100 : 1 );
+          const scoreVal = Math.round(score);
+
+          return `
+          <div class="col-12 col-md-6">
+            <div class="card job-card h-100 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <h5 class="card-title mb-1">${job.TITLE || job.title || ''}</h5>
+                  ${scoreVal ? `<span class="badge text-bg-info">Score ${scoreVal}</span>` : ``}
+                </div>
+                <div class="text-muted mb-2">
+                  <strong>${job.COMPANY || job.company || ''}</strong> •
+                  ${job.LOCATION || job.location || ''} •
+                  ${(job.COUNTRY || job.country || '')}
+                </div>
+                <p class="card-text truncate-3">${(job.DESCRIPTION || job.description || '').replace(/</g,'&lt;')}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="small text-muted">Posted: ${posted || '—'}</div>
+                  <a class="btn btn-sm btn-primary" target="_blank" rel="noopener" href="${job.URL || job.url}">View & Apply</a>
+                </div>
+              </div>
+              <div class="card-footer bg-transparent border-0">
+                <span class="badge text-bg-secondary">${job.SOURCE || job.source || 'source'}</span>
+                ${job.CLOSING_DATE || job.closing_date ? `<span class="badge text-bg-warning ms-2">Closes: ${job.CLOSING_DATE || job.closing_date}</span>` : ``}
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+      } catch (e) {
+        els.jobs.innerHTML = `<div class="alert alert-danger">Failed to load jobs. ${e.message}</div>`;
+      }
+    }
+
+    function applyAndReload() { page = 1; loadJobs(); }
+
+    // UI events
+    els.apply.addEventListener('click', applyAndReload);
+    els.prev.addEventListener('click', () => { if (page>1){ page--; loadJobs(); } });
+    els.next.addEventListener('click', () => { page++; loadJobs(); });
+
+    // Debounced search typing
+    let t;
+    els.q.addEventListener('input', () => { clearTimeout(t); t = setTimeout(applyAndReload, 400); });
+
+    // initial
+    loadJobs();
+  </script>
 </body>
 </html>
-<footer class="bg-dark text-light text-center py-4 mt-5">
-  <div class="container">
-    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-    <p class="small">
-      Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
-    </p>
-  </div>
-</footer>
 
-<script>
-  // auto-update year
-  document.getElementById("year").textContent = new Date().getFullYear();
-</script>

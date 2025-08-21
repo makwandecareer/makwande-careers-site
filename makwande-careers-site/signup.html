@@ -84,6 +84,39 @@
       alert("✅ Account created (connect to backend later).");
     });
   </script>
+  <script>
+    document.getElementById("signupForm")?.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const name = document.getElementById("signupName").value.trim();
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
+    
+      try {
+        // create the user
+        let res = await fetch(`${API_BASE}/api/auth/signup`, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({name, email, password})
+        });
+        if (!res.ok) throw new Error(await res.text());
+    
+        // then login
+        res = await fetch(`${API_BASE}/api/auth/login`, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({email, password})
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        setToken(data.access_token);
+        alert("✅ Account created");
+        location.href = "dashboard.html";
+      } catch (err) {
+        alert("Sign up failed: " + err.message);
+      }
+    });
+    </script>
+    
 </body>
 </html>
 <footer class="bg-dark text-light text-center py-4 mt-5">

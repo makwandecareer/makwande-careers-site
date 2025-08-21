@@ -321,7 +321,7 @@ fetch("./site-config.json").then(r => r.json()).then(cfg => {
   init();
 }).catch(() => {
   // fallback if config missing — set your API URL here:
-  API_BASE = "https://YOUR-API-SERVICE.onrender.com";
+  API_BASE = "https://autoapplyapp-mobile.onrender.com";
   init();
 });
 
@@ -390,5 +390,6 @@ function init(){
   resetAndFetch();
 }
 </script>
-
+  </script>
+  
 </html>

@@ -216,6 +216,72 @@
   // auto-update year
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
-
+<script>
+  // ====== BASIC API CLIENT (paste once per page that needs API) ======
+  window.API_BASE = "https://autoapplyapp-mobile.onrender.com";  // FastAPI base
+  const TOKEN_KEY = "mc_token";
+  
+  // Auth helpers
+  function setToken(t){ localStorage.setItem(TOKEN_KEY, t); }
+  function getToken(){ return localStorage.getItem(TOKEN_KEY); }
+  function authHeaders(h={}) {
+    const t = getToken();
+    return t ? {...h, Authorization: `Bearer ${t}`} : h;
+  }
+  
+  // API helper (GET/POST/etc)
+  async function api(path, {method="GET", body, headers} = {}) {
+    const res = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers: authHeaders({
+        "Content-Type": "application/json",
+        ...(headers||{})
+      }),
+      body: body ? JSON.stringify(body) : undefined
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.status === 204 ? null : res.json();
+  }
+  </script>
+  
 </body>
+<script>
+  document.getElementById("companyProfile").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const body = {
+      name:       document.getElementById("compName").value,
+      industry:   document.getElementById("compIndustry").value,
+      description:document.getElementById("compDesc").value,
+      website:    document.getElementById("compWebsite").value,
+      location:   document.getElementById("compLocation").value
+    };
+    try {
+      await api("/api/employer/profile", {method:"POST", body});
+      alert("Profile saved.");
+    } catch (err) {
+      alert("Save failed: " + err.message);
+    }
+  });
+  </script>
+  <script>
+    async function loadBursaries(){
+      try{
+        const rows = await api("/api/bursaries"); // [{id,title,field,country,close_date,summary},...]
+        const list = document.getElementById("bursaries-list");
+        list.innerHTML = rows.map(b => `
+          <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <h5 class="card-title fw-bold">${b.title}</h5>
+                <p class="card-text">${b.summary || ""}</p>
+                <p><span class="badge bg-primary">Closes: ${b.close_date || "TBA"}</span></p>
+                <a href="bursary-apply.html?id=${encodeURIComponent(b.id)}" class="btn btn-outline-primary btn-sm">Apply Now</a>
+              </div>
+            </div>
+          </div>`).join("") || `<p class="text-muted">No bursaries yet.</p>`;
+      }catch(e){ console.error(e); }
+    }
+    loadBursaries();
+    </script>
+    
 </html>

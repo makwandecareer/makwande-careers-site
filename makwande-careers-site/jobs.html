@@ -1,395 +1,257 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <link rel="stylesheet" href="assets/css/app.css">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Jobs – Makwande Careers</title>
-  <link rel="stylesheet" href="assets/css/app.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f172a; --card:#111827; --muted:#94a3b8; --accent:#22c55e; --text:#e5e7eb; --border:#1f2937;
+    }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    header{padding:20px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(15,23,42,.9);backdrop-filter:blur(6px)}
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    h1{margin:0 0 2px;font-size:28px}
+    .sub{color:var(--muted);font-size:14px}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+    select,input,button{
+      background:#0b1222;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px
+    }
+    button{cursor:pointer;border-color:#1f2937;background:#09111f}
+    button.primary{background:var(--accent);border-color:transparent;color:#062a10;font-weight:600}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;gap:10px;flex-direction:column}
+    .title{font-weight:700}
+    .meta{color:var(--muted);font-size:13px;display:flex;gap:12px;flex-wrap:wrap}
+    .badge{background:#0a1a12;color:#76f0ae;border:1px solid #164b2e;padding:2px 8px;border-radius:999px;font-size:12px}
+    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+    .link{color:#9ae6b4;text-decoration:none}
+    .error{background:#3b0d0d;border:1px solid #5f1515;color:#ffd2d2;padding:10px 12px;border-radius:10px;margin:12px 0}
+    .muted{color:var(--muted)}
+    .empty{border:1px dashed var(--border);border-radius:12px;padding:24px;text-align:center}
+    .pager{display:flex;gap:8px;justify-content:center;margin:18px 0}
+    .spinner{width:22px;height:22px;border:3px solid #284258;border-top-color:#76f0ae;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px}
+    .row{display:flex;align-items:center;gap:10px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
 </head>
 <body>
-
-<!-- ====== Navbar ====== -->
-<nav class="navbar navbar-expand-lg sticky-top shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="index.html">Makwande Careers</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link active" href="jobs.html">Jobs</a></li>
-        <li class="nav-item"><a class="nav-link" href="bursaries.html">Bursaries</a></li>
-        <li class="nav-item"><a class="nav-link" href="candidates.html">Candidates</a></li>
-        <li class="nav-item"><a class="nav-link" href="recruiters.html">Recruiters</a></li>
-        <li class="nav-item"><a class="nav-link" href="employers.html">Employers</a></li>
-        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<!-- ====== Header ====== -->
-<header class="py-5 text-center bg-light shadow-sm">
-  <div class="container">
-    <h1 class="fw-bold">Available Jobs</h1>
-    <p class="lead text-muted">Explore tailored opportunities across Africa.</p>
-  </div>
-</header>
-
-<!-- ====== Filters ====== -->
-<section class="py-4">
-  <div class="container">
-    <form class="row g-3 align-items-center">
-      <div class="col-md-4">
-        <input type="text" class="form-control" placeholder="Search job title or keywords">
-      </div>
-      <div class="col-md-3">
-        <select class="form-select">
-          <option selected>All Locations</option>
-          <option value="South Africa">South Africa</option>
-          <option value="Nigeria">Nigeria</option>
-          <option value="Kenya">Kenya</option>
-          <option value="Mozambique">Mozambique</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <select class="form-select">
-          <option selected>All Companies</option>
-          <option>Standard Bank</option>
-          <option>MTN</option>
-          <option>Shoprite</option>
-          <option>Flutterwave</option>
-        </select>
-      </div>
-      <div class="col-md-2 d-grid">
-        <button type="submit" class="btn btn-primary">Filter</button>
-      </div>
-    </form>
-  </div>
-</section>
-
-<!-- ====== Jobs Table ====== -->
-<section class="pb-5">
-  <div class="container">
-    <div class="table-responsive shadow-sm">
-      <table class="table table-striped align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>Title</th>
-            <th>Company</th>
-            <th>Location</th>
-            <th>Match</th>
-            <th>Posted</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="jobs-table-body">
-          <!-- Example static row -->
-          <tr>
-            <td>Software Engineer</td>
-            <td>MTN</td>
-            <td>South Africa</td>
-            <td><span class="badge bg-success">92%</span></td>
-            <td>3 days ago</td>
-            <td><a href="#" class="btn btn-sm btn-outline-primary">Apply</a></td>
-          </tr>
-          <!-- More rows injected dynamically by backend -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ====== Footer ====== -->
-<footer class="py-4 bg-light mt-auto">
-  <div class="container text-center">
-    <p class="mb-1">© 2025 Makwande Careers. All Rights Reserved.</p>
-    <small>
-      <a href="marketing.html">Marketing</a> · 
-      <a href="brand-collaborations.html">Brand Collaborations</a> · 
-      <a href="contact.html">Contact Us</a>
-    </small>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-// Placeholder: Replace with backend fetch
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("Jobs page ready. Hook to API here.");
-});
-</script>
-<footer class="bg-dark text-light text-center py-4 mt-5">
-  <div class="container">
-    <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-    <p class="small">
-      Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.
-    </p>
-  </div>
-</footer>
-
-<script>
-  // auto-update year
-  document.getElementById("year").textContent = new Date().getFullYear();
-</script>
-<script>
-  // ====== BASIC API CLIENT (paste once per page that needs API) ======
-  window.API_BASE = "https://autoapplyapp-mobile.onrender.com";  // FastAPI base
-  const TOKEN_KEY = "mc_token";
-  
-  // Auth helpers
-  function setToken(t){ localStorage.setItem(TOKEN_KEY, t); }
-  function getToken(){ return localStorage.getItem(TOKEN_KEY); }
-  function authHeaders(h={}) {
-    const t = getToken();
-    return t ? {...h, Authorization: `Bearer ${t}`} : h;
-  }
-  
-  // API helper (GET/POST/etc)
-  async function api(path, {method="GET", body, headers} = {}) {
-    const res = await fetch(`${API_BASE}${path}`, {
-      method,
-      headers: authHeaders({
-        "Content-Type": "application/json",
-        ...(headers||{})
-      }),
-      body: body ? JSON.stringify(body) : undefined
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.status === 204 ? null : res.json();
-  }
-  </script>
-  <script>
-    const API_BASE = window.API_BASE_URL || "https://autoapplyapp.onrender.com"; // set a global if you prefer
-    const state = {
-      q: "", location: "Gauteng", company: "", source: "",
-      days: 7, limit: 25, offset: 0, busy: false
-    };
-    
-    const els = {
-      list: document.getElementById("jobs-list"),
-      loadMore: document.getElementById("jobs-load-more"),
-      q: document.getElementById("filter-q"),
-      loc: document.getElementById("filter-location"),
-      src: document.getElementById("filter-source"),
-      company: document.getElementById("filter-company"),
-      count: document.getElementById("jobs-count"),
-      updated: document.getElementById("jobs-updated")
-    };
-    
-    function fmtDate(s){ return s || ""; }
-    
-    function jobCard(j){
-      return `
-      <div class="card mb-3 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <h5 class="card-title mb-1">${j.title}</h5>
-            <span class="badge text-bg-light">${j.source?.toUpperCase() || ""}</span>
-          </div>
-          <h6 class="card-subtitle text-muted mb-2">${j.company || ""}</h6>
-          <p class="card-text">
-            <small class="text-muted">${j.location || ""} • Posted ${fmtDate(j.posted_date)}</small>
-          </p>
-          <a class="btn btn-primary btn-sm" href="${j.url}" target="_blank" rel="noopener">View & Apply</a>
+  <header>
+    <div class="wrap">
+      <h1>Makwande Careers</h1>
+      <div class="sub">Fresh roles across the SADC region.</div>
+      <div class="controls">
+        <label>
+          <span class="muted">Country</span><br/>
+          <select id="country"></select>
+        </label>
+        <label>
+          <span class="muted">Search</span><br/>
+          <input id="q" type="search" placeholder="e.g. data, finance, graduate…" />
+        </label>
+        <label>
+          <span class="muted">Limit</span><br/>
+          <select id="limit">
+            <option>10</option><option selected>20</option><option>30</option><option>50</option>
+          </select>
+        </label>
+        <div style="align-self:end;display:flex;gap:8px">
+          <button id="refresh" class="primary">Load Jobs</button>
+          <button id="reset">Reset</button>
         </div>
-      </div>`;
-    }
-    
-    async function fetchJobs(append=false){
-      if (state.busy) return;
-      state.busy = true;
-      els.loadMore?.setAttribute("disabled","disabled");
-      try {
-        const params = new URLSearchParams({
-          q: state.q, location: state.location, company: state.company,
-          source: state.source, days: String(state.days),
-          limit: String(state.limit), offset: String(state.offset), order: "recent"
-        });
-        const r = await fetch(`${API_BASE}/api/jobs?` + params.toString(), { mode: "cors" });
-        if (!r.ok) throw new Error("API error");
-        const data = await r.json();
-    
-        if (!append) els.list.innerHTML = "";
-        data.forEach(j => els.list.insertAdjacentHTML("beforeend", jobCard(j)));
-        els.count.textContent = (parseInt(els.count.textContent||"0") + data.length).toString();
-        els.updated.textContent = new Date().toLocaleString();
-    
-        // enable/disable Load More
-        if (data.length < state.limit) {
-          els.loadMore?.setAttribute("disabled","disabled");
-        } else {
-          els.loadMore?.removeAttribute("disabled");
-        }
-      } catch (e) {
-        console.error(e);
-        alert("Could not fetch jobs. Please try again later.");
-      } finally {
-        state.busy = false;
-      }
-    }
-    
-    function resetAndFetch(){
-      state.offset = 0;
-      els.count.textContent = "0";
-      fetchJobs(false);
-    }
-    
-    function bindUI(){
-      els.q?.addEventListener("input", e => { state.q = e.target.value.trim(); resetAndFetch(); });
-      els.loc?.addEventListener("change", e => { state.location = e.target.value; resetAndFetch(); });
-      els.src?.addEventListener("change", e => { state.source = e.target.value; resetAndFetch(); });
-      els.company?.addEventListener("input", e => { state.company = e.target.value.trim(); resetAndFetch(); });
-      els.loadMore?.addEventListener("click", () => { state.offset += state.limit; fetchJobs(true); });
-    }
-    
-    // bootstrap
-    document.addEventListener("DOMContentLoaded", () => {
-      bindUI();
-      resetAndFetch();
-    });
-    </script>
-    
-</body>
-<table class="table table-striped">
-  <thead><tr>
-    <th>Title</th><th>Company</th><th>Location</th><th>Match</th><th>Posted</th><th></th>
-  </tr></thead>
-  <tbody id="jobsBody"></tbody>
-</table>
-<script>
-  async function loadJobs(){
-    try {
-      const rows = await api("/api/jobs");  // expects list: [{id,title,company,location,match,posted_at}, ...]
-      const body = document.getElementById("jobsBody");
-      body.innerHTML = rows.map(j => `
-        <tr>
-          <td>${j.title}</td>
-          <td>${j.company}</td>
-          <td>${j.location || "—"}</td>
-          <td><span class="badge-soft">${(j.match ?? 0)}%</span></td>
-          <td>${j.posted_at ? new Date(j.posted_at).toLocaleDateString() : "—"}</td>
-          <td><a class="btn btn-sm btn-primary" href="autoapply.html?job=${encodeURIComponent(j.id)}">Apply</a></td>
-        </tr>
-      `).join("") || `<tr><td colspan="6" class="text-center text-muted">No jobs yet.</td></tr>`;
-    } catch(e) {
-      console.error(e); alert("Couldn’t load jobs");
-    }
-  }
-  loadJobs();
-  </script>
-  <!-- Minimal filters + list -->
-<div class="row g-2 mb-3">
-  <div class="col-12 col-md"><input id="filter-q" class="form-control" placeholder="Search title or company"></div>
-  <div class="col-6 col-md"><input id="filter-company" class="form-control" placeholder="Company"></div>
-  <div class="col-6 col-md">
-    <select id="filter-location" class="form-select">
-      <option value="Gauteng" selected>Gauteng</option>
-      <option value="Western Cape">Western Cape</option>
-      <option value="KwaZulu-Natal">KwaZulu-Natal</option>
-    </select>
-  </div>
-  <div class="col-6 col-md">
-    <select id="filter-source" class="form-select">
-      <option value="">All sources</option>
-      <option value="indeed">Indeed</option>
-      <option value="pnet">PNet</option>
-      <option value="career24">Career24</option>
-    </select>
-  </div>
-</div>
+      </div>
+      <div id="status" class="row muted" style="min-height:24px"></div>
+      <div id="err" class="error" style="display:none"></div>
+    </div>
+  </header>
 
-<div class="d-flex justify-content-between align-items-center mb-2">
-  <div><strong id="jobs-count">0</strong> jobs loaded</div>
-  <div class="text-muted small">Updated: <span id="jobs-updated">—</span></div>
-</div>
-
-<div id="jobs-list"></div>
-
-<div class="d-grid mt-3">
-  <button id="jobs-load-more" class="btn btn-outline-primary">Load more</button>
-</div>
+  <main class="wrap">
+    <div id="list" class="grid"></div>
+    <div id="empty" class="empty" style="display:none">No jobs found. Try a different country or search term.</div>
+    <div class="pager">
+      <button id="prev">Prev</button>
+      <div id="page" class="muted">1</div>
+      <button id="next">Next</button>
+    </div>
+  </main>
 
 <script>
-// Load API base from site-config.json
-letAPI_BASE = "";
-fetch("./site-config.json").then(r => r.json()).then(cfg => {
-  API_BASE = cfg.API_BASE_URL;
-  init();
-}).catch(() => {
-  // fallback if config missing — set your API URL here:
-  API_BASE = "https://autoapplyapp-mobile.onrender.com";
-  init();
-});
+  // ====== CONFIG ======
+  const API_BASE = 'https://autoapplyapp.onrender.com/api';
+  // The 10 SADC defaults (edit to your exact set if needed)
+  const COUNTRY_OPTIONS = [
+    {code:'ZA', name:'South Africa'},
+    {code:'BW', name:'Botswana'},
+    {code:'NA', name:'Namibia'},
+    {code:'ZM', name:'Zambia'},
+    {code:'ZW', name:'Zimbabwe'},
+    {code:'MZ', name:'Mozambique'},
+    {code:'AO', name:'Angola'},
+    {code:'TZ', name:'Tanzania'},
+    {code:'MW', name:'Malawi'},
+    {code:'LS', name:'Lesotho'},
+  ];
 
-function init(){
-  const state = { q:"", location:"Gauteng", company:"", source:"", days:7, limit:25, offset:0, busy:false };
-  const els = {
-    list: document.getElementById("jobs-list"),
-    loadMore: document.getElementById("jobs-load-more"),
-    q: document.getElementById("filter-q"),
-    loc: document.getElementById("filter-location"),
-    src: document.getElementById("filter-source"),
-    company: document.getElementById("filter-company"),
-    count: document.getElementById("jobs-count"),
-    updated: document.getElementById("jobs-updated")
+  // ====== STATE ======
+  let state = {
+    page: 1,
+    limit: 20,
+    country: localStorage.getItem('country') || 'ZA',
+    q: ''
   };
 
-  function jobCard(j){
-    return `
-    <div class="card mb-3 shadow-sm">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <h5 class="card-title mb-1">${j.title}</h5>
-          <span class="badge text-bg-light">${(j.source||"").toUpperCase()}</span>
-        </div>
-        <h6 class="card-subtitle text-muted mb-2">${j.company||""}</h6>
-        <p class="card-text"><small class="text-muted">${j.location||""} • Posted ${j.posted_date||""}</small></p>
-        <a class="btn btn-primary btn-sm" href="${j.url}" target="_blank" rel="noopener">View & Apply</a>
-      </div>
-    </div>`;
+  // ====== DOM ======
+  const countrySel = document.getElementById('country');
+  const qInput      = document.getElementById('q');
+  const limitSel    = document.getElementById('limit');
+  const refreshBtn  = document.getElementById('refresh');
+  const resetBtn    = document.getElementById('reset');
+  const prevBtn     = document.getElementById('prev');
+  const nextBtn     = document.getElementById('next');
+  const pageLbl     = document.getElementById('page');
+  const listEl      = document.getElementById('list');
+  const emptyEl     = document.getElementById('empty');
+  const statusEl    = document.getElementById('status');
+  const errEl       = document.getElementById('err');
+
+  // ====== UTILS ======
+  function fmtDate(iso){
+    if(!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'});
   }
+  function relTime(iso){
+    if(!iso) return '';
+    const d = new Date(iso).getTime(), now = Date.now(), diff = Math.max(1, Math.round((now-d)/1000));
+    const units = [[31536000,'y'],[2592000,'mo'],[604800,'w'],[86400,'d'],[3600,'h'],[60,'m'],[1,'s']];
+    for(const [s, label] of units){ if(diff >= s) return Math.floor(diff/s)+label+' ago'; }
+    return 'just now';
+  }
+  function setLoading(isLoading){
+    statusEl.innerHTML = isLoading
+      ? <div class="spinner"></div> Loading…
+      : '';
+  }
+  function showError(msg){
+    errEl.style.display='block';
+    errEl.textContent = msg || 'Could not load jobs.';
+  }
+  function clearError(){ errEl.style.display='none'; }
 
-  async function fetchJobs(append=false){
-    if (state.busy) return;
-    state.busy = true; els.loadMore?.setAttribute("disabled","disabled");
-    try {
-      const params = new URLSearchParams({
-        q: state.q, location: state.location, company: state.company, source: state.source,
-        days: String(state.days), limit: String(state.limit), offset: String(state.offset), order: "recent"
-      });
-      const r = await fetch(`${API_BASE}/api/jobs?`+params.toString(), { mode:"cors" });
-      if (!r.ok) throw new Error("API error");
-      const data = await r.json();
-
-      if (!append) els.list.innerHTML = "";
-      data.forEach(j => els.list.insertAdjacentHTML("beforeend", jobCard(j)));
-      els.count.textContent = (parseInt(els.count.textContent||"0")+data.length).toString();
-      els.updated.textContent = new Date().toLocaleString();
-
-      if (data.length < state.limit) els.loadMore?.setAttribute("disabled","disabled");
-      else els.loadMore?.removeAttribute("disabled");
-    } catch (e) {
-      console.error(e); alert("Could not fetch jobs. Please try again later.");
-    } finally {
-      state.busy = false;
+  // ====== RENDER ======
+  function renderJobs(rows){
+    listEl.innerHTML = '';
+    if(!rows || rows.length===0){
+      emptyEl.style.display='block';
+      return;
+    }
+    emptyEl.style.display='none';
+    for(const j of rows){
+      const match = j.match != null ? Math.round(Number(j.match) * 100) : null;
+      const loc = j.location || j.country || '';
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="title">${escapeHtml(j.title || '(Untitled)')}</div>
+        <div class="meta">
+          <span>${escapeHtml(j.company || 'Unknown')}</span>
+          ${loc ? <span>• ${escapeHtml(loc)}</span>:''}
+          ${j.source ? <span>• ${escapeHtml(j.source)}</span>:''}
+        </div>
+        <div class="meta">
+          ${j.posted_at ? <span class="badge" title="${fmtDate(j.posted_at)}">posted ${relTime(j.posted_at)}</span>:''}
+          ${match!=null ? <span class="badge" title="Match score">${match}% match</span>:''}
+        </div>
+        <div class="footer">
+          <a class="link" href="${encodeURI(j.url || '#')}" target="_blank" rel="noopener">View & Apply →</a>
+          <span class="muted">${fmtDate(j.created_at)}</span>
+        </div>
+      `;
+      listEl.appendChild(card);
     }
   }
 
-  function resetAndFetch(){ state.offset = 0; els.count.textContent = "0"; fetchJobs(false); }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
 
-  els.q?.addEventListener("input", e => { state.q = e.target.value.trim(); resetAndFetch(); });
-  els.loc?.addEventListener("change", e => { state.location = e.target.value; resetAndFetch(); });
-  els.src?.addEventListener("change", e => { state.source = e.target.value; resetAndFetch(); });
-  els.company?.addEventListener("input", e => { state.company = e.target.value.trim(); resetAndFetch(); });
-  els.loadMore?.addEventListener("click", () => { state.offset += state.limit; fetchJobs(true); });
+  // ====== DATA ======
+  async function fetchJobs(){
+    clearError();
+    setLoading(true);
+    const params = new URLSearchParams();
+    params.set('limit', state.limit);
+    params.set('offset', (state.page-1)*state.limit);
+    if(state.country) params.set('country', state.country);
+    if(state.q) params.set('q', state.q);
 
-  resetAndFetch();
-}
+    const url = ${API_BASE}/jobs?${params.toString()};
+    pageLbl.textContent = state.page;
+
+    try{
+      const res = await fetch(url, {headers:{'accept':'application/json'}});
+      if(!res.ok){
+        const text = await res.text();
+        throw new Error(API ${res.status}: ${text || res.statusText});
+      }
+      const data = await res.json();
+      // support either {items:[...]} or raw array
+      const rows = Array.isArray(data) ? data : (data.items || data.rows || data.results || []);
+      renderJobs(rows);
+    }catch(err){
+      showError(err.message);
+      console.error('Fetch error:', err);
+    }finally{
+      setLoading(false);
+    }
+  }
+
+  // ====== INIT ======
+  (function init(){
+    // populate countries
+    countrySel.innerHTML = COUNTRY_OPTIONS
+      .map(c => <option value="${c.code}">${c.name}</option>).join('');
+    // restore country if present in URL ?country=XX
+    const u = new URL(window.location.href);
+    const urlCountry = u.searchParams.get('country');
+    if(urlCountry) state.country = urlCountry.toUpperCase();
+    countrySel.value = state.country;
+
+    limitSel.value = String(state.limit);
+    qInput.value = state.q;
+
+    // events
+    countrySel.addEventListener('change', () => {
+      state.country = countrySel.value;
+      state.page = 1;
+      localStorage.setItem('country', state.country);
+      fetchJobs();
+    });
+    limitSel.addEventListener('change', () => {
+      state.limit = Number(limitSel.value) || 20;
+      state.page = 1;
+      fetchJobs();
+    });
+    qInput.addEventListener('keyup', e => {
+      if(e.key === 'Enter'){ state.q = qInput.value.trim(); state.page=1; fetchJobs(); }
+    });
+    refreshBtn.addEventListener('click', () => {
+      state.q = qInput.value.trim();
+      state.page = 1;
+      fetchJobs();
+    });
+    resetBtn.addEventListener('click', () => {
+      qInput.value = '';
+      state.q = '';
+      state.page = 1;
+      fetchJobs();
+    });
+    prevBtn.addEventListener('click', () => { if(state.page>1){ state.page--; fetchJobs(); }});
+    nextBtn.addEventListener('click', () => { state.page++; fetchJobs(); });
+
+    // initial load
+    fetchJobs();
+  })();
 </script>
-  </script>
-  
+</body>
 </html>

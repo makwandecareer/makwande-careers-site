@@ -165,7 +165,7 @@
       { code:"SZ", name:"Eswatini" }
     ];
     countryEl.innerHTML =
-      <option value="">All locations</option> +
+    
       COUNTRIES.map(c => <option value="${c.code}">${c.name}</option>).join("");
 
     function setStatus(t){ statusEl.textContent = t || ""; }

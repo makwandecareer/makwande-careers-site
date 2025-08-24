@@ -4,62 +4,112 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Jobs — Makwande Careers</title>
+  <meta name="color-scheme" content="light dark" />
   <style>
-    :root {
-      --bg: #0e2030; --panel: #13283b; --ink: #eef7ff; --muted:#a8c1d6;
-      --accent:#4ade80; --accent-ink:#053a1b; --chip:#163247; --border:#204761;
+    :root{
+      --bg1:#0d1720; --bg2:#101a24;
+      --panel:#0f1f2a; --panel-hi:#122536;
+      --ink:#f8fafc; --muted:#d2dee8cc;
+      --brand:#f59e0b;        /* warm amber */
+      --brand-ink:#2b1600;
+      --chip:#0f2433; --border:#1d3a4e;
+      --ok:#22c55e;
     }
-    html,body { height:100%; }
-    body {
-      margin:0; font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 600px at 20% -10%, #1a3a54 0, #0e2030 60%, #0a1824 100%);
-      color: var(--ink);
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg1:#fffaf3; --bg2:#fff7ec;
+        --panel:#ffffff; --panel-hi:#fffdf8;
+        --ink:#0b1220; --muted:#42566bcc;
+        --chip:#f6f7f9; --border:#e7edf2;
+      }
+      body{ background: radial-gradient(1300px 600px at 10% -10%, #fff0d8 0, #fff7ec 30%, #fffaf3 70%); }
     }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
-    header h1 { margin: 0 0 6px; font-size: clamp(28px, 4vw, 44px); letter-spacing: .5px; }
-    header p { margin: 0 0 22px; color: var(--muted); }
-    .controls {
-      display:grid; gap:12px; grid-template-columns: 1fr; margin: 8px 0 18px;
+    body{
+      margin:0; color:var(--ink);
+      background: radial-gradient(1300px 600px at 10% -10%, #1a2936 0, #0f1c27 45%, #0d1720 100%);
+      font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
     }
-    @media (min-width: 720px){
-      .controls { grid-template-columns: 220px 1fr 120px auto auto; align-items:end; }
+    .wrap{ max-width: 1120px; margin:0 auto; padding:24px 14px 72px; }
+    header{
+      background:
+        radial-gradient(800px 280px at 10% -40%, rgba(245,158,11,.18), transparent 40%),
+        linear-gradient(180deg, transparent, transparent 70%, rgba(245,158,11,.06));
+      border: 1px solid rgba(245,158,11,.18);
+      border-radius: 18px;
+      padding: 22px 18px 20px;
+      box-shadow: 0 10px 40px rgba(245,158,11,.05), 0 8px 30px rgba(0,0,0,.25) inset;
+      margin: 4px 0 18px;
     }
-    label { display:block; font-size:12px; color: var(--muted); margin:0 0 6px; }
-    select, input[type="text"], input[type="number"] {
-      width:100%; padding:10px 11px; border-radius:10px; border:1px solid var(--border);
-      background: var(--chip); color: var(--ink);
+    h1{ margin:0 0 6px; font-weight:800; letter-spacing:.3px; font-size: clamp(28px, 4.4vw, 44px); }
+    header p{ margin:0; color:var(--muted); }
+
+    /* controls */
+    .controls{
+      display:grid; gap:12px; grid-template-columns: 1fr;
+      margin: 16px 0 8px;
     }
-    .btn {
-      appearance:none; border:0; padding:10px 14px; border-radius:12px; cursor:pointer;
-      background: var(--accent); color: var(--accent-ink); font-weight:600;
-      box-shadow: 0 6px 18px rgba(74,222,128,.18);
+    @media (min-width: 780px){
+      .controls{ grid-template-columns: 220px 1fr 120px auto auto; align-items:end; }
     }
-    .btn.secondary { background: #2b3f52; color:#e7f4ff; box-shadow: none; border:1px solid var(--border); }
-    .btn:disabled { opacity:.55; cursor:not-allowed; }
-    .status { min-height: 22px; color: var(--muted); margin: 6px 0 6px; }
-    .grid { display:grid; gap:14px; grid-template-columns: 1fr; }
-    @media (min-width: 720px){ .grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1024px){ .grid { grid-template-columns: repeat(3, 1fr); } }
-    .card {
-      background: linear-gradient(180deg, var(--panel), #112538);
-      border: 1px solid var(--border);
-      padding:14px 14px 12px; border-radius:16px;
+    label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; letter-spacing:.3px; }
+    select,input[type="text"],input[type="number"]{
+      width:100%; padding:11px 12px; border-radius:12px;
+      background:var(--chip); color:var(--ink);
+      border:1px solid var(--border); outline: none;
+      box-shadow: 0 2px 0 rgba(0,0,0,.12) inset, 0 8px 26px rgba(0,0,0,.12);
     }
-    .card h3 { margin:0 0 6px; font-size: 16px; }
-    .card h3 a { color: var(--ink); text-decoration:none; }
-    .meta { font-size: 12px; color: var(--muted); display:flex; flex-wrap:wrap; gap:8px; }
-    .chip { background:#0f2233; border:1px solid var(--border); padding:2px 8px; border-radius:999px; }
-    .footer { display:flex; align-items:center; gap:10px; margin-top:12px; }
-    .pager { display:flex; align-items:center; gap:10px; margin:14px 0 0; }
-    .pager .page { width:46px; text-align:center; background:transparent; color:var(--muted); border:0; }
-    .empty { padding:18px; border-radius:12px; border:1px dashed var(--border); color: var(--muted); }
+    .btn{
+      appearance:none; border:0; padding:11px 16px; border-radius:14px; cursor:pointer;
+      background: linear-gradient(180deg, #f8b84a, var(--brand));
+      color:var(--brand-ink); font-weight:800; letter-spacing:.2px;
+      box-shadow: 0 10px 24px rgba(245,158,11,.25), 0 2px 0 rgba(0,0,0,.12) inset;
+      transform: translateZ(0);
+    }
+    .btn.secondary{
+      background: linear-gradient(180deg, var(--panel-hi), var(--panel));
+      color: var(--ink); border:1px solid var(--border); box-shadow:none; font-weight:600;
+    }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
+    .status{ min-height: 22px; color:var(--muted); margin: 8px 4px 2px; }
+
+    /* cards */
+    .grid{ display:grid; gap:16px; grid-template-columns: 1fr; margin-top:12px; }
+    @media (min-width: 760px){ .grid{ grid-template-columns: repeat(2,1fr); } }
+    @media (min-width: 1060px){ .grid{ grid-template-columns: repeat(3,1fr); } }
+    .card{
+      background: linear-gradient(180deg, var(--panel-hi), var(--panel));
+      border:1px solid var(--border); border-radius:16px; padding:14px 16px 12px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.18);
+    }
+    .card h3{ margin:0 0 8px; font-size:17px; }
+    .card h3 a{ color:var(--ink); text-decoration:none; }
+    .meta{ display:flex; flex-wrap:wrap; gap:8px; color:var(--muted); font-size:12px; }
+    .chip{ background: #112b3a; border:1px solid var(--border); padding:2px 8px; border-radius:999px; }
+    .ok{ color:var(--ok); font-weight:700; }
+    .empty{
+      padding:18px; border-radius:14px; border:1px dashed var(--border);
+      color:var(--muted); background: linear-gradient(180deg, rgba(245,158,11,.05), transparent);
+    }
+    .pager{ display:flex; align-items:center; gap:10px; margin:16px 2px 0; }
+    .page{ width:46px; text-align:center; color:var(--muted); }
+    .toast{
+      position: fixed; left: 50%; transform: translateX(-50%);
+      bottom: 18px; background:#1a2d3d; color:#fff; border:1px solid #22455c;
+      padding: 10px 14px; border-radius: 12px; box-shadow: 0 12px 28px rgba(0,0,0,.25);
+      max-width: 92vw; display:none;
+    }
+    .skeleton{ height:118px; border-radius:16px; background:
+      linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.02), rgba(255,255,255,.08));
+      animation: sh 1.4s infinite; border:1px solid var(--border);
+    }
+    @keyframes sh{ 0%{ background-position:-240px 0 } 100%{ background-position:240px 0 } }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1>Makwande Careers</h1>
-      <p>Fresh roles across the SADC region.</p>
+      <p>Warm opportunities across the SADC region — refreshed hourly.</p>
     </header>
 
     <section class="controls" id="controls">
@@ -92,25 +142,16 @@
     <section class="grid" id="results" aria-live="polite"></section>
   </div>
 
+  <div class="toast" id="toast"></div>
+
   <script>
   (async () => {
-    // ---------- small helpers ----------
     const $ = (id) => document.getElementById(id);
-    const resultsEl = $("results");
-    const statusEl  = $("status");
-    const countryEl = $("country");
-    const qEl       = $("q");
-    const limitEl   = $("limit");
-    const prevBtn   = $("prev");
-    const nextBtn   = $("next");
-    const pageEl    = $("pageNum");
-    const loadBtn   = $("load");
-    const resetBtn  = $("reset");
+    const resultsEl = $("results"), statusEl = $("status"), toastEl = $("toast");
+    const countryEl = $("country"), qEl = $("q"), limitEl = $("limit");
+    const prevBtn = $("prev"), nextBtn = $("next"), pageEl = $("pageNum");
+    const loadBtn = $("load"), resetBtn = $("reset");
 
-    function setStatus(msg){ statusEl.textContent = msg || ""; }
-    function setLoading(is){ loadBtn.disabled = is; prevBtn.disabled = is || state.page<=1; nextBtn.disabled = is; }
-
-    // ---------- SADC-10 countries ----------
     const COUNTRIES = [
       { code:"ZA", name:"South Africa" },
       { code:"NA", name:"Namibia" },
@@ -127,88 +168,88 @@
       <option value="">All locations</option> +
       COUNTRIES.map(c => <option value="${c.code}">${c.name}</option>).join("");
 
-    // ---------- config: API base ----------
-    // 1) URL ?api= override for testing
+    function setStatus(t){ statusEl.textContent = t || ""; }
+    function toast(t){ toastEl.textContent = t; toastEl.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>toastEl.style.display="none", 4000); }
+    function setLoading(on){
+      loadBtn.disabled = on; prevBtn.disabled = on || state.page<=1; nextBtn.disabled = on;
+      resultsEl.classList.toggle("loading", !!on);
+    }
+    function skeleton(n=6){
+      resultsEl.innerHTML = ""; for(let i=0;i<n;i++){ const d=document.createElement("div"); d.className="skeleton"; resultsEl.appendChild(d); }
+    }
+
     const urlParams = new URLSearchParams(location.search);
-    let API_BASE = urlParams.get("api") || "";
-
-    // 2) Try site-config.json (non-blocking)
-    try {
-      const r = await fetch("site-config.json", { cache:"no-store" });
-      if (r.ok) {
-        const cfg = await r.json().catch(() => ({}));
-        if (!API_BASE && cfg && typeof cfg.API_BASE === "string" && cfg.API_BASE.trim()) {
-          API_BASE = cfg.API_BASE.trim().replace(/\/+$/,'');
-        }
-      }
-    } catch(_) { /* ignore */ }
-
-    // 3) Hard fallback (current Render API)
-    if (!API_BASE) API_BASE = "https://autoapplyapp.onrender.com";
-
-    // ---------- state ----------
     const state = {
       page: Number(urlParams.get("page") || 1),
-      limit: Number(urlParams.get("limit") || limitEl.value),
-      q: urlParams.get("q") || "",
+      limit: Number(urlParams.get("limit") || 20),
+      q: (urlParams.get("q") || "").trim(),
       country: urlParams.get("country") || ""
     };
-    pageEl.textContent = state.page;
-    limitEl.value = String(state.limit);
-    qEl.value = state.q;
-    countryEl.value = state.country;
+    pageEl.textContent = state.page; limitEl.value = String(state.limit); qEl.value = state.q; countryEl.value = state.country;
 
-    // ---------- build URL ----------
+    // -------- API base (robust) --------
+    let API_BASE = (urlParams.get("api") || "").trim();
+    async function readConfig(){
+      try{
+        const r = await fetch("/site-config.json", { cache:"no-store" });
+        if (!r.ok) return;
+        const ct = (r.headers.get("content-type") || "").toLowerCase();
+        if (!ct.includes("application/json")) return;   // avoid parsing HTML/SPA shell
+        const cfg = await r.json().catch(()=> ({}));
+        if (!API_BASE && cfg && typeof cfg.API_BASE === "string" && cfg.API_BASE.trim()){
+          API_BASE = cfg.API_BASE.trim().replace(/\/+$/,'');
+        }
+      }catch(_){}
+    }
+    await readConfig();
+    if (!API_BASE) API_BASE = "https://autoapplyapp.onrender.com";
+
     function buildURL(page){
-      const offset = (page - 1) * state.limit;
+      const offset = (page-1) * state.limit;
       const qs = new URLSearchParams();
       if (state.country) qs.set("country", state.country);
       if (state.q) qs.set("q", state.q);
       qs.set("limit", String(state.limit));
-      if (offset > 0) qs.set("offset", String(offset));
-      return ${API_BASE.replace(/\/+$/,'')}/jobs? + qs.toString();
+      if (offset>0) qs.set("offset", String(offset));
+      return API_BASE.replace(/\/+$/,'') + "/jobs?" + qs.toString();
     }
 
-    // ---------- render ----------
     function render(items){
       resultsEl.innerHTML = "";
       if (!items || !items.length){
-        resultsEl.innerHTML = <div class="empty">No results yet. Try a different search or country.</div>;
+        resultsEl.innerHTML = <div class="empty">No results right now. Try a broader search or a different country.</div>;
         return;
       }
       const frag = document.createDocumentFragment();
       for (const job of items){
-        const card = document.createElement("article");
-        card.className = "card";
+        const a = document.createElement("article");
+        a.className = "card";
         const title = job.title || "Untitled role";
         const company = job.company || "—";
-        const location = job.location || job.country_name || job.country || "—";
-        const source = job.source || "web";
+        const loc = job.location || job.country_name || job.country || "—";
+        const src = job.source || "web";
         const match = (typeof job.match === "number") ? Math.round(job.match) : null;
         const url = job.url || "#";
         const posted = job.posted_at ? new Date(job.posted_at) : null;
 
-        card.innerHTML = `
+        a.innerHTML = `
           <h3><a href="${url}" target="_blank" rel="noopener">${title}</a></h3>
           <div class="meta">
             <span class="chip">${company}</span>
-            <span class="chip">${location}</span>
-            <span class="chip">Source: ${source}</span>
-            ${match !== null ? <span class="chip">Match: ${match}%</span> : ``}
+            <span class="chip">${loc}</span>
+            <span class="chip">Source: ${src}</span>
+            ${match !== null ? <span class="chip ok">Match: ${match}%</span> : ``}
             ${posted ? <span class="chip">Posted: ${posted.toLocaleDateString()}</span> : ``}
-          </div>
-        `;
-        frag.appendChild(card);
+          </div>`;
+        frag.appendChild(a);
       }
       resultsEl.appendChild(frag);
     }
 
-    // ---------- loader ----------
-    async function load(page = 1){
+    async function load(page=1){
       state.page = Math.max(1, Number(page) || 1);
       pageEl.textContent = state.page;
 
-      // keep URL in address bar tidy (no reload)
       const qs = new URLSearchParams();
       if (state.country) qs.set("country", state.country);
       if (state.q) qs.set("q", state.q);
@@ -219,58 +260,53 @@
       const url = buildURL(state.page);
       setStatus("Loading…");
       setLoading(true);
+      skeleton();
 
-      try {
+      try{
         const resp = await fetch(url, { method:"GET", headers:{ "Accept":"application/json" } });
-        if (!resp.ok) {
-          const txt = await resp.text().catch(()=>String(resp.status));
-          throw new Error(HTTP ${resp.status}: ${txt.slice(0,200)});
+        const text = await resp.text(); // always read as text first
+        if (!resp.ok){ throw new Error(HTTP ${resp.status}: ${text.slice(0,180)}); }
+
+        let data = [];
+        try{
+          const parsed = JSON.parse(text);
+          data = Array.isArray(parsed) ? parsed :
+                 (parsed && Array.isArray(parsed.items) ? parsed.items : []);
+        }catch{
+          data = []; // if backend served HTML/other, avoid console SyntaxError
         }
-        let payload = [];
-        try { payload = await resp.json(); } catch { payload = []; }
 
-        // API may return {items:[...]} or raw array; normalize
-        const items = Array.isArray(payload) ? payload
-                     : Array.isArray(payload.items) ? payload.items
-                     : [];
-        render(items);
-
-        // pager buttons
-        prevBtn.disabled = state.page <= 1;
-        nextBtn.disabled = items.length < state.limit;
-        setStatus(Loaded ${items.length} job${items.length===1?"":"s"}.);
-      } catch (err){
+        render(data);
+        prevBtn.disabled = state.page<=1;
+        nextBtn.disabled = data.length < state.limit;
+        setStatus(Loaded ${data.length} job${data.length===1?"":"s"}.);
+      }catch(err){
         console.error(err);
         render([]);
-        prevBtn.disabled = state.page <= 1;
-        nextBtn.disabled = true;
-        setStatus("Error: " + (err && err.message ? err.message : "couldn’t load jobs."));
-      } finally {
+        prevBtn.disabled = state.page<=1; nextBtn.disabled = true;
+        setStatus("Couldn’t load jobs.");
+        toast("Network/API error: " + (err?.message || "please try again."));
+      }finally{
         setLoading(false);
       }
     }
 
-    // ---------- events ----------
+    // events
     loadBtn.addEventListener("click", () => {
       state.country = countryEl.value.trim();
       state.q = qEl.value.trim();
       state.limit = Number(limitEl.value) || 20;
       load(1);
     });
-
     resetBtn.addEventListener("click", () => {
-      countryEl.value = "";
-      qEl.value = "";
-      limitEl.value = "20";
-      state.country = ""; state.q = ""; state.limit = 20;
-      load(1);
+      countryEl.value=""; qEl.value=""; limitEl.value="20";
+      state.country=""; state.q=""; state.limit=20; load(1);
     });
+    nextBtn.addEventListener("click", () => load(state.page+1));
+    prevBtn.addEventListener("click", () => load(state.page-1));
+    qEl.addEventListener("keydown", (e)=>{ if(e.key==="Enter") load(1); });
 
-    nextBtn.addEventListener("click", () => load(state.page + 1));
-    prevBtn.addEventListener("click", () => load(state.page - 1));
-    qEl.addEventListener("keydown", (e) => { if (e.key === "Enter") load(1); });
-
-    // ---------- initial auto-load ----------
+    // initial
     await load(state.page);
   })();
   </script>

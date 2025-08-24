@@ -344,6 +344,14 @@
       load(page);
     }
 
+// BEFORE (causes preflight on some setups)
+// fetch(url, { headers: { 'accept': 'application/json' } })
+
+// AFTER (simple GET, no preflight)
+const resp = await fetch(url);          // no headers, no credentials
+if (!resp.ok) throw new Error(HTTP ${resp.status});
+const payload = await resp.json();
+
     // Events
     loadBtn.addEventListener("click", function(){ load(1); });
     resetBtn.addEventListener("click", resetFilters);

@@ -3,365 +3,276 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Jobs – Makwande Careers</title>
-  <meta name="description" content="Fresh roles across the SADC region." />
+  <title>Jobs — Makwande Careers</title>
   <style>
-    :root{
-      --bg:#0b2136; --card:#0f2c49; --muted:#9fb3c8; --text:#e7f1fb; --accent:#23d18b; --chip:#183a5c;
-      --radius:16px;
+    :root {
+      --bg: #0e2030; --panel: #13283b; --ink: #eef7ff; --muted:#a8c1d6;
+      --accent:#4ade80; --accent-ink:#053a1b; --chip:#163247; --border:#204761;
     }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    header{padding:20px 16px 0;max-width:1100px;margin:0 auto}
-    .brand{font-weight:800;font-size:clamp(26px,4vw,44px);letter-spacing:.3px;margin:0}
-    .tag{color:var(--muted);margin:.25rem 0 1.25rem}
-    .panel{background:var(--card);border-radius:var(--radius);padding:14px;display:grid;gap:12px;
-           grid-template-columns:1fr;max-width:1100px;margin:0 auto}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .ctrl{flex:1 1 220px;display:flex;flex-direction:column;gap:6px}
-    label{font-size:.85rem;color:var(--muted)}
-    input,select,button{
-      width:100%;padding:12px 12px;border-radius:12px;border:1px solid #234560;background:#0b243d;color:var(--text);
-      outline:none
+    html,body { height:100%; }
+    body {
+      margin:0; font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #1a3a54 0, #0e2030 60%, #0a1824 100%);
+      color: var(--ink);
     }
-    input::placeholder{color:#7d98b3}
-    button{background:var(--accent);color:#0a1d2f;font-weight:700;border:none;cursor:pointer}
-    button.secondary{background:#0b243d;color:var(--muted);border:1px solid #234560}
-    button:disabled{opacity:.55;cursor:not-allowed}
-    .results{max-width:1100px;margin:16px auto 80px;display:grid;gap:14px}
-    .card{background:var(--card);border-radius:var(--radius);padding:16px;display:grid;gap:6px}
-    .title{font-size:1.05rem;font-weight:700}
-    .title a{color:#cfe8ff;text-decoration:none}
-    .title a:hover{text-decoration:underline}
-    .meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
-    .chip{background:var(--chip);padding:4px 10px;border-radius:999px;color:#cfe8ff;font-size:.8rem}
-    .grid{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
-    .right{display:flex;gap:10px;align-items:center}
-    .pct{font-weight:800;color:var(--accent)}
-    .status{max-width:1100px;margin:10px auto 0;color:var(--muted);font-size:.95rem}
-    .pager{max-width:1100px;margin:8px auto 40px;display:flex;align-items:center;gap:10px}
-    .pager button{width:auto;min-width:90px}
-    .count{color:var(--muted)}
-    @media(min-width:780px){
-      .panel{grid-template-columns:1.5fr 2fr .8fr auto auto}
-      .ctrl{flex:initial}
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+    header h1 { margin: 0 0 6px; font-size: clamp(28px, 4vw, 44px); letter-spacing: .5px; }
+    header p { margin: 0 0 22px; color: var(--muted); }
+    .controls {
+      display:grid; gap:12px; grid-template-columns: 1fr; margin: 8px 0 18px;
     }
+    @media (min-width: 720px){
+      .controls { grid-template-columns: 220px 1fr 120px auto auto; align-items:end; }
+    }
+    label { display:block; font-size:12px; color: var(--muted); margin:0 0 6px; }
+    select, input[type="text"], input[type="number"] {
+      width:100%; padding:10px 11px; border-radius:10px; border:1px solid var(--border);
+      background: var(--chip); color: var(--ink);
+    }
+    .btn {
+      appearance:none; border:0; padding:10px 14px; border-radius:12px; cursor:pointer;
+      background: var(--accent); color: var(--accent-ink); font-weight:600;
+      box-shadow: 0 6px 18px rgba(74,222,128,.18);
+    }
+    .btn.secondary { background: #2b3f52; color:#e7f4ff; box-shadow: none; border:1px solid var(--border); }
+    .btn:disabled { opacity:.55; cursor:not-allowed; }
+    .status { min-height: 22px; color: var(--muted); margin: 6px 0 6px; }
+    .grid { display:grid; gap:14px; grid-template-columns: 1fr; }
+    @media (min-width: 720px){ .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px){ .grid { grid-template-columns: repeat(3, 1fr); } }
+    .card {
+      background: linear-gradient(180deg, var(--panel), #112538);
+      border: 1px solid var(--border);
+      padding:14px 14px 12px; border-radius:16px;
+    }
+    .card h3 { margin:0 0 6px; font-size: 16px; }
+    .card h3 a { color: var(--ink); text-decoration:none; }
+    .meta { font-size: 12px; color: var(--muted); display:flex; flex-wrap:wrap; gap:8px; }
+    .chip { background:#0f2233; border:1px solid var(--border); padding:2px 8px; border-radius:999px; }
+    .footer { display:flex; align-items:center; gap:10px; margin-top:12px; }
+    .pager { display:flex; align-items:center; gap:10px; margin:14px 0 0; }
+    .pager .page { width:46px; text-align:center; background:transparent; color:var(--muted); border:0; }
+    .empty { padding:18px; border-radius:12px; border:1px dashed var(--border); color: var(--muted); }
   </style>
 </head>
 <body>
-  <header>
-    <h1 class="brand">Makwande Careers</h1>
-    <p class="tag">Fresh roles across the SADC region.</p>
-  </header>
+  <div class="wrap">
+    <header>
+      <h1>Makwande Careers</h1>
+      <p>Fresh roles across the SADC region.</p>
+    </header>
 
-  <section class="panel" role="search">
-    <div class="ctrl">
-      <label for="country">Country</label>
-      <select id="country">
-        <option value="">All SADC</option>
-        <option value="ZA">South Africa</option>
-        <option value="BW">Botswana</option>
-        <option value="NA">Namibia</option>
-        <option value="ZW">Zimbabwe</option>
-        <option value="ZM">Zambia</option>
-        <option value="LS">Lesotho</option>
-        <option value="SZ">Eswatini</option>
-        <option value="MZ">Mozambique</option>
-        <option value="AO">Angola</option>
-        <option value="MW">Malawi</option>
-      </select>
-    </div>
+    <section class="controls" id="controls">
+      <div>
+        <label for="country">Country</label>
+        <select id="country"></select>
+      </div>
+      <div>
+        <label for="q">Search</label>
+        <input id="q" type="text" placeholder="e.g. data, finance, graduate" />
+      </div>
+      <div>
+        <label for="limit">Limit</label>
+        <select id="limit">
+          <option>10</option><option selected>20</option><option>30</option><option>50</option>
+        </select>
+      </div>
+      <button class="btn" id="load">Load Jobs</button>
+      <button class="btn secondary" id="reset">Reset</button>
+    </section>
 
-    <div class="ctrl">
-      <label for="q">Search</label>
-      <input id="q" placeholder="e.g. data, finance, grad…"/>
-    </div>
+    <div class="status" id="status" aria-live="polite"></div>
 
-    <div class="ctrl">
-      <label for="limit">Limit</label>
-      <select id="limit">
-        <option>10</option>
-        <option selected>20</option>
-        <option>50</option>
-        <option>100</option>
-      </select>
-    </div>
+    <section class="pager">
+      <button class="btn secondary" id="prev" disabled>Prev</button>
+      <span class="page" id="pageNum">1</span>
+      <button class="btn secondary" id="next" disabled>Next</button>
+    </section>
 
-    <div class="ctrl">
-      <label>&nbsp;</label>
-      <button id="loadBtn">Load Jobs</button>
-    </div>
-
-    <div class="ctrl">
-      <label>&nbsp;</label>
-      <button id="resetBtn" class="secondary">Reset</button>
-    </div>
-  </section>
-
-  <div class="status" id="status">Ready.</div>
-
-  <section class="pager">
-    <button id="prevBtn" class="secondary" disabled>Prev</button>
-    <span class="count">Page <span id="pageNum">1</span></span>
-    <button id="nextBtn" class="secondary" disabled>Next</button>
-  </section>
-
-  <section class="results" id="results" aria-live="polite"></section>
+    <section class="grid" id="results" aria-live="polite"></section>
+  </div>
 
   <script>
-    // -------- Config (API base from site-config.json with fallback) ----------
-    var API_BASE = "https://autoapplyapp.onrender.com";
-    (function bootstrapConfig(){
-      fetch("/site-config.json", {cache:"no-store"})
-        .then(function(r){return r.ok ? r.json() : {};})
-        .then(function(cfg){
-          if (cfg && cfg.API_BASE && typeof cfg.API_BASE === "string" && cfg.API_BASE.trim()) {
-            API_BASE = cfg.API_BASE.trim().replace(/\/+$/, "");
-          }
-        })
-        .catch(function(){ /* keep fallback */ });
-    })();
+  (async () => {
+    // ---------- small helpers ----------
+    const $ = (id) => document.getElementById(id);
+    const resultsEl = $("results");
+    const statusEl  = $("status");
+    const countryEl = $("country");
+    const qEl       = $("q");
+    const limitEl   = $("limit");
+    const prevBtn   = $("prev");
+    const nextBtn   = $("next");
+    const pageEl    = $("pageNum");
+    const loadBtn   = $("load");
+    const resetBtn  = $("reset");
 
-    // -------- Elements ----------
-    var countrySel = document.getElementById("country");
-    var searchInput = document.getElementById("q");
-    var limitSel = document.getElementById("limit");
-    var loadBtn = document.getElementById("loadBtn");
-    var resetBtn = document.getElementById("resetBtn");
-    var prevBtn = document.getElementById("prevBtn");
-    var nextBtn = document.getElementById("nextBtn");
-    var pageEl = document.getElementById("pageNum");
-    var resultsEl = document.getElementById("results");
-    var statusEl = document.getElementById("status");
+    function setStatus(msg){ statusEl.textContent = msg || ""; }
+    function setLoading(is){ loadBtn.disabled = is; prevBtn.disabled = is || state.page<=1; nextBtn.disabled = is; }
 
-    // -------- State ----------
-    var page = 1;
-    var lastCount = 0;
+    // ---------- SADC-10 countries ----------
+    const COUNTRIES = [
+      { code:"ZA", name:"South Africa" },
+      { code:"NA", name:"Namibia" },
+      { code:"BW", name:"Botswana" },
+      { code:"ZW", name:"Zimbabwe" },
+      { code:"ZM", name:"Zambia" },
+      { code:"MZ", name:"Mozambique" },
+      { code:"AO", name:"Dr Congo" },
+      { code:"MW", name:"Malawi" },
+      { code:"LS", name:"Lesotho" },
+      { code:"SZ", name:"Eswatini" }
+    ];
+    countryEl.innerHTML =
+      <option value="">All locations</option> +
+      COUNTRIES.map(c => <option value="${c.code}">${c.name}</option>).join("");
 
-    function setStatus(msg){ statusEl.textContent = msg; }
+    // ---------- config: API base ----------
+    // 1) URL ?api= override for testing
+    const urlParams = new URLSearchParams(location.search);
+    let API_BASE = urlParams.get("api") || "";
 
-    function fmtDate(iso){
-      if (!iso) return "";
-      var d = new Date(iso);
-      if (isNaN(d.getTime())) return iso;
-      var now = new Date();
-      var diff = (now - d) / 1000;
-      if (diff < 60) return "just now";
-      if (diff < 3600) return Math.floor(diff/60) + "m ago";
-      if (diff < 86400) return Math.floor(diff/3600) + "h ago";
-      return d.toLocaleDateString();
+    // 2) Try site-config.json (non-blocking)
+    try {
+      const r = await fetch("site-config.json", { cache:"no-store" });
+      if (r.ok) {
+        const cfg = await r.json().catch(() => ({}));
+        if (!API_BASE && cfg && typeof cfg.API_BASE === "string" && cfg.API_BASE.trim()) {
+          API_BASE = cfg.API_BASE.trim().replace(/\/+$/,'');
+        }
+      }
+    } catch(_) { /* ignore */ }
+
+    // 3) Hard fallback (current Render API)
+    if (!API_BASE) API_BASE = "https://autoapplyapp.onrender.com";
+
+    // ---------- state ----------
+    const state = {
+      page: Number(urlParams.get("page") || 1),
+      limit: Number(urlParams.get("limit") || limitEl.value),
+      q: urlParams.get("q") || "",
+      country: urlParams.get("country") || ""
+    };
+    pageEl.textContent = state.page;
+    limitEl.value = String(state.limit);
+    qEl.value = state.q;
+    countryEl.value = state.country;
+
+    // ---------- build URL ----------
+    function buildURL(page){
+      const offset = (page - 1) * state.limit;
+      const qs = new URLSearchParams();
+      if (state.country) qs.set("country", state.country);
+      if (state.q) qs.set("q", state.q);
+      qs.set("limit", String(state.limit));
+      if (offset > 0) qs.set("offset", String(offset));
+      return ${API_BASE.replace(/\/+$/,'')}/jobs? + qs.toString();
     }
 
-    function pct(x){
-      var n = Number(x);
-      if (!isFinite(n)) return "";
-      return Math.round(Math.max(0, Math.min(100, n*100))) + "%";
-    }
-
-    function jobUrl(j){
-      if (j && j.url) return j.url;
-      if (j && j.link) return j.link;
-      return "#";
-    }
-
-    function jobLocation(j){
-      if (!j) return "";
-      if (j.location && j.country) return j.location + " (" + j.country + ")";
-      if (j.location) return j.location;
-      if (j.country_name) return j.country_name;
-      if (j.country) return j.country;
-      return "";
-    }
-
-    function extractItems(payload){
-      if (!payload) return [];
-      if (Array.isArray(payload)) return payload;
-      if (Array.isArray(payload.data)) return payload.data;
-      if (Array.isArray(payload.items)) return payload.items;
-      if (Array.isArray(payload.results)) return payload.results;
-      // backend sometimes returns {jobs:[...]}
-      if (Array.isArray(payload.jobs)) return payload.jobs;
-      return [];
-    }
-
+    // ---------- render ----------
     function render(items){
       resultsEl.innerHTML = "";
-      lastCount = items.length;
-
-      if (!items.length){
-        var empty = document.createElement("div");
-        empty.className = "card";
-        empty.textContent = "No jobs found. Try a different search or country.";
-        resultsEl.appendChild(empty);
-        updatePager();
+      if (!items || !items.length){
+        resultsEl.innerHTML = <div class="empty">No results yet. Try a different search or country.</div>;
         return;
       }
-
-      for (var i=0;i<items.length;i++){
-        var j = items[i];
-
-        var card = document.createElement("article");
+      const frag = document.createDocumentFragment();
+      for (const job of items){
+        const card = document.createElement("article");
         card.className = "card";
+        const title = job.title || "Untitled role";
+        const company = job.company || "—";
+        const location = job.location || job.country_name || job.country || "—";
+        const source = job.source || "web";
+        const match = (typeof job.match === "number") ? Math.round(job.match) : null;
+        const url = job.url || "#";
+        const posted = job.posted_at ? new Date(job.posted_at) : null;
 
-        var grid = document.createElement("div");
-        grid.className = "grid";
-
-        var title = document.createElement("div");
-        title.className = "title";
-        var a = document.createElement("a");
-        a.href = jobUrl(j);
-        a.target = "_blank";
-        a.rel = "noopener";
-        a.textContent = (j.title || "Untitled role");
-        title.appendChild(a);
-
-        var r = document.createElement("div");
-        r.className = "right";
-
-        var m = document.createElement("span");
-        m.className = "pct";
-        m.textContent = j.match != null ? pct(j.match) : "";
-        if (!m.textContent) m.style.display = "none";
-
-        var apply = document.createElement("a");
-        apply.href = a.href;
-        apply.target = "_blank";
-        apply.rel = "noopener";
-        apply.className = "chip";
-        apply.textContent = "View";
-
-        r.appendChild(m);
-        r.appendChild(apply);
-
-        grid.appendChild(title);
-        grid.appendChild(r);
-
-        var meta = document.createElement("div");
-        meta.className = "meta";
-        var company = document.createElement("span");
-        company.className = "chip";
-        company.textContent = j.company ? j.company : "Company N/A";
-        var loc = document.createElement("span");
-        loc.className = "chip";
-        loc.textContent = jobLocation(j) || "Location N/A";
-        var src = document.createElement("span");
-        src.className = "chip";
-        src.textContent = j.source ? ("Source: " + j.source) : "Source: —";
-        var posted = document.createElement("span");
-        posted.className = "chip";
-        posted.textContent = j.posted_at ? ("Posted " + fmtDate(j.posted_at)) :
-                           j.created_at ? ("Added " + fmtDate(j.created_at)) : "Date N/A";
-
-        meta.appendChild(company);
-        meta.appendChild(loc);
-        meta.appendChild(src);
-        meta.appendChild(posted);
-
-        card.appendChild(grid);
-        card.appendChild(meta);
-        resultsEl.appendChild(card);
+        card.innerHTML = `
+          <h3><a href="${url}" target="_blank" rel="noopener">${title}</a></h3>
+          <div class="meta">
+            <span class="chip">${company}</span>
+            <span class="chip">${location}</span>
+            <span class="chip">Source: ${source}</span>
+            ${match !== null ? <span class="chip">Match: ${match}%</span> : ``}
+            ${posted ? <span class="chip">Posted: ${posted.toLocaleDateString()}</span> : ``}
+          </div>
+        `;
+        frag.appendChild(card);
       }
-
-      updatePager();
+      resultsEl.appendChild(frag);
     }
 
-    function updatePager(){
-      pageEl.textContent = String(page);
-      var limit = Number(limitSel.value) || 20;
-      prevBtn.disabled = page <= 1;
-      // if we received less than limit, likely no more pages
-      nextBtn.disabled = lastCount < limit;
-    }
+    // ---------- loader ----------
+    async function load(page = 1){
+      state.page = Math.max(1, Number(page) || 1);
+      pageEl.textContent = state.page;
 
-    function persist(){
-      try{
-        localStorage.setItem("jobs.country", countrySel.value || "");
-        localStorage.setItem("jobs.q", searchInput.value || "");
-        localStorage.setItem("jobs.limit", limitSel.value || "20");
-      }catch(e){}
-    }
-    function restore(){
-      try{
-        var c = localStorage.getItem("jobs.country") || "";
-        var q = localStorage.getItem("jobs.q") || "";
-        var l = localStorage.getItem("jobs.limit") || "20";
-        if (c) countrySel.value = c;
-        if (q) searchInput.value = q;
-        limitSel.value = l;
-      }catch(e){}
-    }
+      // keep URL in address bar tidy (no reload)
+      const qs = new URLSearchParams();
+      if (state.country) qs.set("country", state.country);
+      if (state.q) qs.set("q", state.q);
+      if (state.limit) qs.set("limit", String(state.limit));
+      if (state.page > 1) qs.set("page", String(state.page));
+      history.replaceState(null, "", location.pathname + (qs.toString()??${qs.toString()}:""));
 
-    async function load(pageNumber){
-      page = pageNumber || 1;
-      persist();
-
-      var limit = Number(limitSel.value) || 20;
-      var offset = (page - 1) * limit;
-      var country = (countrySel.value || "").trim();
-      var q = (searchInput.value || "").trim();
-
-      var qs = new URLSearchParams();
-      if (country) qs.set("country", country);
-      if (q) qs.set("q", q);
-      qs.set("limit", String(limit));
-      qs.set("offset", String(offset));
-
-      var url = API_BASE.replace(/\/+$/,"") + "/jobs?" + qs.toString();
-
+      const url = buildURL(state.page);
       setStatus("Loading…");
-      loadBtn.disabled = true; prevBtn.disabled = true; nextBtn.disabled = true;
+      setLoading(true);
 
       try {
-        var resp = await fetch(url, {headers: {"Accept":"application/json"}});
+        const resp = await fetch(url, { method:"GET", headers:{ "Accept":"application/json" } });
         if (!resp.ok) {
-          var t = ""; try{ t = await resp.text(); }catch(e){}
-          throw new Error("HTTP " + resp.status + " " + t.slice(0,200));
+          const txt = await resp.text().catch(()=>String(resp.status));
+          throw new Error(HTTP ${resp.status}: ${txt.slice(0,200)});
         }
-        var payload = {};
-        try{ payload = await resp.json(); }catch(e){ payload = []; }
+        let payload = [];
+        try { payload = await resp.json(); } catch { payload = []; }
 
-        var items = extractItems(payload);
+        // API may return {items:[...]} or raw array; normalize
+        const items = Array.isArray(payload) ? payload
+                     : Array.isArray(payload.items) ? payload.items
+                     : [];
         render(items);
-        setStatus("Loaded " + items.length + " jobs");
-      } catch (err) {
+
+        // pager buttons
+        prevBtn.disabled = state.page <= 1;
+        nextBtn.disabled = items.length < state.limit;
+        setStatus(Loaded ${items.length} job${items.length===1?"":"s"}.);
+      } catch (err){
         console.error(err);
-        setStatus("Error loading jobs: " + (err && err.message ? err.message : String(err)));
-        resultsEl.innerHTML = "";
-        var card = document.createElement("div");
-        card.className = "card";
-        card.textContent = "Couldn't load jobs. Please try again.";
-        resultsEl.appendChild(card);
+        render([]);
+        prevBtn.disabled = state.page <= 1;
+        nextBtn.disabled = true;
+        setStatus("Error: " + (err && err.message ? err.message : "couldn’t load jobs."));
       } finally {
-        loadBtn.disabled = false;
+        setLoading(false);
       }
     }
 
-    function resetFilters(){
-      countrySel.value = "";
-      searchInput.value = "";
-      limitSel.value = "20";
-      page = 1;
-      load(page);
-    }
+    // ---------- events ----------
+    loadBtn.addEventListener("click", () => {
+      state.country = countryEl.value.trim();
+      state.q = qEl.value.trim();
+      state.limit = Number(limitEl.value) || 20;
+      load(1);
+    });
 
-// BEFORE (causes preflight on some setups)
-// fetch(url, { headers: { 'accept': 'application/json' } })
+    resetBtn.addEventListener("click", () => {
+      countryEl.value = "";
+      qEl.value = "";
+      limitEl.value = "20";
+      state.country = ""; state.q = ""; state.limit = 20;
+      load(1);
+    });
 
-// AFTER (simple GET, no preflight)
-const resp = await fetch(url);          // no headers, no credentials
-if (!resp.ok) throw new Error(HTTP ${resp.status});
-const payload = await resp.json();
+    nextBtn.addEventListener("click", () => load(state.page + 1));
+    prevBtn.addEventListener("click", () => load(state.page - 1));
+    qEl.addEventListener("keydown", (e) => { if (e.key === "Enter") load(1); });
 
-    // Events
-    loadBtn.addEventListener("click", function(){ load(1); });
-    resetBtn.addEventListener("click", resetFilters);
-    prevBtn.addEventListener("click", function(){ if (page>1) load(page-1); });
-    nextBtn.addEventListener("click", function(){ load(page+1); });
-    limitSel.addEventListener("change", function(){ load(1); });
-
-    // Auto-load on first paint
-    restore();
-    load(1);
+    // ---------- initial auto-load ----------
+    await load(state.page);
+  })();
   </script>
 </body>
 </html>

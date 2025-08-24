@@ -91,7 +91,12 @@
 
 <script>
 (() => {
-  const API_BASE = 'https://autoapplyapp.onrender.com';
+  // Prefer env from config.js, fall back to default
+const API_BASE = (window.CONFIG && window.CONFIG.API_BASE) || 'https://autoapplyapp.onrender.com';
+
+// If you later want to pin the path as well (instead of auto-detect)
+// add to config.js: API_PATH: "/api/jobs"
+// and then set: const CANDIDATES = [window.CONFIG?.API_PATH || '/api/jobs', '/jobs', '/v1/jobs', '/api/v1/jobs'];
   // likely paths in your FastAPI app
   const CANDIDATES = ['/api/jobs','/jobs','/v1/jobs','/api/v1/jobs'];
 
@@ -219,7 +224,7 @@
       statusEl.textContent = Loaded ${items.length} job(s).;
     } catch (e){
       console.error(e);
-      showAlert(Couldn't load jobs: ${e.message});
+      showAlert (Couldn't load jobs: ${e.message});
       statusEl.textContent = 'Error';
     }
   }
@@ -234,4 +239,6 @@
 })();
 </script>
 </body>
+<!-- in <head> (anywhere before your main <script>) -->
+<script src="./config.js"></script>
 </html>

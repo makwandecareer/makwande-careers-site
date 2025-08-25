@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cover Letter — Makwande Careers</title>
+  <meta name="description" content="Makwande Careers — AutoApply platform for SADC." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="/assets/css/style.css" rel="stylesheet" />
+  
+</head>
+<body class="">
+  <nav class="nav-wrap bg-white sticky-top">
+    <div class="container-xxl py-2 d-flex align-items-center gap-3">
+      <a class="d-flex align-items-center gap-2 text-decoration-none" href="/index.html" aria-label="Makwande Careers home">
+        <img src="/assets/img/logo.png" alt="Makwande Careers logo" width="32" height="32" />
+        <span class="logo-word">Makwande Careers</span>
+      </a>
+      <div class="d-none d-md-flex ms-3 flex-grow-1" style="max-width:520px;">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+          <input class="form-control bg-light border-0" placeholder="Search jobs, titles, companies" />
+        </div>
+      </div>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a class="text-decoration-none nav-link-lite" href="/index.html">Home</a>
+<a class="text-decoration-none nav-link-lite" href="/jobs.html">Jobs</a>
+<a class="text-decoration-none nav-link-lite" href="/revamp.html">Revamp CV</a>
+<a class="text-decoration-none fw-bold text-success" href="/cover_letter.html">Cover Letter</a>
+<a class="text-decoration-none nav-link-lite" href="/pricing.html">Pricing</a>
+<a class="text-decoration-none nav-link-lite" href="/dashboard.html">Dashboard</a>
+<a class="text-decoration-none nav-link-lite" href="/login.html">Login</a>
+<a class="text-decoration-none nav-link-lite" href="/signup.html">Sign up</a>
+      </div>
+    </div>
+  </nav>
+
+  
+<div class="container-xxl my-5" style="max-width:900px">
+  <div class="card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="icon-circle"><i class="bi bi-journal-text"></i></div>
+      <div><h4 class="mb-0">Generate a cover letter</h4><small class="text-muted">Tailored to the job spec</small></div>
+    </div>
+    <form id="coverForm">
+      <div class="mb-3"><label class="form-label">Job specification</label><textarea name="job_spec" class="form-control" rows="6" placeholder="Paste the job description here…" required></textarea></div>
+      <div class="mb-3"><label class="form-label">Your highlights</label><textarea name="highlights" class="form-control" rows="4" placeholder="Key achievements/skills to emphasize"></textarea></div>
+      <button class="btn btn-brand rounded-pill" type="submit">Generate</button>
+    </form>
+    <hr/>
+    <h6>Result</h6>
+    <pre id="coverResult" class="p-3 bg-light rounded" style="white-space:pre-wrap">—</pre>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const form = document.getElementById('coverForm');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const payload = Object.fromEntries(new FormData(form).entries());
+    const btn = form.querySelector('button[type="submit"]'); btn.disabled=true;
+    try{
+      const res = await api('/cover_letter', { method:'POST', body: payload });
+      document.getElementById('coverResult').textContent = res.letter || res.text || JSON.stringify(res,null,2);
+    }catch(err){ alert(err.message||'Failed'); }
+    finally{ btn.disabled=false; }
+  });
+});
+</script>
+
+
+  <footer class="border-top py-4 mt-5">
+    <div class="container-xxl d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="small text-muted">© <span id="year"></span> Makwande Careers • All rights reserved</div>
+      <div class="d-flex gap-3 small">
+        <a href="/index.html">Home</a>
+        <a href="/jobs.html">Jobs</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

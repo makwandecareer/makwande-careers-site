@@ -271,36 +271,94 @@ document.addEventListener('DOMContentLoaded', ()=>{ try{ injectNav(); }catch(e){
       c.appendChild(a);
     });
 
-    // Optional “More” dropdown (visible menu, but no raw code text)
-    const wrap = document.createElement('div');
-    wrap.className = 'dropdown';
-    wrap.innerHTML = `
-      <a class="btn btn-soft dropdown-toggle rounded-pill" href="#" role="button" data-bs-toggle="dropdown">More</a>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><h6 class="dropdown-header">More</h6></li>
-        <li><a class="dropdown-item" href="/recruiter.html">Recruiter</a></li>
-        <li><a class="dropdown-item" href="/recruiter-dashboard.html">Recruiter Dashboard</a></li>
-        <li><a class="dropdown-item" href="/employer.html">Employers</a></li>
-        <li><a class="dropdown-item" href="/employer-dashboard.html">Employer Dashboard</a></li>
-        <li><a class="dropdown-item" href="/post-job.html">Post Job</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/bursaries.html">Bursaries</a></li>
-        <li><a class="dropdown-item" href="/bursary-apply.html">Bursary Apply</a></li>
-        <li><a class="dropdown-item" href="/admin-bursaries.html">Admin Bursaries</a></li>
-        <li><a class="dropdown-item" href="/learners.html">Learners</a></li>
-        <li><a class="dropdown-item" href="/universities.html">Universities</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/investors.html">Investors</a></li>
-        <li><a class="dropdown-item" href="/partnerships.html">Partnerships</a></li>
-        <li><a class="dropdown-item" href="/brand-collaborations.html">Brand Collaborations</a></li>
-        <li><a class="dropdown-item" href="/marketing.html">Marketing</a></li>
-        <li><a class="dropdown-item" href="/components.html">Components</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/sitemap.html">Sitemap</a></li>
-      </ul>`;
-    c.appendChild(wrap);
-  });
+    <nav class="nav-wrap bg-white sticky-top">
+  <div class="container-xxl py-2 d-flex align-items-center gap-3">
+    <!-- Logo -->
+    <a class="d-flex align-items-center gap-2 text-decoration-none" href="/index.html" aria-label="Makwande Careers home">
+      <img src="/assets/img/logo.png" alt="Makwande Careers logo" width="32" height="32" />
+      <span class="logo-word">Makwande Careers</span>
+    </a>
+
+    <!-- Desktop search -->
+    <div class="d-none d-md-flex ms-3 flex-grow-1" style="max-width:520px;">
+      <div class="input-group">
+        <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+        <input class="form-control bg-light border-0" placeholder="Search jobs, titles, companies" />
+      </div>
+    </div>
+
+    <!-- Desktop links + More (injected by JS if you kept injectNav), leave this container -->
+    <div class="ms-auto d-none d-lg-flex align-items-center gap-3"></div>
+
+    <!-- Mobile toggle -->
+    <button class="btn btn-soft mobile-toggle ms-auto d-lg-none" type="button"
+            data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+
+  <!-- Offcanvas mobile menu -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileNav" aria-labelledby="mobileNavLabel">
+    <div class="offcanvas-header">
+      <h6 class="offcanvas-title" id="mobileNavLabel">Makwande Careers</h6>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="d-grid gap-2">
+        <a class="btn btn-light" href="/index.html">Home</a>
+        <a class="btn btn-light" href="/jobs.html">Jobs</a>
+        <a class="btn btn-light" href="/revamp.html">Revamp CV</a>
+        <a class="btn btn-light" href="/cover_letter.html">Cover Letter</a>
+        <a class="btn btn-light" href="/pricing.html">Pricing</a>
+        <a class="btn btn-light" href="/dashboard.html">Dashboard</a>
+        <hr />
+        <!-- Long list moved under “More” -->
+        <a class="btn btn-outline-secondary" href="/recruiter.html">Recruiter</a>
+        <a class="btn btn-outline-secondary" href="/recruiter-dashboard.html">Recruiter Dashboard</a>
+        <a class="btn btn-outline-secondary" href="/employer.html">Employers</a>
+        <a class="btn btn-outline-secondary" href="/employer-dashboard.html">Employer Dashboard</a>
+        <a class="btn btn-outline-secondary" href="/post-job.html">Post Job</a>
+        <a class="btn btn-outline-secondary" href="/bursaries.html">Bursaries</a>
+        <a class="btn btn-outline-secondary" href="/bursary-apply.html">Bursary Apply</a>
+        <a class="btn btn-outline-secondary" href="/admin-bursaries.html">Admin Bursaries</a>
+        <a class="btn btn-outline-secondary" href="/learners.html">Learners</a>
+        <a class="btn btn-outline-secondary" href="/universities.html">Universities</a>
+        <a class="btn btn-outline-secondary" href="/investors.html">Investors</a>
+        <a class="btn btn-outline-secondary" href="/partnerships.html">Partnerships</a>
+        <a class="btn btn-outline-secondary" href="/brand-collaborations.html">Brand Collaborations</a>
+        <a class="btn btn-outline-secondary" href="/marketing.html">Marketing</a>
+        <a class="btn btn-outline-secondary" href="/components.html">Components</a>
+        <a class="btn btn-outline-secondary" href="/sitemap.html">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
 </script>
 const jobs = await (await fetchAPI('/jobs')).json();
 
+  <!-- global API helper (1 line, works on every page) -->
+  <script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
+
+  <!-- shared app JS (contains the invisible nav etc.) -->
+  <script defer src="/assets/js/main.js"></script>
+
+  <!-- page-specific code (pick ONE style) -->
+  <!-- Option A: module with top-level await -->
+  <script type="module">
+    const jobs = await (await fetchAPI('/jobs')).json();
+    // ...use jobs here...
+  </script>
+
+  <!-- Option B: classic script with async IIFE -->
+  <!--
+  <script>
+    (async () => {
+      const jobs = await (await fetchAPI('/jobs')).json();
+      // ...use jobs here...
+    })();
+  </script>
+  -->
+</body>
 </html>
+

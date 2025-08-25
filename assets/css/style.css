@@ -1,32 +1,49 @@
+/* --- Responsive Enhancements --- */
 
-:root{
-  --brand:#0a6e3d;
-  --brand-600:#085a31;
-  --ink:#1f2937;
-  --muted:#6b7280;
-  --bg:#f3f4f6;
-  --card:#ffffff;
-  --soft:#eef3f8;
-  --radius:18px;
-  --shadow:0 10px 30px rgba(2, 6, 23, 0.08);
+/* Fluid base type & headings */
+html { font-size: 100%; }
+body { font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1.05rem); line-height: 1.6; }
+h1 { font-size: clamp(1.8rem, 1.2rem + 3.2vw, 3.2rem); }
+h2 { font-size: clamp(1.4rem, 1.1rem + 2.0vw, 2.2rem); }
+h3 { font-size: clamp(1.2rem, 1.05rem + 1.2vw, 1.6rem); }
+.display-5 { font-size: clamp(2rem, 1.3rem + 3.5vw, 3.5rem); }
+
+/* Images & cards */
+img, svg { max-width: 100%; height: auto; }
+.card { border-radius: var(--radius); box-shadow: var(--shadow); }
+
+/* Buttons scale nicely */
+.btn { padding: clamp(.45rem, .35rem + .4vw, .7rem) clamp(.85rem, .7rem + .6vw, 1.2rem); }
+.btn.rounded-pill { border-radius: 999px; }
+
+/* Navbar tweaks */
+.nav-wrap .input-group { max-width: 520px; }
+.nav-wrap .mobile-toggle { display: none; }
+
+/* Trustbar grid on small screens */
+.trustbar { gap: .75rem !important; }
+.trustbar .kpi { min-width: 0; }
+
+/* Hero padding scales */
+.hero, .cover-brand { padding-top: clamp(2rem, 1.2rem + 3vw, 4rem); padding-bottom: clamp(2rem, 1.2rem + 3vw, 4rem); }
+
+/* Map card */
+.map-card { margin-top: 0; }
+
+/* ===== Breakpoints ===== */
+
+/* Mobile-first ≤ 992px */
+@media (max-width: 991.98px) {
+  .nav-wrap .input-group { display: none; }
+  .nav-wrap .mobile-toggle { display: inline-flex; }
+  .trustbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero .card { margin-top: 1rem; }
+  .map-card { margin-top: 1rem; }
+  .container-xxl { padding-left: 1rem; padding-right: 1rem; }
 }
-html,body{background:var(--bg);color:var(--ink);}
-a{text-decoration:none}
-.btn-brand{background:var(--brand);border:none;color:#fff}
-.btn-brand:hover{background:var(--brand-600);color:#fff}
-.btn-soft{background:var(--soft);border:none}
-.badge-pill{border-radius:999px;padding:.35rem .7rem;font-weight:600}
-/* NAV */
-.nav-wrap{backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid #e5e7eb;}
-.logo-word{font-weight:800;letter-spacing:.3px;color:var(--brand);}
-.nav-link-lite{color:#374151}
-/* Cards */
-.card{border-radius:var(--radius);border:1px solid #e5e7eb}
-.shadow-lg-soft{box-shadow:var(--shadow)}
-.icon-circle{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--soft)}
-/* Footer */
-footer a{color:#6b7280}
-/* Utilities */
-.pill{background:var(--soft);border-radius:999px;padding:.25rem .6rem}
-.chip{background:var(--soft);border-radius:999px;padding:.35rem .7rem;display:inline-block}
-.cover-brand{background:linear-gradient(135deg,var(--brand),#33b07a)}
+
+/* ≥ 1400px large desktops */
+@media (min-width: 1399.98px) {
+  .container-xxl { max-width: 1280px; }
+}
+

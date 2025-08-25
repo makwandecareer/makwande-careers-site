@@ -1,4 +1,4 @@
-<!doctype html>
+<doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -33,7 +33,6 @@
       </div>
     </div>
   </nav>
-
   
 <div class="container-xxl my-5" style="max-width:900px">
   <div class="card p-4">
@@ -57,8 +56,6 @@ document.getElementById('bursApply').addEventListener('submit', async (e)=>{
   catch(err){ alert('Failed to submit'); }
 });
 </script>
-
-
   <footer class="border-top py-4 mt-5">
     <div class="container-xxl d-flex flex-wrap align-items-center justify-content-between gap-3">
       <div class="small text-muted">© <span id="year"></span> Makwande Careers • All rights reserved</div>
@@ -70,7 +67,6 @@ document.getElementById('bursApply').addEventListener('submit', async (e)=>{
       </div>
     </div>
   </footer>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/main.js"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear(); initStatus && initStatus();</script>
@@ -81,26 +77,21 @@ document.getElementById('bursApply').addEventListener('submit', async (e)=>{
 </body>
 <script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
 <script type="module">
-  const jobs = await (await fetchAPI('/jobs')).json();
-
   await fetchAPI('/apply_job', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ job_id:'123' })
   });
-
   const fd = new FormData(document.querySelector('#revampForm'));
   await fetchAPI('/revamp', { method:'POST', body: fd }); // no Content-Type header
 </script>
 <script>
   // 1-line global API helper (works on all pages)
   window.fetchAPI = (p,o={}) => fetch('/api'+p,{credentials:'include',...o});
-
   // Invisible dynamic nav (executes, shows no raw code)
   document.addEventListener('DOMContentLoaded', function () {
     const c = document.querySelector('nav.nav-wrap .ms-auto');
-    if (!c) return;
-
+    if (c) return;
     // Build links with DOM (no template text visible)
     const links = [
       ['Home','/index.html'], ['Jobs','/jobs.html'], ['Revamp CV','/revamp.html'],
@@ -114,7 +105,6 @@ document.getElementById('bursApply').addEventListener('submit', async (e)=>{
       a.textContent = t;
       c.appendChild(a);
     });
-
     // Optional “More” dropdown (visible menu, but no raw code text)
     const wrap = document.createElement('div');
     wrap.className = 'dropdown';
@@ -145,6 +135,4 @@ document.getElementById('bursApply').addEventListener('submit', async (e)=>{
     c.appendChild(wrap);
   });
 </script>
-const jobs = await (await fetchAPI('/jobs')).json();
-
 </html>

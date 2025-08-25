@@ -80,6 +80,39 @@
     });
   </script>
 </body>
+<textarea id="cv_text" name="cv_text" rows="14" required></textarea>
+<script>
+const cv = {
+  header: { name: "Makwande Gcora", title: "Chemical Engineer" },
+  summary: "Director of Emerging Markets at Makwande Chemicals...",
+  experience: [
+    { title:"Process Engineer", company:"Progressive Liquor", dates:"2024–2025",
+      bullets:["Built alcohol lab (gin/whisky/vodka)","Cut CoGS by 8%"] }
+  ],
+  skills: ["Process Design","QA/QC","Snowflake","FastAPI"]
+};
+
+function cvToText(cv){
+  const lines = [];
+  lines.push(`${cv.header.name} — ${cv.header.title}`);
+  lines.push("");
+  lines.push("SUMMARY");
+  lines.push(cv.summary);
+  lines.push("");
+  lines.push("EXPERIENCE");
+  for (const r of cv.experience){
+    lines.push(`${r.title}, ${r.company} (${r.dates})`);
+    for (const b of r.bullets) lines.push(`• ${b}`);
+    lines.push("");
+  }
+  lines.push("SKILLS");
+  lines.push(cv.skills.join(", "));
+  return lines.join("\n");
+}
+
+document.getElementById('cv_text').value = cvToText(cv);
+</script>
+
 </html>
 <footer class="bg-dark text-light text-center py-4 mt-5">
   <div class="container">

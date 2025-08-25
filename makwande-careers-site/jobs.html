@@ -319,4 +319,114 @@ for (const c of COUNTRIES) {
   })();
   </script>
 </body>
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-body p-4">
+          <h3 class="card-title text-center mb-4">Revamp Your CV</h3>
+          
+          <form id="revampForm">
+            
+            <!-- Job Title -->
+            <div class="mb-3">
+              <label for="job_title" class="form-label">Target Job Title</label>
+              <input type="text" class="form-control" id="job_title" name="job_title" placeholder="e.g., Process Engineer">
+            </div>
+
+            <!-- Job Description -->
+            <div class="mb-3">
+              <label for="job_description" class="form-label">Job Description</label>
+              <textarea class="form-control" id="job_description" name="job_description" rows="5" placeholder="Paste the job description here..."></textarea>
+            </div>
+
+            <!-- CV Text -->
+            <div class="mb-3">
+              <label for="cv_text" class="form-label">Your CV</label>
+              <textarea class="form-control" id="cv_text" name="cv_text" rows="12" placeholder="Paste your CV here..."></textarea>
+              <div class="form-text">Paste plain text only (no formatting). PDF/Word should be converted to text first.</div>
+            </div>
+
+            <!-- Extra fields -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="country" class="form-label">Target Country</label>
+                <input type="text" class="form-control" id="country" name="country" placeholder="e.g., South Africa">
+              </div>
+              <div class="col-md-6">
+                <label for="seniority" class="form-label">Seniority</label>
+                <select class="form-select" id="seniority" name="seniority">
+                  <option value="">Select...</option>
+                  <option value="Junior">Junior</option>
+                  <option value="Mid">Mid</option>
+                  <option value="Senior">Senior</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Submit button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">Revamp My CV</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="revampResults" class="mt-4" style="display:none;">
+        <div class="card shadow border-0">
+          <div class="card-body">
+            <h4 class="mb-3">Revamped CV Results</h4>
+            <p><strong>ATS Score:</strong> <span id="ats_score"></span>%</p>
+            <h5>Summary</h5>
+            <p id="cv_summary"></p>
+            <h5>Improvement Tips</h5>
+            <ul id="improvement_tips"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('revampForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    job_title: document.getElementById('job_title').value,
+    job_description: document.getElementById('job_description').value,
+    cv_text: document.getElementById('cv_text').value,
+    target_country: document.getElementById('country').value,
+    seniority: document.getElementById('seniority').value
+  };
+
+  const res = await fetch('/api/revamp_cv', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    alert(data.detail || 'Something went wrong.');
+    return;
+  }
+
+  // Display results
+  document.getElementById('revampResults').style.display = 'block';
+  document.getElementById('ats_score').textContent = data.ats_score;
+  document.getElementById('cv_summary').textContent = data.summary;
+
+  // Improvement tips
+  const tipsUl = document.getElementById('improvement_tips');
+  tipsUl.innerHTML = '';
+  data.improvement_tips.forEach(tip => {
+    const li = document.createElement('li');
+    li.textContent = tip;
+    tipsUl.appendChild(li);
+  });
+});
+</script>
+
 </html>

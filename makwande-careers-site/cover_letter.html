@@ -95,6 +95,108 @@
       </script>
       
 </body>
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-body p-4">
+          <h3 class="card-title text-center mb-4">Generate a Cover Letter</h3>
+          
+          <form id="coverLetterForm">
+            
+            <!-- Applicant Name -->
+            <div class="mb-3">
+              <label for="applicant_name" class="form-label">Your Name</label>
+              <input type="text" class="form-control" id="applicant_name" name="applicant_name" placeholder="e.g., Makwande Gcora" required>
+            </div>
+
+            <!-- Company Name -->
+            <div class="mb-3">
+              <label for="company" class="form-label">Company Name</label>
+              <input type="text" class="form-control" id="company" name="company" placeholder="e.g., Progressive Liquor" required>
+            </div>
+
+            <!-- Role -->
+            <div class="mb-3">
+              <label for="role" class="form-label">Job Role</label>
+              <input type="text" class="form-control" id="role" name="role" placeholder="e.g., Process Engineer" required>
+            </div>
+
+            <!-- Job Description -->
+            <div class="mb-3">
+              <label for="cl_job_description" class="form-label">Job Description</label>
+              <textarea class="form-control" id="cl_job_description" name="cl_job_description" rows="5" placeholder="Paste the job description here..." required></textarea>
+            </div>
+
+            <!-- CV Text -->
+            <div class="mb-3">
+              <label for="cl_cv_text" class="form-label">Your CV (Plain Text)</label>
+              <textarea class="form-control" id="cl_cv_text" name="cl_cv_text" rows="10" placeholder="Paste your CV here..." required></textarea>
+            </div>
+
+            <!-- Tone -->
+            <div class="mb-3">
+              <label for="tone" class="form-label">Tone</label>
+              <select class="form-select" id="tone" name="tone">
+                <option value="professional" selected>Professional</option>
+                <option value="enthusiastic">Enthusiastic</option>
+                <option value="concise">Concise</option>
+                <option value="warm">Warm</option>
+              </select>
+            </div>
+
+            <!-- Submit button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-success btn-lg">Generate Cover Letter</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="coverLetterResults" class="mt-4" style="display:none;">
+        <div class="card shadow border-0">
+          <div class="card-body">
+            <h4 class="mb-3">Your Cover Letter</h4>
+            <pre id="cover_letter_output" style="white-space: pre-wrap; font-family: inherit;"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('coverLetterForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    applicant_name: document.getElementById('applicant_name').value,
+    company: document.getElementById('company').value,
+    role: document.getElementById('role').value,
+    job_description: document.getElementById('cl_job_description').value,
+    cv_text: document.getElementById('cl_cv_text').value,
+    tone: document.getElementById('tone').value
+  };
+
+  const res = await fetch('/api/cover_letter', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    alert(data.detail || 'Something went wrong.');
+    return;
+  }
+
+  // Display cover letter
+  document.getElementById('coverLetterResults').style.display = 'block';
+  document.getElementById('cover_letter_output').textContent = data.letter_markdown;
+});
+</script>
+
 </html>
 <footer class="bg-dark text-light text-center py-4 mt-5">
   <div class="container">

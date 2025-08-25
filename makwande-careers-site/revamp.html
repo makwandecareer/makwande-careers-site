@@ -1,187 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
-  
-  </script>
-  
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>CV Revamp | Makwande Careers</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- App & Bootstrap CSS -->
-  <link rel="stylesheet" href="assets/css/app.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { padding-top: 72px; }
+    textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; white-space: pre-wrap; }
+  </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg fixed-top bg-white shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="index.html">Makwande Careers</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div id="navMain" class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a href="jobs.html" class="nav-link">Jobs</a></li>
-          <li class="nav-item"><a href="cv-revamp.html" class="nav-link active">CV Revamp</a></li>
-          <li class="nav-item"><a href="cover-letter.html" class="nav-link">Cover Letter</a></li>
-          <li class="nav-item"><a href="dashboard.html" class="nav-link">Dashboard</a></li>
-        </ul>
+      <a class="navbar-brand fw-semibold" href="#">Makwande Careers</a>
+      <div class="ms-auto">
+        <a class="btn btn-outline-primary btn-sm" href="cover-letter.html">Cover Letter</a>
       </div>
     </div>
   </nav>
 
-  <!-- Main -->
-  <main class="container" style="margin-top: 5.5rem;">
-    <header class="mb-4">
-      <h2 class="mb-1">AI-Powered CV Revamp</h2>
-      <p class="lead mb-0">Paste your CV and job description. We’ll restructure it for ATS compliance and recruiter impact.</p>
-    </header>
+  <main class="container">
+    <h1 class="h3 mb-3">AI-Powered CV Revamp</h1>
+    <p class="text-secondary mb-4">Paste your CV and the job details. We’ll optimize it for ATS and recruiters.</p>
 
-    <!-- Alerts -->
-    <div id="alertBox" class="d-none"></div>
-
-    <!-- CV Revamp Form -->
-    <form id="cvRevampForm" class="card shadow-sm border-0 p-4">
+    <form id="revampForm" class="card p-3 p-md-4 shadow-sm">
       <div class="row g-3">
         <div class="col-md-6">
-          <label for="job_title" class="form-label">Target Job Title</label>
-          <input type="text" id="job_title" class="form-control" placeholder="e.g., Process Engineer" />
+          <label class="form-label">Job Title</label>
+          <input id="job_title" class="form-control" placeholder="Process Engineer">
         </div>
-        <div class="col-md-6">
-          <label for="seniority" class="form-label">Seniority</label>
+        <div class="col-md-3">
+          <label class="form-label">Target Country</label>
+          <input id="target_country" class="form-control" placeholder="South Africa">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Seniority</label>
           <select id="seniority" class="form-select">
-            <option value="">Select…</option>
-            <option value="Junior">Junior</option>
-            <option value="Mid">Mid</option>
-            <option value="Senior">Senior</option>
+            <option value="">—</option>
+            <option>Intern</option>
+            <option>Junior</option>
+            <option>Mid</option>
+            <option>Senior</option>
+            <option>Lead</option>
+            <option>Director</option>
           </select>
         </div>
-        <div class="col-md-6">
-          <label for="country" class="form-label">Target Country</label>
-          <input type="text" id="country" class="form-control" placeholder="e.g., South Africa" />
-        </div>
+
         <div class="col-12">
-          <label for="job_description" class="form-label">Job Description</label>
-          <textarea id="job_description" class="form-control" rows="5" placeholder="Paste the job description here..."></textarea>
+          <label class="form-label">Job Description</label>
+          <textarea id="job_description" class="form-control" rows="6" placeholder="Paste the job description…"></textarea>
         </div>
+
         <div class="col-12">
-          <label for="cv_text" class="form-label">Your CV (Plain Text)</label>
-          <textarea id="cv_text" class="form-control" rows="12" placeholder="Paste your CV text here..." required></textarea>
-          <div class="form-text">Tip: Paste plain text. If you have a PDF/DOCX, convert/extract to text first.</div>
+          <label class="form-label">Your CV (plain text)</label>
+          <textarea id="cv_text" class="form-control" rows="12" placeholder="Paste your CV here…"></textarea>
+          <div class="form-text">Tip: If you have a PDF/DOCX, copy the text out and paste it here.</div>
         </div>
-      </div>
-      <div class="d-grid mt-4">
-        <button type="submit" class="btn btn-primary btn-lg">Revamp My CV</button>
+
+        <div class="col-12 d-flex gap-2">
+          <button id="submitBtn" class="btn btn-primary" type="submit">Revamp CV</button>
+          <button id="demoBtn" class="btn btn-outline-secondary" type="button">Load Demo</button>
+        </div>
       </div>
     </form>
 
-    <!-- Results -->
-    <section id="revampResults" class="mt-4 d-none">
-      <div class="card shadow-sm border-0">
+    <section id="resultWrap" class="mt-4" style="display:none;">
+      <div class="card shadow-sm">
         <div class="card-body">
-          <h4 class="mb-3">Revamped CV Results</h4>
-          <p><strong>ATS Score:</strong> <span id="ats_score"></span>%</p>
-          <h5>Summary</h5>
-          <p id="cv_summary"></p>
-          <h5>Improvement Tips</h5>
-          <ul id="improvement_tips"></ul>
+          <h2 class="h5 mb-3">Results</h2>
+          <div class="row gy-3">
+            <div class="col-md-4">
+              <div class="border rounded p-3 bg-light">
+                <div class="small text-muted">ATS Score</div>
+                <div id="ats_score" class="display-6 fw-semibold">—</div>
+              </div>
+              <div class="mt-3">
+                <div class="small text-muted mb-1">Improvement Tips</div>
+                <ul id="improvement_tips" class="mb-0"></ul>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="small text-muted mb-1">Summary</div>
+              <p id="summary" class="mono"></p>
+              <hr>
+              <div class="small text-muted mb-1">Structured Sections (JSON)</div>
+              <pre id="sections" class="mono border rounded p-3 bg-light" style="max-height:420px;overflow:auto;"></pre>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-dark text-light text-center py-4 mt-5">
-    <div class="container">
-      <p class="mb-1">&copy; <span id="year"></span> Makwande Careers. All rights reserved.</p>
-      <p class="small mb-0">Empowering Africa’s professionals with smarter job applications, bursaries, and career growth.</p>
-    </div>
-  </footer>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- App JS -->
   <script>
-    // ----------------- CONFIG -----------------
     const API_BASE = "https://autoapplyapp.onrender.com";
 
-    // ----------------- HELPERS ----------------
-    function showAlert(type, msg) {
-      const box = document.getElementById("alertBox");
-      box.className = `alert alert-${type}`;
-      box.textContent = msg;
-      box.classList.remove("d-none");
-    }
-    function hideAlert() {
-      const box = document.getElementById("alertBox");
-      box.className = "d-none";
-      box.textContent = "";
-    }
     async function postJSON(path, payload) {
       const res = await fetch(`${API_BASE}${path}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
-      const data = await res.json().catch(() => ({}));
+      const data = await res.json().catch(()=> ({}));
       if (!res.ok) throw new Error(data?.detail || `HTTP ${res.status}`);
       return data;
     }
-    function setYear() {
-      document.getElementById("year").textContent = new Date().getFullYear();
-    }
 
-    // ----------------- FORM HOOKUP ------------
-    document.addEventListener("DOMContentLoaded", () => {
-      setYear();
+    document.getElementById("demoBtn").addEventListener("click", () => {
+      document.getElementById("job_title").value = "Process Engineer";
+      document.getElementById("target_country").value = "South Africa";
+      document.getElementById("seniority").value = "Senior";
+      document.getElementById("job_description").value = "We seek a Process Engineer to optimize distillation, fermentation, and QA/QC. Experience with GMP, SPC, and continuous improvement preferred.";
+      document.getElementById("cv_text").value = [
+        "Makwande Gcora — Chemical Engineer",
+        "",
+        "SUMMARY",
+        "Process/chemical engineer with hands-on plant optimization and QA/QC.",
+        "",
+        "EXPERIENCE",
+        "Process Engineer, Progressive Liquor (2024–2025)",
+        "• Built alcohol lab (gin/whisky/vodka) and reduced CoGS by 8%",
+        "• Implemented SPC and cut rework by 22%",
+        "",
+        "SKILLS",
+        "Process design, QA/QC, SPC, Python, FastAPI"
+      ].join("\n");
+    });
 
-      const form = document.getElementById("cvRevampForm");
-      const results = document.getElementById("revampResults");
+    document.getElementById("revampForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true; const original = btn.textContent; btn.textContent = "Revamping…";
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        hideAlert();
+      const payload = {
+        job_title: document.getElementById("job_title").value,
+        job_description: document.getElementById("job_description").value,
+        cv_text: document.getElementById("cv_text").value,
+        target_country: document.getElementById("target_country").value,
+        seniority: document.getElementById("seniority").value
+      };
 
-        const btn = form.querySelector('button[type="submit"]');
-        const originalText = btn.textContent;
-        btn.disabled = true;
-        btn.textContent = "Revamping…";
-
-        const payload = {
-          job_title: document.getElementById("job_title").value.trim(),
-          job_description: document.getElementById("job_description").value.trim(),
-          cv_text: document.getElementById("cv_text").value.trim(),
-          target_country: document.getElementById("country").value.trim(),
-          seniority: document.getElementById("seniority").value
-        };
-
-        if (!payload.cv_text) {
-          showAlert("warning", "Please paste your CV text first.");
-          btn.disabled = false;
-          btn.textContent = originalText;
-          return;
-        }
-
-        try {
-          const data = await postJSON("/api/revamp_cv", payload);
-          document.getElementById("ats_score").textContent = data.ats_score ?? "";
-          document.getElementById("cv_summary").textContent = data.summary ?? "";
-          const tipsUl = document.getElementById("improvement_tips");
-          tipsUl.innerHTML = "";
-          (data.improvement_tips || []).forEach((tip) => {
-            const li = document.createElement("li");
-            li.textContent = tip;
-            tipsUl.appendChild(li);
-          });
-          results.classList.remove("d-none");
-        } catch (err) {
-          showAlert("danger", `CV Revamp failed: ${err.message}`);
-        } finally {
-          btn.disabled = false;
-          btn.textContent = originalText;
-        }
-      });
+      try {
+        const data = await postJSON("/api/revamp_cv", payload);
+        document.getElementById("resultWrap").style.display = "block";
+        document.getElementById("ats_score").textContent = data.ats_score ?? "—";
+        document.getElementById("summary").textContent = data.summary || "";
+        document.getElementById("sections").textContent = JSON.stringify(data.cv_sections || {}, null, 2);
+        const tips = data.improvement_tips || [];
+        const tipsUl = document.getElementById("improvement_tips");
+        tipsUl.innerHTML = "";
+        tips.forEach(t => {
+          const li = document.createElement("li"); li.textContent = t; tipsUl.appendChild(li);
+        });
+        window.scrollTo({ top: document.getElementById("resultWrap").offsetTop - 72, behavior: "smooth" });
+      } catch (err) {
+        alert(`CV Revamp failed: ${err.message}`);
+      } finally {
+        btn.disabled = false; btn.textContent = original;
+      }
     });
   </script>
 </body>

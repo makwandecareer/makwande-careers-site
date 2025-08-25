@@ -166,9 +166,18 @@
     ];
 
     // 🔧 FIXED: this line uses backticks so it’s a string, not raw HTML in JS.
-    countryEl.innerHTML =
-      <option value="">All locations</option> +
-      COUNTRIES.map(c => <option value="${c.code}">${c.name}</option>).join("");
+    countryEl.innerHTML = "";
+const all = document.createElement("option");
+all.value = "";
+all.textContent = "All locations";
+countryEl.appendChild(all);
+
+for (const c of COUNTRIES) {
+  const o = document.createElement("option");
+  o.value = c.code;
+  o.textContent = c.name;
+  countryEl.appendChild(o);
+}
 
     function setStatus(t){ statusEl.textContent = t || ""; }
     function toast(t){ toastEl.textContent = t; toastEl.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>toastEl.style.display="none", 4000); }

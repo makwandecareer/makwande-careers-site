@@ -73,7 +73,6 @@
 </body>
 <script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
 <script type="module">
-  const jobs = await (await fetchAPI('/jobs')).json();
 
   await fetchAPI('/apply_job', {
     method:'POST',
@@ -137,6 +136,5 @@
     c.appendChild(wrap);
   });
 </script>
-const jobs = await (await fetchAPI('/jobs')).json();
 
 </html>

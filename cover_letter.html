@@ -91,7 +91,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </body>
 <script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
 <script type="module">
-  const jobs = await (await fetchAPI('/jobs')).json();
 
   await fetchAPI('/apply_job', {
     method:'POST',
@@ -155,6 +154,5 @@ document.addEventListener('DOMContentLoaded', ()=>{
     c.appendChild(wrap);
   });
 </script>
-const jobs = await (await fetchAPI('/jobs')).json();
 
 </html>

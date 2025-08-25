@@ -238,5 +238,59 @@ document.addEventListener('DOMContentLoaded', ()=>{ try{ injectNav(); }catch(e){
   const fd = new FormData(document.querySelector('#revampForm'));
   await fetchAPI('/revamp', { method:'POST', body: fd }); // no Content-Type header
 </script>
+<script>
+  // 1-line global API helper (works on all pages)
+  window.fetchAPI = (p,o={}) => fetch('/api'+p,{credentials:'include',...o});
+
+  // Invisible dynamic nav (executes, shows no raw code)
+  document.addEventListener('DOMContentLoaded', function () {
+    const c = document.querySelector('nav.nav-wrap .ms-auto');
+    if (!c) return;
+
+    // Build links with DOM (no template text visible)
+    const links = [
+      ['Home','/index.html'], ['Jobs','/jobs.html'], ['Revamp CV','/revamp.html'],
+      ['Cover Letter','/cover_letter.html'], ['Pricing','/pricing.html'], ['Dashboard','/dashboard.html']
+    ];
+    c.innerHTML = '';
+    links.forEach(([t,h]) => {
+      const a = document.createElement('a');
+      a.className = 'text-decoration-none nav-link-lite';
+      a.href = h;
+      a.textContent = t;
+      c.appendChild(a);
+    });
+
+    // Optional “More” dropdown (visible menu, but no raw code text)
+    const wrap = document.createElement('div');
+    wrap.className = 'dropdown';
+    wrap.innerHTML = `
+      <a class="btn btn-soft dropdown-toggle rounded-pill" href="#" role="button" data-bs-toggle="dropdown">More</a>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><h6 class="dropdown-header">More</h6></li>
+        <li><a class="dropdown-item" href="/recruiter.html">Recruiter</a></li>
+        <li><a class="dropdown-item" href="/recruiter-dashboard.html">Recruiter Dashboard</a></li>
+        <li><a class="dropdown-item" href="/employer.html">Employers</a></li>
+        <li><a class="dropdown-item" href="/employer-dashboard.html">Employer Dashboard</a></li>
+        <li><a class="dropdown-item" href="/post-job.html">Post Job</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="/bursaries.html">Bursaries</a></li>
+        <li><a class="dropdown-item" href="/bursary-apply.html">Bursary Apply</a></li>
+        <li><a class="dropdown-item" href="/admin-bursaries.html">Admin Bursaries</a></li>
+        <li><a class="dropdown-item" href="/learners.html">Learners</a></li>
+        <li><a class="dropdown-item" href="/universities.html">Universities</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="/investors.html">Investors</a></li>
+        <li><a class="dropdown-item" href="/partnerships.html">Partnerships</a></li>
+        <li><a class="dropdown-item" href="/brand-collaborations.html">Brand Collaborations</a></li>
+        <li><a class="dropdown-item" href="/marketing.html">Marketing</a></li>
+        <li><a class="dropdown-item" href="/components.html">Components</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="/sitemap.html">Sitemap</a></li>
+      </ul>`;
+    c.appendChild(wrap);
+  });
+</script>
+const jobs = await (await fetchAPI('/jobs')).json();
 
 </html>

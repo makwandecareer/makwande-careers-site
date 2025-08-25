@@ -7,100 +7,99 @@
   <meta name="color-scheme" content="light dark" />
   <style>
     :root{
-      --bg1:#0d1720; --bg2:#101a24;
-      --panel:#0f1f2a; --panel-hi:#122536;
-      --ink:#f8fafc; --muted:#d2dee8cc;
-      --brand:#f59e0b;        /* warm amber */
-      --brand-ink:#2b1600;
-      --chip:#0f2433; --border:#1d3a4e;
-      --ok:#22c55e;
+      --bg:#f3f6f8;           /* neutral background */
+      --panel:#ffffff;        /* cards/panels */
+      --ink:#0b1f33;          /* main text */
+      --muted:#5b6b7b;        /* secondary text */
+      --border:#e6edf2;       /* borders */
+      --accent:#0a66c2;       /* LinkedIn blue */
+      --chip:#f0f4f8;
+      --ok:#1a7f37;
     }
-    @media (prefers-color-scheme: light){
+    @media (prefers-color-scheme: dark){
       :root{
-        --bg1:#fffaf3; --bg2:#fff7ec;
-        --panel:#ffffff; --panel-hi:#fffdf8;
-        --ink:#0b1220; --muted:#42566bcc;
-        --chip:#f6f7f9; --border:#e7edf2;
+        --bg:#0e141a; --panel:#0f1821;
+        --ink:#e9f1f6; --muted:#a8b4bf; --border:#1d2a36;
+        --chip:#14202b; --accent:#4aa3ff;
       }
-      body{ background: radial-gradient(1300px 600px at 10% -10%, #fff0d8 0, #fff7ec 30%, #fffaf3 70%); }
     }
+    * { box-sizing: border-box; }
+    html,body{ height:100%; }
     body{
-      margin:0; color:var(--ink);
-      background: radial-gradient(1300px 600px at 10% -10%, #1a2936 0, #0f1c27 45%, #0d1720 100%);
-      font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      margin:0; background:var(--bg); color:var(--ink);
+      font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
     }
-    .wrap{ max-width: 1120px; margin:0 auto; padding:24px 14px 72px; }
+    .wrap{ max-width:1140px; margin:0 auto; padding:24px 16px 72px; }
     header{
-      background:
-        radial-gradient(800px 280px at 10% -40%, rgba(245,158,11,.18), transparent 40%),
-        linear-gradient(180deg, transparent, transparent 70%, rgba(245,158,11,.06));
-      border: 1px solid rgba(245,158,11,.18);
-      border-radius: 18px;
-      padding: 22px 18px 20px;
-      box-shadow: 0 10px 40px rgba(245,158,11,.05), 0 8px 30px rgba(0,0,0,.25) inset;
-      margin: 4px 0 18px;
+      background: var(--panel);
+      border:1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 16px;
+      box-shadow: 0 8px 24px rgba(2,12,20,.06);
+      margin: 8px 0 18px;
     }
-    h1{ margin:0 0 6px; font-weight:800; letter-spacing:.3px; font-size: clamp(28px, 4.4vw, 44px); }
+    h1{ margin:0 0 4px; font-weight:800; letter-spacing:.2px; font-size: clamp(26px, 4vw, 40px); }
     header p{ margin:0; color:var(--muted); }
 
     /* controls */
     .controls{
       display:grid; gap:12px; grid-template-columns: 1fr;
-      margin: 16px 0 8px;
+      margin: 16px 0 10px;
     }
     @media (min-width: 780px){
-      .controls{ grid-template-columns: 220px 1fr 120px auto auto; align-items:end; }
+      .controls{ grid-template-columns: 220px 1fr 110px auto auto; align-items:end; }
     }
     label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; letter-spacing:.3px; }
-    select,input[type="text"],input[type="number"]{
-      width:100%; padding:11px 12px; border-radius:12px;
-      background:var(--chip); color:var(--ink);
+    select,input[type="text"]{
+      width:100%; padding:10px 12px; border-radius:10px;
+      background:var(--panel); color:var(--ink);
       border:1px solid var(--border); outline: none;
-      box-shadow: 0 2px 0 rgba(0,0,0,.12) inset, 0 8px 26px rgba(0,0,0,.12);
+      box-shadow: 0 1px 0 rgba(0,0,0,.04);
     }
     .btn{
-      appearance:none; border:0; padding:11px 16px; border-radius:14px; cursor:pointer;
-      background: linear-gradient(180deg, #f8b84a, var(--brand));
-      color:var(--brand-ink); font-weight:800; letter-spacing:.2px;
-      box-shadow: 0 10px 24px rgba(245,158,11,.25), 0 2px 0 rgba(0,0,0,.12) inset;
-      transform: translateZ(0);
+      appearance:none; border:1px solid var(--accent);
+      padding:10px 14px; border-radius:10px; cursor:pointer;
+      background: var(--accent); color:#fff; font-weight:700; letter-spacing:.2px;
+      box-shadow: 0 6px 18px rgba(10,102,194,.25);
     }
     .btn.secondary{
-      background: linear-gradient(180deg, var(--panel-hi), var(--panel));
-      color: var(--ink); border:1px solid var(--border); box-shadow:none; font-weight:600;
+      background: transparent; color:var(--accent);
+      border:1px solid var(--accent); box-shadow:none;
     }
     .btn:disabled{ opacity:.55; cursor:not-allowed; }
     .status{ min-height: 22px; color:var(--muted); margin: 8px 4px 2px; }
 
     /* cards */
-    .grid{ display:grid; gap:16px; grid-template-columns: 1fr; margin-top:12px; }
+    .grid{ display:grid; gap:14px; grid-template-columns: 1fr; margin-top:10px; }
     @media (min-width: 760px){ .grid{ grid-template-columns: repeat(2,1fr); } }
-    @media (min-width: 1060px){ .grid{ grid-template-columns: repeat(3,1fr); } }
+    @media (min-width: 1080px){ .grid{ grid-template-columns: repeat(3,1fr); } }
     .card{
-      background: linear-gradient(180deg, var(--panel-hi), var(--panel));
-      border:1px solid var(--border); border-radius:16px; padding:14px 16px 12px;
-      box-shadow: 0 14px 40px rgba(0,0,0,.18);
+      background: var(--panel);
+      border:1px solid var(--border); border-radius:12px; padding:12px 14px 12px;
+      box-shadow: 0 6px 20px rgba(2,12,20,.06);
     }
-    .card h3{ margin:0 0 8px; font-size:17px; }
+    .card h3{ margin:0 0 6px; font-size:16px; line-height:1.35; }
     .card h3 a{ color:var(--ink); text-decoration:none; }
+    .card h3 a:hover{ text-decoration:underline; }
     .meta{ display:flex; flex-wrap:wrap; gap:8px; color:var(--muted); font-size:12px; }
-    .chip{ background: #112b3a; border:1px solid var(--border); padding:2px 8px; border-radius:999px; }
+    .chip{ background: var(--chip); border:1px solid var(--border); padding:2px 8px; border-radius:999px; }
     .ok{ color:var(--ok); font-weight:700; }
     .empty{
-      padding:18px; border-radius:14px; border:1px dashed var(--border);
-      color:var(--muted); background: linear-gradient(180deg, rgba(245,158,11,.05), transparent);
+      padding:16px; border-radius:12px; border:1px dashed var(--border);
+      color:var(--muted); background: var(--panel);
     }
     .pager{ display:flex; align-items:center; gap:10px; margin:16px 2px 0; }
-    .page{ width:46px; text-align:center; color:var(--muted); }
+    .page{ width:42px; text-align:center; color:var(--muted); }
+
     .toast{
       position: fixed; left: 50%; transform: translateX(-50%);
-      bottom: 18px; background:#1a2d3d; color:#fff; border:1px solid #22455c;
-      padding: 10px 14px; border-radius: 12px; box-shadow: 0 12px 28px rgba(0,0,0,.25);
-      max-width: 92vw; display:none;
+      bottom: 18px; background:#0a2238; color:#fff; border:1px solid #13324d;
+      padding: 10px 14px; border-radius: 10px; box-shadow: 0 10px 26px rgba(0,0,0,.25);
+      max-width: 92vw; display:none; z-index:999;
     }
-    .skeleton{ height:118px; border-radius:16px; background:
-      linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.02), rgba(255,255,255,.08));
-      animation: sh 1.4s infinite; border:1px solid var(--border);
+    .skeleton{ height:112px; border-radius:12px; background:
+      linear-gradient(90deg, rgba(0,0,0,.04), rgba(0,0,0,.02), rgba(0,0,0,.04));
+      animation: sh 1.2s infinite; border:1px solid var(--border);
     }
     @keyframes sh{ 0%{ background-position:-240px 0 } 100%{ background-position:240px 0 } }
   </style>
@@ -109,7 +108,7 @@
   <div class="wrap">
     <header>
       <h1>Makwande Careers</h1>
-      <p>Warm opportunities across the SADC region — refreshed hourly.</p>
+      <p>Fresh roles across the SADC region — updated regularly.</p>
     </header>
 
     <section class="controls" id="controls">
@@ -119,7 +118,7 @@
       </div>
       <div>
         <label for="q">Search</label>
-        <input id="q" type="text" placeholder="e.g. data, finance, graduate" />
+        <input id="q" type="text" placeholder="e.g. analyst, finance, graduate" />
       </div>
       <div>
         <label for="limit">Limit</label>
@@ -152,6 +151,7 @@
     const prevBtn = $("prev"), nextBtn = $("next"), pageEl = $("pageNum");
     const loadBtn = $("load"), resetBtn = $("reset");
 
+    // 10 SADC countries
     const COUNTRIES = [
       { code:"ZA", name:"South Africa" },
       { code:"NA", name:"Namibia" },
@@ -159,20 +159,21 @@
       { code:"ZW", name:"Zimbabwe" },
       { code:"ZM", name:"Zambia" },
       { code:"MZ", name:"Mozambique" },
-      { code:"AO", name:"Dr Congo" },
+      { code:"AO", name:"Angola" },
       { code:"MW", name:"Malawi" },
       { code:"LS", name:"Lesotho" },
       { code:"SZ", name:"Eswatini" }
     ];
+
+    // 🔧 FIXED: this line uses backticks so it’s a string, not raw HTML in JS.
     countryEl.innerHTML =
-    
+      <option value="">All locations</option> +
       COUNTRIES.map(c => <option value="${c.code}">${c.name}</option>).join("");
 
     function setStatus(t){ statusEl.textContent = t || ""; }
     function toast(t){ toastEl.textContent = t; toastEl.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>toastEl.style.display="none", 4000); }
     function setLoading(on){
       loadBtn.disabled = on; prevBtn.disabled = on || state.page<=1; nextBtn.disabled = on;
-      resultsEl.classList.toggle("loading", !!on);
     }
     function skeleton(n=6){
       resultsEl.innerHTML = ""; for(let i=0;i<n;i++){ const d=document.createElement("div"); d.className="skeleton"; resultsEl.appendChild(d); }
@@ -194,7 +195,7 @@
         const r = await fetch("/site-config.json", { cache:"no-store" });
         if (!r.ok) return;
         const ct = (r.headers.get("content-type") || "").toLowerCase();
-        if (!ct.includes("application/json")) return;   // avoid parsing HTML/SPA shell
+        if (!ct.includes("application/json")) return;   // avoid parsing HTML
         const cfg = await r.json().catch(()=> ({}));
         if (!API_BASE && cfg && typeof cfg.API_BASE === "string" && cfg.API_BASE.trim()){
           API_BASE = cfg.API_BASE.trim().replace(/\/+$/,'');
@@ -264,7 +265,7 @@
 
       try{
         const resp = await fetch(url, { method:"GET", headers:{ "Accept":"application/json" } });
-        const text = await resp.text(); // always read as text first
+        const text = await resp.text();
         if (!resp.ok){ throw new Error(HTTP ${resp.status}: ${text.slice(0,180)}); }
 
         let data = [];
@@ -272,9 +273,7 @@
           const parsed = JSON.parse(text);
           data = Array.isArray(parsed) ? parsed :
                  (parsed && Array.isArray(parsed.items) ? parsed.items : []);
-        }catch{
-          data = []; // if backend served HTML/other, avoid console SyntaxError
-        }
+        }catch{ data = []; }
 
         render(data);
         prevBtn.disabled = state.page<=1;

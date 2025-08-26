@@ -3,173 +3,415 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Public Profile — Makwande Careers</title>
+  <title>Candidate Profile — Makwande Careers</title>
 
-  <!-- Basic share metas (will be filled when data loads) -->
-  <meta property="og:title" content="Makwande Careers — Candidate" />
-  <meta property="og:description" content="Candidate profile on Makwande Careers" />
-  <meta property="og:image" content="/assets/img/logo.png" />
-  <meta name="theme-color" content="#0f5132" />
-
+  <!-- UI kit + icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
-  <link href="/assets/css/style.css" rel="stylesheet" />
+
   <style>
-    .cover { background: linear-gradient(135deg, #eaf4ef, #ffffff); }
-    .avatar { width:112px; height:112px; object-fit:cover; border-radius:50%; border:4px solid #fff; box-shadow: var(--shadow); }
-    .chip { display:inline-block; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; background:#fff; margin:.2rem; font-size:.9rem; }
-    .card-soft { border:1px solid var(--border); border-radius:var(--radius); background:#fff; box-shadow:var(--shadow); }
-    .muted { color:var(--muted); }
+    :root{
+      --brand:#0f6a43; --brand-ink:#0b4e31; --ink:#1b1f23; --muted:#6b7280;
+      --border:#e8ecef; --radius:14px; --shadow:0 8px 28px rgba(16,24,40,.06);
+    }
+    body{ color:var(--ink); }
+    .logo-word{ font-weight:700; letter-spacing:.2px; }
+    .nav-link-lite{ color:var(--ink); opacity:.85; padding:.25rem .5rem; }
+    .nav-link-lite:hover{ opacity:1; }
+    .card-soft{ border:1px solid var(--border); border-radius:var(--radius); background:#fff; box-shadow:var(--shadow); }
+    .btn-soft{ background:#f6f8f7; border:1px solid var(--border); }
+    .muted{ color:var(--muted); }
+    .cover-profile{ background:linear-gradient(145deg,#eaf4ef,#fff); }
+    .avatar-wrap{ width:128px; height:128px; }
+    .avatar-wrap img{ width:100%; height:100%; object-fit:cover; border-radius:50%; border:4px solid #fff; box-shadow:var(--shadow); }
+    .chip{ display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; background:#fff; font-size:.9rem; }
+    .chip .remove{ border:0; background:transparent; line-height:1; opacity:.65; }
+    .chip .remove:hover{ opacity:1; }
+    .skel{ position:relative; background:#eef2f5; border-radius:10px; overflow:hidden; min-height:1.2rem; }
+    .skel::after{ content:""; position:absolute; inset:0; transform:translateX(-100%); background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent); animation:skel 1.2s infinite; }
+    @keyframes skel{ to{ transform:translateX(100%);} }
+    @media (max-width: 768px){ .avatar-wrap{ width:96px; height:96px; } }
   </style>
 </head>
 <body>
-  <!-- Minimal header -->
+  <!-- Navbar shell (links injected by /assets/js/main.js if present) -->
   <nav class="nav-wrap bg-white sticky-top border-bottom">
-    <div class="container-xxl py-2 d-flex align-items-center justify-content-between">
-      <a class="d-flex align-items-center gap-2 text-decoration-none" href="/index.html">
-        <img src="/assets/img/logo.png" width="28" height="28" alt="Makwande Careers" />
-        <strong class="logo-word">Makwande Careers</strong>
+    <div class="container-xxl py-2 d-flex align-items-center gap-3">
+      <a class="d-flex align-items-center gap-2 text-decoration-none" href="/index.html" aria-label="Makwande Careers home">
+        <img src="/assets/img/logo.png" width="32" height="32" alt="Makwande Careers logo" />
+        <span class="logo-word">Makwande Careers</span>
       </a>
-      <a class="btn btn-outline-success" href="/jobs.html"><i class="bi bi-search"></i> Browse Jobs</a>
+      <div class="ms-auto d-flex align-items-center gap-3"></div>
     </div>
   </nav>
 
-  <header class="cover py-4">
-    <div class="container-xxl d-flex flex-wrap align-items-end gap-3">
+  <!-- Profile header -->
+  <header class="cover-profile py-4">
+    <div class="container-xxl">
+      <div class="d-flex flex-wrap align-items-end gap-3">
+        <div class="avatar-wrap">
+          <img id="avatarImg" src="/assets/img/avatar-placeholder.png" alt="Your profile photo" />
+          <input id="avatarInput" type="file" accept="image/*" class="visually-hidden">
+        </div>
+        <div class="flex-grow-1">
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <h1 id="nameText" class="mb-0 h3">Your Name</h1>
+            <span class="badge text-bg-success" id="visibilityBadge">Public</span>
+          </div>
+          <div class="muted mt-1" id="headlineText">Role / Headline</div>
+          <div class="muted"><i class="bi bi-geo-alt"></i> <span id="locationText">SADC Region</span></div>
+        </div>
         <div class="d-flex flex-wrap gap-2 ms-auto">
-            <button class="btn btn-soft" id="btnChangePhoto"><i class="bi bi-camera"></i> Change photo</button>
+          <div class="btn-group">
+            <button class="btn btn-soft" id="btnChangePhoto"><i class="bi bi-camera"></i> Photo</button>
             <label class="btn btn-primary mb-0" for="resumeInput"><i class="bi bi-upload"></i> Upload CV</label>
-            <input id="resumeInput" type="file" accept=".pdf,.doc,.docx" class="visually-hidden">
             <a id="resumeLink" class="btn btn-outline-secondary d-none" href="#" target="_blank" rel="noopener"><i class="bi bi-file-earmark-text"></i> View CV</a>
-          </div>  
-  </header>
-
-  <main class="container-xxl my-4">
-    <div class="row g-4">
-      <div class="col-lg-8">
-        <div class="card-soft p-3 mb-3">
-          <h5 class="mb-2">About</h5>
-          <div id="about" class="text-body-secondary">No summary provided.</div>
-        </div>
-
-        <div class="card-soft p-3 mb-3">
-          <h5 class="mb-2">Experience</h5>
-          <div id="experience">No experience added yet.</div>
-        </div>
-
-        <div class="card-soft p-3">
-          <h5 class="mb-2">Education</h5>
-          <div id="education">No education added yet.</div>
+            <button id="btnCopyPublic" class="btn btn-outline-secondary"><i class="bi bi-link-45deg"></i> Copy public link</button>
+          </div>
+          <input id="resumeInput" type="file" accept=".pdf,.doc,.docx" class="visually-hidden">
         </div>
       </div>
+    </div>
+  </header>
+
+  <!-- Stats strip -->
+  <section class="bg-white border-top">
+    <div class="container-xxl py-2 d-flex flex-wrap gap-3 small text-muted">
+      <div><i class="bi bi-lightning-charge"></i> <span id="statSkills">0</span> skills</div>
+      <div><i class="bi bi-briefcase"></i> <span id="statExperience">0</span> experience</div>
+      <div><i class="bi bi-mortarboard"></i> <span id="statEducation">0</span> education</div>
+      <div class="ms-auto"><span class="badge rounded-pill text-bg-light" id="profileUpdated">Updated just now</span></div>
+    </div>
+  </section>
+
+  <!-- Main two-column layout -->
+  <main class="container-xxl my-4">
+    <div class="row g-4">
+      <!-- Left column: basics -->
       <div class="col-lg-4">
-        <div class="card-soft p-3 mb-3">
-          <h6 class="mb-2">Skills</h6>
-          <div id="skills"></div>
-        </div>
         <div class="card-soft p-3">
-          <h6 class="mb-2">Resume</h6>
-          <a id="resume" class="btn btn-outline-secondary w-100 d-none" target="_blank" rel="noopener">
-            <i class="bi bi-file-earmark-text"></i> View CV
-          </a>
+          <h5 class="mb-3">Basics</h5>
+          <div class="mb-3">
+            <label class="form-label">Full name</label>
+            <input id="nameInput" class="form-control" placeholder="e.g., Thandiwe M." />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Headline</label>
+            <input id="headlineInput" class="form-control" placeholder="e.g., Data Analyst • SQL • Power BI" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Location (SADC)</label>
+            <select id="locationSelect" class="form-select">
+              <option value="">Select country</option>
+              <option>South Africa</option><option>Botswana</option><option>Namibia</option>
+              <option>Zimbabwe</option><option>Zambia</option><option>Lesotho</option>
+              <option>Eswatini</option><option>Angola</option><option>Mozambique</option>
+              <option>Malawi</option><option>Tanzania</option><option>DR Congo</option>
+              <option>Mauritius</option><option>Seychelles</option><option>Comoros</option>
+              <option>Madagascar</option>
+            </select>
+          </div>
+          <div class="mb-3 d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-medium">Profile visibility</div>
+              <div class="small text-muted">Shown to employers when public</div>
+            </div>
+            <div class="form-check form-switch m-0">
+              <input id="visibilityToggle" class="form-check-input" type="checkbox" checked>
+            </div>
+          </div>
+          <button id="btnSaveBasics" class="btn btn-primary w-100">Save basics</button>
+        </div>
+
+        <div class="card-soft p-3 mt-3">
+          <h6 class="mb-2">Skills</h6>
+          <div id="skillsWrap" class="d-flex flex-wrap gap-2 mb-2"></div>
+          <div class="input-group">
+            <input id="skillInput" class="form-control" placeholder="Add a skill (Enter)" />
+            <button id="btnAddSkill" class="btn btn-outline-secondary">Add</button>
+          </div>
+        </div>
+
+        <div class="card-soft p-3 mt-3">
+          <h6 class="mb-2">Job Preferences</h6>
+          <div class="mb-2">
+            <label class="form-label">Open to opportunities</label>
+            <select id="prefOpen" class="form-select">
+              <option value="open">Open</option>
+              <option value="considering">Considering</option>
+              <option value="not_open">Not open</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Work type</label>
+            <select id="prefWork" class="form-select">
+              <option>On-site</option><option>Hybrid</option><option>Remote</option>
+            </select>
+          </div>
+          <button id="btnSavePrefs" class="btn btn-outline-primary w-100">Save preferences</button>
+        </div>
+      </div>
+
+      <!-- Right column: about, experience, education -->
+      <div class="col-lg-8">
+        <div class="card-soft p-3 mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">About</h5>
+            <div class="small text-muted" id="aboutSavedHint" style="opacity:.65">Auto-saves</div>
+          </div>
+          <textarea id="aboutInput" class="form-control mt-2" rows="5" placeholder="Write a short summary about your background, strengths and goals…"></textarea>
+        </div>
+
+        <div class="card-soft p-3 mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Experience</h5>
+            <button class="btn btn-soft" data-bs-toggle="modal" data-bs-target="#expModal"><i class="bi bi-plus-lg"></i> Add</button>
+          </div>
+          <div id="expList" class="mt-3"></div>
+        </div>
+
+        <div class="card-soft p-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Education</h5>
+            <button class="btn btn-soft" data-bs-toggle="modal" data-bs-target="#eduModal"><i class="bi bi-plus-lg"></i> Add</button>
+          </div>
+          <div id="eduList" class="mt-3"></div>
         </div>
       </div>
     </div>
   </main>
 
+  <!-- Experience Modal -->
+  <div class="modal fade" id="expModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="expForm" class="modal-content">
+        <div class="modal-header"><h6 class="modal-title">Add Experience</h6><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-body">
+          <div class="mb-2"><label class="form-label">Title</label><input name="title" class="form-control" required></div>
+          <div class="mb-2"><label class="form-label">Company</label><input name="company" class="form-control" required></div>
+          <div class="row">
+            <div class="col"><label class="form-label">Start</label><input name="start" type="month" class="form-control" required></div>
+            <div class="col"><label class="form-label">End</label><input name="end" type="month" class="form-control"></div>
+          </div>
+          <div class="mt-2"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3"></textarea></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-primary" type="submit">Save</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Education Modal -->
+  <div class="modal fade" id="eduModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="eduForm" class="modal-content">
+        <div class="modal-header"><h6 class="modal-title">Add Education</h6><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-body">
+          <div class="mb-2"><label class="form-label">Institution</label><input name="school" class="form-control" required></div>
+          <div class="mb-2"><label class="form-label">Degree / Program</label><input name="degree" class="form-control" required></div>
+          <div class="row">
+            <div class="col"><label class="form-label">Start</label><input name="start" type="month" class="form-control" required></div>
+            <div class="col"><label class="form-label">End</label><input name="end" type="month" class="form-control"></div>
+          </div>
+          <div class="mt-2"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="3"></textarea></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-primary" type="submit">Save</button></div>
+      </form>
+    </div>
+  </div>
+
   <footer class="border-top mt-5 py-4">
-    <div class="container-xxl small text-muted">© <span id="year"></span> Makwande Careers</div>
+    <div class="container-xxl d-flex flex-wrap align-items-center justify-content-between">
+      <div class="small text-muted">© <span id="year"></span> Makwande Careers</div>
+      <div class="d-flex gap-3 small">
+        <a href="/jobs.html">Jobs</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/sitemap.html">Sitemap</a>
+      </div>
+    </div>
   </footer>
 
-  <!-- 1) 1-line API helper -->
+  <!-- 1) One-line API helper: calls go to /api/* (same origin) -->
   <script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
-  <!-- 2) Vendor + shared app JS (if you want nav injection, keep it) -->
+  <!-- 2) Vendor + shared app JS (nav injection if present) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script defer src="/assets/js/main.js?v=3"></script>
+  <script defer src="/assets/js/main.js"></script>
 
   <!-- 3) Page logic -->
   <script type="module">
-    const $ = s => document.querySelector(s);
-    const y = $('#year'); if (y) y.textContent = new Date().getFullYear();
+    // Utilities
+    const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+    const debounce=(fn,ms=700)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);}};
 
-    // Get ?id= (or ?handle=)
-    const q = new URLSearchParams(location.search);
-    const id = q.get('id') || q.get('handle') || '';
+    // DOM refs
+    const nameText=$('#nameText'), headlineText=$('#headlineText'), locationText=$('#locationText');
+    const visibilityBadge=$('#visibilityBadge'), nameInput=$('#nameInput'), headlineInput=$('#headlineInput');
+    const locationSelect=$('#locationSelect'), visibilityToggle=$('#visibilityToggle'), aboutInput=$('#aboutInput');
+    const aboutSavedHint=$('#aboutSavedHint'), skillsWrap=$('#skillsWrap'), skillInput=$('#skillInput');
+    const btnAddSkill=$('#btnAddSkill'), btnSaveBasics=$('#btnSaveBasics'), btnSavePrefs=$('#btnSavePrefs');
+    const avatarImg=$('#avatarImg'), avatarInput=$('#avatarInput'), resumeInput=$('#resumeInput'), resumeLink=$('#resumeLink');
+    const btnChangePhoto=$('#btnChangePhoto'), btnCopyPublic=$('#btnCopyPublic'), expList=$('#expList'), eduList=$('#eduList');
+    const expForm=$('#expForm'), eduForm=$('#eduForm');
 
-    // Robust fetcher: try common public endpoints; fall back to /profile?id=…
-    async function getPublicProfile() {
-      const paths = id
-        ? [`/public/profile?id=${encodeURIComponent(id)}`,
-           `/profile/public?id=${encodeURIComponent(id)}`,
-           `/profile?id=${encodeURIComponent(id)}`]
-        : [`/public/profile`, `/profile/public`, `/profile`];
+    // Footer year & safe nav call
+    const y=document.getElementById('year'); if(y) y.textContent=new Date().getFullYear();
+    if(window.injectNav) window.injectNav();
 
-      for (const base of paths) {
-        const r = await fetchAPI(base);
-        if (r.ok) return r.json();
+    // UX helpers
+    function toast(msg,type='success'){
+      const el=document.createElement('div');
+      el.className=`toast align-items-center text-bg-${type} border-0 position-fixed bottom-0 end-0 m-3`;
+      el.role='status'; el.innerHTML=`<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+      document.body.appendChild(el); const t=new bootstrap.Toast(el,{delay:1800}); t.show(); el.addEventListener('hidden.bs.toast',()=>el.remove());
+    }
+    const busy=(btn,on=true)=>{ if(!btn) return; if(on){ btn.dataset.label=btn.innerHTML; btn.disabled=true; btn.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Saving…'; } else { btn.disabled=false; btn.innerHTML=btn.dataset.label||btn.innerHTML; } };
+    function setSkeleton(on=true){ [nameText,headlineText,locationText,aboutInput].forEach(n=>{ if(!n) return; on?n.classList.add('skel'):n.classList.remove('skel'); }); }
+    function updateStats(){
+      $('#statSkills').textContent=(profile.skills||[]).length; $('#statExperience').textContent=(profile.experience||[]).length; $('#statEducation').textContent=(profile.education||[]).length;
+      $('#profileUpdated').textContent='Updated '+new Date().toLocaleString();
+    }
+    const escapeHtml=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    const fmtMonth=v=>v?new Date(v+'-01').toLocaleString(undefined,{month:'short',year:'numeric'}):'';
+
+    // Data
+    let profile={};
+
+    // Load profile (robust paths)
+    async function loadProfile(){
+      setSkeleton(true);
+      const paths=['/profile','/me/profile','/v1/profile'];
+      for(const p of paths){
+        try{ const r=await fetchAPI(p); if(r.ok){ profile=await r.json(); break; } }catch{}
       }
-      throw new Error('profile not found');
+      profile ||= {};
+      renderProfile();
+      // optional resume url
+      try{ const r=await fetchAPI('/profile/resume'); if(r.ok){ const {url}=await r.json(); if(url){ resumeLink.classList.remove('d-none'); resumeLink.href=url; } } }catch{}
+      setSkeleton(false);
     }
 
-    const escape = s => (s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-    const fmtMonth = v => v ? new Date(v+'-01').toLocaleString(undefined,{month:'short',year:'numeric'}) : '';
+    function renderProfile(){
+      const p=profile||{};
+      nameText.textContent=p.name||'Your Name';
+      headlineText.textContent=p.headline||'Role / Headline';
+      locationText.textContent=p.location||'SADC Region';
+      visibilityBadge.textContent=p.visibility==='private'?'Private':'Public';
+      visibilityBadge.className='badge '+(p.visibility==='private'?'text-bg-secondary':'text-bg-success');
 
-    try {
-      const p = await getPublicProfile();
-
-      // Header
-      $('#name').textContent = p.name || 'Candidate';
-      $('#headline').textContent = p.headline || '';
-      $('#location').textContent = p.location || 'SADC Region';
-      if (p.photo_url) $('#avatar').src = p.photo_url;
-
-      // About
-      $('#about').innerHTML = p.about ? escape(p.about) : '<span class="text-muted">No summary provided.</span>';
-
-      // Skills
-      const skills = (p.skills || []).slice(0, 20);
-      $('#skills').innerHTML = skills.length ? skills.map(s=>`<span class="chip">${escape(s)}</span>`).join('') : '<span class="text-muted">No skills listed.</span>';
-
-      // Experience
-      const exp = (p.experience || []).slice(0, 8);
-      $('#experience').innerHTML = exp.length
-        ? exp.map(e=>`
-            <div class="py-2">
-              <div class="fw-semibold">${escape(e.title||'')} ${e.company? '· <span class="text-muted">'+escape(e.company)+'</span>':''}</div>
-              <div class="small text-muted">${fmtMonth(e.start)} – ${e.end?fmtMonth(e.end):'Present'}</div>
-              ${e.description ? `<div class="small mt-1">${escape(e.description)}</div>` : ''}
-            </div>`).join('')
-        : '<span class="text-muted">No experience added yet.</span>';
-
-      // Education
-      const edu = (p.education || []).slice(0, 8);
-      $('#education').innerHTML = edu.length
-        ? edu.map(e=>`
-            <div class="py-2">
-              <div class="fw-semibold">${escape(e.degree||'')} ${e.school? '· <span class="text-muted">'+escape(e.school)+'</span>':''}</div>
-              <div class="small text-muted">${fmtMonth(e.start)} – ${e.end?fmtMonth(e.end):'Present'}</div>
-              ${e.notes ? `<div class="small mt-1">${escape(e.notes)}</div>` : ''}
-            </div>`).join('')
-        : '<span class="text-muted">No education added yet.</span>';
-
-      // Resume link
-      if (p.resume_url) { const a = $('#resume'); a.href = p.resume_url; a.classList.remove('d-none'); }
-
-      // Update share metas for prettier link cards
-      document.querySelector('meta[property="og:title"]').setAttribute('content', (p.name||'Candidate')+' — Makwande Careers');
-      document.querySelector('meta[property="og:description"]').setAttribute('content', p.headline || 'Candidate profile');
-      if (p.photo_url) document.querySelector('meta[property="og:image"]').setAttribute('content', p.photo_url);
-
-      // “Contact” CTA (could point to recruiter portal)
-      const cta = $('#cta');
-      if (p.contact_url) cta.href = p.contact_url;
-    } catch (e) {
-      document.body.insertAdjacentHTML('beforeend',
-        `<div class="container-xxl my-5"><div class="alert alert-warning">Profile not available.</div></div>`);
+      nameInput.value=p.name||''; headlineInput.value=p.headline||''; locationSelect.value=p.location||''; visibilityToggle.checked=(p.visibility!=='private');
+      aboutInput.value=p.about||'';
+      skillsWrap.innerHTML=''; (p.skills||[]).forEach(addSkillChip);
+      renderList(expList,p.experience||[],'No experience yet.'); renderList(eduList,p.education||[],'No education added yet.');
+      if(p.photo_url) avatarImg.src=p.photo_url;
+      updateStats();
     }
+
+    function renderList(container,items,emptyText){
+      if(!items.length){ container.innerHTML=`<div class="text-muted">${emptyText}</div>`; return; }
+      container.innerHTML=items.map(it=>`
+        <div class="d-flex gap-3 py-2">
+          <div class="flex-grow-1">
+            <div class="fw-semibold">${escapeHtml(it.title||it.degree||'')} ${it.company?`· <span class="text-muted">${escapeHtml(it.company)}</span>`:''}</div>
+            <div class="small text-muted">${[it.school,it.location].filter(Boolean).join(' · ')}</div>
+            <div class="small text-muted">${fmtMonth(it.start)} – ${it.end?fmtMonth(it.end):'Present'}</div>
+            ${it.description||it.notes?`<div class="small mt-1">${escapeHtml(it.description||it.notes||'')}</div>`:''}
+          </div>
+        </div>`).join('');
+    }
+
+    function addSkillChip(skill){
+      const chip=document.createElement('span'); chip.className='chip';
+      chip.innerHTML=`<i class="bi bi-lightning-charge"></i><span>${escapeHtml(skill)}</span><button class="remove" title="Remove" aria-label="Remove"><i class="bi bi-x"></i></button>`;
+      chip.querySelector('.remove').addEventListener('click', async ()=>{
+        profile.skills=(profile.skills||[]).filter(s=>s.toLowerCase()!==skill.toLowerCase());
+        await savePatch({skills:profile.skills}); chip.remove(); updateStats();
+      });
+      skillsWrap.appendChild(chip);
+    }
+
+    async function savePatch(patch){
+      try{ const r=await fetchAPI('/profile',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(patch)}); return r.ok; }catch{ return false; }
+    }
+
+    // Basics save
+    btnSaveBasics.addEventListener('click', async ()=>{
+      busy(btnSaveBasics,true);
+      await savePatch({
+        name: nameInput.value.trim(),
+        headline: headlineInput.value.trim(),
+        location: locationSelect.value || null,
+        visibility: visibilityToggle.checked ? 'public' : 'private'
+      });
+      Object.assign(profile,{name:nameInput.value.trim(),headline:headlineInput.value.trim(),location:locationSelect.value,visibility:visibilityToggle.checked?'public':'private'});
+      renderProfile(); busy(btnSaveBasics,false); toast('Basics saved');
+    });
+
+    // About autosave
+    const saveAbout=debounce(async()=>{
+      aboutSavedHint.textContent='Saving…';
+      await savePatch({about:aboutInput.value});
+      profile.about=aboutInput.value; aboutSavedHint.textContent='Saved'; setTimeout(()=>aboutSavedHint.textContent='Auto-saves',1200);
+    },700);
+    aboutInput.addEventListener('input',saveAbout);
+
+    // Skills add
+    function tryAddSkill(){
+      const s=skillInput.value.trim(); if(!s) return;
+      profile.skills=Array.from(new Set([...(profile.skills||[]),s]));
+      savePatch({skills:profile.skills}).then(()=>{ addSkillChip(s); updateStats(); skillInput.value=''; skillInput.focus(); });
+    }
+    btnAddSkill.addEventListener('click',tryAddSkill);
+    skillInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); tryAddSkill(); } });
+
+    // Photo upload
+    btnChangePhoto.addEventListener('click',()=>avatarInput.click());
+    avatarInput.addEventListener('change', async ()=>{
+      if(!avatarInput.files?.length) return;
+      const fd=new FormData(); fd.append('photo',avatarInput.files[0]);
+      const r=await fetchAPI('/profile/photo',{method:'POST',body:fd});
+      if(r.ok){ const {url}=await r.json().catch(()=>({})); if(url) avatarImg.src=url; toast('Photo updated'); }
+    });
+
+    // Resume upload
+    resumeInput.addEventListener('change', async ()=>{
+      if(!resumeInput.files?.length) return;
+      const fd=new FormData(); fd.append('resume',resumeInput.files[0]);
+      const r=await fetchAPI('/profile/resume',{method:'POST',body:fd});
+      if(r.ok){ const {url}=await r.json().catch(()=>({})); if(url){ resumeLink.classList.remove('d-none'); resumeLink.href=url; toast('CV uploaded'); } }
+    });
+
+    // Preferences
+    btnSavePrefs.addEventListener('click', async ()=>{
+      busy(btnSavePrefs,true);
+      await savePatch({ preferences:{ open:$('#prefOpen').value, work:$('#prefWork').value } });
+      busy(btnSavePrefs,false); toast('Preferences saved');
+    });
+
+    // Experience
+    expForm.addEventListener('submit', async e=>{
+      e.preventDefault(); const fd=new FormData(expForm); const payload=Object.fromEntries(fd.entries());
+      const r=await fetchAPI('/profile/experience',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if(r.ok){ (profile.experience ||= []).unshift(payload); renderList(expList,profile.experience,'No experience yet.'); updateStats(); expForm.reset(); bootstrap.Modal.getInstance(document.getElementById('expModal')).hide(); toast('Experience added'); }
+    });
+
+    // Education
+    eduForm.addEventListener('submit', async e=>{
+      e.preventDefault(); const fd=new FormData(eduForm); const payload=Object.fromEntries(fd.entries());
+      const r=await fetchAPI('/profile/education',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if(r.ok){ (profile.education ||= []).unshift(payload); renderList(eduList,profile.education,'No education added yet.'); updateStats(); eduForm.reset(); bootstrap.Modal.getInstance(document.getElementById('eduModal')).hide(); toast('Education added'); }
+    });
+
+    // Copy public link
+    if(btnCopyPublic){
+      btnCopyPublic.addEventListener('click', async ()=>{
+        const pid=profile?.slug||profile?.username||profile?.id||'';
+        const url=location.origin+'/public-profile.html'+(pid?('?id='+encodeURIComponent(pid)):'');
+        try{ await navigator.clipboard.writeText(url); btnCopyPublic.textContent='Link copied!'; }catch{ prompt('Copy this link:',url); }
+        setTimeout(()=>btnCopyPublic.innerHTML='<i class="bi bi-link-45deg"></i> Copy public link',1200);
+      });
+    }
+
+    // Go
+    await loadProfile();
   </script>
 </body>
-<li><a href="/candidate-profile.html">Profile (private)</a></li>
-<li><a href="/public-profile.html">Public Profile (read-only)</a></li>
-
 </html>

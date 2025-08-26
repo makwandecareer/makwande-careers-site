@@ -75,3 +75,18 @@
   new MutationObserver(() => boot()).observe(target, { childList: true, subtree: true });
 })();
 
+// Put Profile links at the top of the "More" dropdown
+document.addEventListener('DOMContentLoaded', () => {
+  const menu = document.querySelector('nav.nav-wrap .dropdown-menu');
+  if (!menu) return;
+
+  const has = (sel) => !!menu.querySelector(sel);
+  if (!has('a[href="/candidate-profile.html"]') && !has('a[href="/public-profile.html"]')) {
+    menu.insertAdjacentHTML('afterbegin', `
+      <li><a class="dropdown-item" href="/candidate-profile.html">Profile</a></li>
+      <li><a class="dropdown-item" href="/public-profile.html">Public Profile</a></li>
+      <li><hr class="dropdown-divider"></li>
+    `);
+  }
+});
+

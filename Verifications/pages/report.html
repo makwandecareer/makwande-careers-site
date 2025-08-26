@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Report a Job</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1>Report a Suspicious Job</h1>
+  <form id="reportForm">
+    <label>Job ID <input id="jobId" required></label><br>
+    <label>Reason <input id="reason" required></label><br>
+    <label>Details <textarea id="details"></textarea></label><br>
+    <button type="submit">Submit Report</button>
+  </form>
+  <pre id="out"></pre>
+
+  <script src="/assets/js/config.js"></script>
+  <script>
+    const form = document.getElementById('reportForm');
+    const out = document.getElementById('out');
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      out.textContent = 'Submitting...';
+      try{
+        const data = await apiFetch('/api/trust/report', {
+          method:'POST',
+          body: {
+            job_id: document.getElementById('jobId').value,
+            reason: document.getElementById('reason').value,
+            details: document.getElementById('details').value
+          }
+        });
+        out.textContent = 'Thanks! Ticket: ' + data.ticket_id;
+      }catch(err){
+        out.textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

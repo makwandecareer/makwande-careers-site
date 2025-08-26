@@ -179,5 +179,92 @@
   <div id="jobsList"></div>
   <div class="d-grid mt-3"><button id="jobsMore" class="btn btn-outline-secondary d-none">Load more</button></div>
 </section>
+<script>
+  // Change this once and all pages use it
+  window.APP_CONFIG = {
+    // Use local dev if not set
+    API_BASE: localStorage.getItem("API_BASE") || "http://127.0.0.1:8000"
+  };
+
+  // Optional: set token after login
+  // localStorage.setItem("AUTH_TOKEN", "<jwt>");
+</script>
+<script>
+  window.apiFetch = async function (path, { method = "GET", headers = {}, body = null, isJson = true } = {}) {
+    const base = window.APP_CONFIG.API_BASE.replace(/\/+$/, "");
+    const token = localStorage.getItem("AUTH_TOKEN");
+    const auth = token ? { "Authorization": "Bearer " + token } : {};
+    const opts = { method, headers: { ...auth, ...headers } };
+
+    if (isJson && body && !(body instanceof FormData)) {
+      opts.headers["Content-Type"] = "application/json";
+      opts.body = JSON.stringify(body);
+    } else if (body) {
+      opts.body = body; // e.g., FormData
+    }
+
+    const res = await fetch(`${base}${path}`, opts);
+    let data = null;
+    const text = await res.text();
+    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+    if (!res.ok) {
+      const msg = (data && (data.detail || data.message)) || res.statusText || "Request failed";
+      throw new Error(msg);
+    }
+    return data;
+  };
+</script>
+<input id="q" placeholder="Search (e.g., data analyst)">
+<select id="location"><option value="">All locations</option></select>
+<select id="company"><option value="">All companies</option></select>
+<select id="score"><option value="">Any match</option>
+  <option value="60">≥60%</option><option value="70">≥70%</option><option value="80">≥80%</option>
+</select>
+<button id="searchBtn">Search</button>
+
+<div id="jobsList">
+
+</div>
+<script>
+  const el = (id) => document.getElementById(id);
+  const list = el("jobsList");
+
+  async function loadJobs() {
+    list.innerHTML = "Loading…";
+    const params = new URLSearchParams();
+    if (el("q").value) params.set("q", el("q").value);
+    if (el("location").value) params.set("location", el("location").value);
+    if (el("company").value) params.set("company", el("company").value);
+    if (el("score").value) params.set("min_score", el("score").value);
+
+    try {
+      // Expected response: { jobs: [{id,title,company,location,match_score,apply_url,posted,closing}] }
+      const data = await apiFetch(`/api/jobs?${params.toString()}`);
+      const jobs = data.jobs || data || [];
+      if (!jobs.length) { list.innerHTML = "No jobs found."; return; }
+
+      // Populate filters once from the result set
+      const locSet = new Set(), compSet = new Set();
+      jobs.forEach(j => { if (j.location) locSet.add(j.location); if (j.company) compSet.add(j.company); });
+      if (el("location").options.length === 1) [...locSet].sort().forEach(v => el("location").append(new Option(v, v)));
+      if (el("company").options.length === 1)  [...compSet].sort().forEach(v => el("company").append(new Option(v, v)));
+
+      list.innerHTML = jobs.map(j => `
+        <div class="card">
+          <h3>${j.title}</h3>
+          <p><b>${j.company || ""}</b> — ${j.location || ""}</p>
+          <p>Match: ${j.match_score ?? "N/A"}% • Posted: ${j.posted || "?"} • Closes: ${j.closing || "?"}</p>
+          <a href="${j.apply_url}" target="_blank" rel="noopener">Apply</a>
+        </div>
+      `).join("");
+    } catch (err) {
+      list.innerHTML = "Error: " + err.message;
+    }
+  }
+
+  el("searchBtn").addEventListener("click", loadJobs);
+  window.addEventListener("DOMContentLoaded", loadJobs);
+</script>
+<script src="/assets/js/config.js"></script>
 
 </html>

@@ -144,5 +144,131 @@
   </form>
   <div id="revampOut" class="mt-3"></div>
 </div>
+<script>
+  // Change this once and all pages use it
+  window.APP_CONFIG = {
+    // Use local dev if not set
+    API_BASE: localStorage.getItem("API_BASE") || "http://127.0.0.1:8000"
+  };
+
+  // Optional: set token after login
+  // localStorage.setItem("AUTH_TOKEN", "<jwt>");
+</script>
+<script>
+  window.apiFetch = async function (path, { method = "GET", headers = {}, body = null, isJson = true } = {}) {
+    const base = window.APP_CONFIG.API_BASE.replace(/\/+$/, "");
+    const token = localStorage.getItem("AUTH_TOKEN");
+    const auth = token ? { "Authorization": "Bearer " + token } : {};
+    const opts = { method, headers: { ...auth, ...headers } };
+
+    if (isJson && body && !(body instanceof FormData)) {
+      opts.headers["Content-Type"] = "application/json";
+      opts.body = JSON.stringify(body);
+    } else if (body) {
+      opts.body = body; // e.g., FormData
+    }
+
+    const res = await fetch(`${base}${path}`, opts);
+    let data = null;
+    const text = await res.text();
+    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+    if (!res.ok) {
+      const msg = (data && (data.detail || data.message)) || res.statusText || "Request failed";
+      throw new Error(msg);
+    }
+    return data;
+  };
+</script>
+<form id="revampForm">
+  <input type="file" id="cvFile" accept=".pdf,.doc,.docx,.txt" required>
+  <textarea id="targetRole" placeholder="Target role or job description (optional)"></textarea>
+  <button type="submit">Revamp CV</button>
+</form>
+
+<pre id="revampResult" style="white-space:pre-wrap"></pre>
+<button id="downloadRevamp" hidden>Download .txt
+
+</button>
+<script>
+  const form = document.getElementById("revampForm");
+  const resultEl = document.getElementById("revampResult");
+  const dlBtn = document.getElementById("downloadRevamp");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    resultEl.textContent = "Processing…";
+
+    const fd = new FormData();
+    fd.append("file", document.getElementById("cvFile").files[0]);
+    fd.append("target_role", document.getElementById("targetRole").value || "");
+
+    try {
+      // Backend endpoint: adjust if yours differs
+      // Expected response: { revamped_text, ats_score, match_rate }
+      const data = await apiFetch("/api/cv/revamp", { method: "POST", body: fd, isJson: false });
+      const { revamped_text, ats_score, match_rate } = data;
+
+      resultEl.textContent =
+        `ATS Score: ${ats_score ?? "N/A"} | Match: ${match_rate ?? "N/A"}\n\n${revamped_text}`;
+
+      dlBtn.hidden = false;
+      dlBtn.onclick = () => {
+        const blob = new Blob([revamped_text], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "revamped_cv.txt"; a.click();
+        URL.revokeObjectURL(url);
+      };
+    } catch (err) {
+      resultEl.textContent = "Error: " + err.message;
+    }
+  });
+</script>
+<form id="revampForm">
+  <input type="file" id="cvFile" accept=".pdf,.doc,.docx,.txt" required>
+  <textarea id="targetRole" placeholder="Target role or job description (optional)"></textarea>
+  <button type="submit">Revamp CV</button>
+</form>
+
+<pre id="revampResult" style="white-space:pre-wrap"></pre>
+<button id="downloadRevamp" hidden>Download .txt
+
+</button>
+<script>
+  const form = document.getElementById("revampForm");
+  const resultEl = document.getElementById("revampResult");
+  const dlBtn = document.getElementById("downloadRevamp");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    resultEl.textContent = "Processing…";
+
+    const fd = new FormData();
+    fd.append("file", document.getElementById("cvFile").files[0]);
+    fd.append("target_role", document.getElementById("targetRole").value || "");
+
+    try {
+      // Backend endpoint: adjust if yours differs
+      // Expected response: { revamped_text, ats_score, match_rate }
+      const data = await apiFetch("/api/cv/revamp", { method: "POST", body: fd, isJson: false });
+      const { revamped_text, ats_score, match_rate } = data;
+
+      resultEl.textContent =
+        `ATS Score: ${ats_score ?? "N/A"} | Match: ${match_rate ?? "N/A"}\n\n${revamped_text}`;
+
+      dlBtn.hidden = false;
+      dlBtn.onclick = () => {
+        const blob = new Blob([revamped_text], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "revamped_cv.txt"; a.click();
+        URL.revokeObjectURL(url);
+      };
+    } catch (err) {
+      resultEl.textContent = "Error: " + err.message;
+    }
+  });
+</script>
+<script src="/assets/js/config.js"></script>
 
 </html>

@@ -128,20 +128,19 @@
 </body>
 </script>
   <script src="/assets/js/main.js"></script>
-  <script>document.getElementById('year').textContent = new Date().getFullYear(); injectNav();</script>
-</body>
-<script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
-<script type="module">
-
-  await fetchAPI('/apply_job', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ job_id:'123' })
+  <script>document.getElementById('year').textContent = new Date().getFullYear(); injectNav(); 
+  </script>
+  <script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
+  <script type="module">
+  
+  const form = document.querySelector('#revampForm');
+if (form) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    await fetchAPI('/revamp', { method: 'POST', body: fd });
   });
-
-  const fd = new FormData(document.querySelector('#revampForm'));
-  await fetchAPI('/revamp', { method:'POST', body: fd }); // no Content-Type header
-</script>
+}
 <script>
   // 1-line global API helper (works on all pages)
   window.fetchAPI = (p,o={}) => fetch('/api'+p,{credentials:'include',...o});

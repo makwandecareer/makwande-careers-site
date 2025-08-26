@@ -1,2 +1,40 @@
-<li><a href="/candidate-profile.html">Profile (private)</a></li>
+﻿<li><a href="/candidate-profile.html">Profile (private)</a></li>
 <li><a href="/public-profile.html">Public Profile (read-only)</a></li>
+<script>
+    // Change this once and all pages use it
+    window.APP_CONFIG = {
+      // Use local dev if not set
+      API_BASE: localStorage.getItem("API_BASE") || "http://127.0.0.1:8000"
+    };
+  
+    // Optional: set token after login
+    // localStorage.setItem("AUTH_TOKEN", "<jwt>");
+  </script>
+  <script>
+    window.apiFetch = async function (path, { method = "GET", headers = {}, body = null, isJson = true } = {}) {
+      const base = window.APP_CONFIG.API_BASE.replace(/\/+$/, "");
+      const token = localStorage.getItem("AUTH_TOKEN");
+      const auth = token ? { "Authorization": "Bearer " + token } : {};
+      const opts = { method, headers: { ...auth, ...headers } };
+  
+      if (isJson && body && !(body instanceof FormData)) {
+        opts.headers["Content-Type"] = "application/json";
+        opts.body = JSON.stringify(body);
+      } else if (body) {
+        opts.body = body; // e.g., FormData
+      }
+  
+      const res = await fetch(`${base}${path}`, opts);
+      let data = null;
+      const text = await res.text();
+      try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+      if (!res.ok) {
+        const msg = (data && (data.detail || data.message)) || res.statusText || "Request failed";
+        throw new Error(msg);
+      }
+      return data;
+    };
+  </script>
+  <script src="/assets/js/config.js"></script>
+
+  </html>

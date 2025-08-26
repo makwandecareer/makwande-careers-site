@@ -128,7 +128,7 @@
 </body>
 </script>
   <script src="/assets/js/main.js"></script>
-  <script>document.getElementById('year').textContent = new Date().getFullYear(); injectNav(); 
+  <script>var y=document.getElementById('year');if(y)y.textContent=new Date().getFullYear();</script>
   </script>
   <script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
   <script type="module">

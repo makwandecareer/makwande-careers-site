@@ -170,5 +170,14 @@
     c.appendChild(wrap);
   });
 </script>
+<section class="container-xxl my-4">
+  <div class="row g-3 align-items-center mb-3">
+    <div class="col-md-6"><input id="jobSearch" class="form-control" placeholder="Search roles, companies…" /></div>
+    <div class="col-md-3"><select id="jobLocation" class="form-select"><option value="">All locations</option></select></div>
+    <div class="col-md-3"><select id="jobType" class="form-select"><option value="">Any type</option><option>Full-time</option><option>Contract</option><option>Internship</option></select></div>
+  </div>
+  <div id="jobsList"></div>
+  <div class="d-grid mt-3"><button id="jobsMore" class="btn btn-outline-secondary d-none">Load more</button></div>
+</section>
 
 </html>

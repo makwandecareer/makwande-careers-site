@@ -135,4 +135,15 @@ document.getElementById('bursApply').addEventListener('submit', async (e)=>{
     c.appendChild(wrap);
   });
 </script>
+<div class="container-xxl my-4">
+  <h5>Apply for bursary</h5>
+  <form id="bursaryApplyForm" class="card card-body" enctype="multipart/form-data">
+    <input class="form-control mb-2" name="full_name" placeholder="Full name" required>
+    <input class="form-control mb-2" name="email" placeholder="Email" required>
+    <input class="form-control mb-2" name="bursary_id" placeholder="Bursary ID from link" required>
+    <input class="form-control mb-2" type="file" name="supporting_docs" required>
+    <button class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
 </html>

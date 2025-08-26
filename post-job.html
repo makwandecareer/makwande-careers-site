@@ -137,5 +137,16 @@
     c.appendChild(wrap);
   });
 </script>
+<div class="container-xxl my-4">
+  <h5>Post a job</h5>
+  <form id="postJobForm" class="card card-body">
+    <input class="form-control mb-2" name="title" placeholder="Job title" required>
+    <input class="form-control mb-2" name="company" placeholder="Company">
+    <input class="form-control mb-2" name="location" placeholder="Location">
+    <select class="form-select mb-2" name="type"><option>Full-time</option><option>Contract</option><option>Internship</option></select>
+    <textarea class="form-control mb-3" name="description" rows="5" placeholder="Description"></textarea>
+    <button class="btn btn-primary">Post Job</button>
+  </form>
+</div>
 
 </html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cover Letter • Makwande Careers</title>
+  <meta name="description" content="Makwande Careers AutoApply platform for SADC." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="/assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <nav class="nav-wrap bg-white sticky-top border-bottom">
+    <div class="container-xxl py-2 d-flex align-items-center gap-3">
+      <a class="d-flex align-items-center gap-2 text-decoration-none" href="/index.html" aria-label="Makwande Careers home">
+        <img src="/assets/img/logo.png" alt="Makwande Careers logo" width="32" height="32" />
+        <span class="logo-word">Makwande Careers</span>
+      </a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a class="text-decoration-none nav-link-lite" href="/index.html">Home</a>
+        <a class="text-decoration-none nav-link-lite" href="/jobs.html">Jobs</a>
+        <a class="text-decoration-none nav-link-lite" href="/revamp.html">Revamp CV</a>
+        <a class="text-decoration-none nav-link-lite fw-bold text-success" href="/cover_letter.html">Cover Letter</a>
+        <a class="text-decoration-none nav-link-lite" href="/pricing.html">Pricing</a>
+        <a class="text-decoration-none nav-link-lite" href="/dashboard.html">Dashboard</a>
+        <a class="text-decoration-none nav-link-lite" href="/login.html">Login</a>
+        <a class="text-decoration-none nav-link-lite" href="/signup.html">Sign up</a>
+      </div>
+    </div>
+  </nav>
+
+
+<div class="container-xxl my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card p-3">
+        <h5 class="mb-3">Generate a cover letter</h5>
+        <form id="clForm" class="vstack gap-2">
+          <input class="form-control" name="role" placeholder="Role (e.g., Data Analyst)" />
+          <input class="form-control" name="company" placeholder="Company" />
+          <textarea class="form-control" name="fit" rows="4" placeholder="Key achievements / fit"></textarea>
+          <button class="btn btn-success rounded-pill mt-2">Generate</button>
+        </form>
+        <div class="mt-3">
+          <h6>Result</h6>
+          <pre id="clOut" class="small bg-light p-2 rounded" style="white-space:pre-wrap;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <footer class="border-top py-4 mt-5">
+    <div class="container-xxl d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="small text-muted">&copy; <span id="year">2025</span> Makwande Careers All rights reserved</div>
+      <div class="d-flex gap-3 small">
+        <a href="/index.html">Home</a>
+        <a href="/jobs.html">Jobs</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    window.apiFetch = async function (path, opts={}) {
+      const base = "";
+      const token = localStorage.getItem("AUTH_TOKEN");
+      const headers = Object.assign({}, (opts.headers||{}));
+      if (token) headers["Authorization"] = "Bearer " + token;
+      const finalOpts = Object.assign({ credentials: "include" }, opts, { headers });
+      const res = await fetch(base + path, finalOpts);
+      const text = await res.text();
+      let data = null; try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+      if (!res.ok) throw new Error((data && (data.detail||data.message)) || res.statusText || "Request failed");
+      return data;
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.getElementById('clForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const fd = new FormData(e.currentTarget);
+  const body = { role: fd.get('role')||'', company: fd.get('company')||'', highlights: fd.get('fit')||'' };
+  const out = document.getElementById('clOut');
+  out.textContent = "Working...";
+  try{
+    const data = await apiFetch('/api/cover_letter', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    out.textContent = (data && (data.text||data.letter||JSON.stringify(data,null,2))) || "No content.";
+  }catch(err){
+    out.textContent = "Error: " + err.message;
+  }
+});
+</script>
+
+</body>
+</html>

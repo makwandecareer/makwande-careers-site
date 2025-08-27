@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -131,9 +131,9 @@
       let data; try { data = text ? JSON.parse(text) : null; } catch { data = text; }
       if (!res.ok) throw new Error((data && (data.detail || data.message)) || res.statusText);
       return data;
+fix/ui-cleanup
     }
 
-<<<<<<< HEAD
     function renderJobs(jobs) {
       if (!jobs || !jobs.length) {
         jobsList.innerHTML = '<div class="text-muted">No jobs found.</div>';
@@ -163,7 +163,38 @@
             ${j.posted ? ' · Posted: ' + j.posted : ''}
             ${j.closing ? ' · Closes: ' + j.closing : ''}
           </div>
-=======
+
+    }
+
+    function renderJobs(jobs) {
+      if (!jobs || !jobs.length) {
+        jobsList.innerHTML = '<div class="text-muted">No jobs found.</div>';
+        countEl.textContent = '0';
+        return;
+      }
+      countEl.textContent = jobs.length;
+
+      // populate location filter once from results
+      if (locSel.options.length === 1) {
+        const set = new Set();
+        jobs.forEach(j => j.location && set.add(j.location));
+        [...set].sort().forEach(v => locSel.add(new Option(v, v)));
+      }
+
+      jobsList.innerHTML = jobs.map(j => `
+        <div class="card p-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="fw-semibold">${j.title || ''}</div>
+              <small class="text-muted">${j.company || ''} ${j.location ? '· ' + j.location : ''}</small>
+            </div>
+            <a class="btn btn-sm btn-brand rounded-pill" href="${j.apply_url || '#'}" target="_blank" rel="noopener">Apply</a>
+          </div>
+          <div class="mt-2 small text-muted">
+            Match: ${j.match_score ?? 'N/A'}%
+            ${j.posted ? ' · Posted: ' + j.posted : ''}
+            ${j.closing ? ' · Closes: ' + j.closing : ''}
+
     const res = await fetch(`${base}${path}`, opts);
     let data = null;
     const text = await res.text();
@@ -207,7 +238,7 @@
           <p><b>${j.company || ""}</b> — ${j.location || ""}</p>
           <p>Match: ${j.match_score ?? "N/A"}% • Posted: ${j.posted || "?"} • Closes: ${j.closing || "?"}</p>
           <a href="${j.apply_url}" target="_blank" rel="noopener">Apply</a>
->>>>>>> origin/main
+
         </div>
       `).join('');
     }

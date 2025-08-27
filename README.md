@@ -21,7 +21,6 @@ All frontend code uses **relative** calls (e.g., `fetch('/api/jobs')`).
 - `/assets/img/logo.png`
 - `/assets/img/africa-map.png`
 - `/assets/css/style.css`
-- `/assets/js/main.js`
 
 ## Notes
 - Keep pages as real `.html` files (no SPA fallback). 

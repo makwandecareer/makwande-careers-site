@@ -7,6 +7,7 @@ trust_safety_popia_pack/
 /assets/js/config.js
 /assets/js/main.js
 /assets/js/pages.js
+ chore/purge-js
 /js/ai.js
 /js/api.js
 /js/app.js
@@ -29,3 +30,4 @@ trust_safety_popia_pack/
 /assets/js/main.js
 /assets/js/pages.js
 /assets/js/config.js
+

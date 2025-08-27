@@ -3,57 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cover Letter • Makwande Careers</title>
-  <meta name="description" content="Makwande Careers AutoApply platform for SADC." />
+  <title>Cover Letter — Makwande Careers</title>
+  <meta name="description" content="Makwande Careers — AutoApply platform for SADC." />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="/assets/css/style.css" rel="stylesheet" />
+  
 </head>
-<body>
-  <nav class="nav-wrap bg-white sticky-top border-bottom">
+<body class="">
+  <nav class="nav-wrap bg-white sticky-top">
     <div class="container-xxl py-2 d-flex align-items-center gap-3">
       <a class="d-flex align-items-center gap-2 text-decoration-none" href="/index.html" aria-label="Makwande Careers home">
         <img src="/assets/img/logo.png" alt="Makwande Careers logo" width="32" height="32" />
         <span class="logo-word">Makwande Careers</span>
       </a>
+      <div class="d-none d-md-flex ms-3 flex-grow-1" style="max-width:520px;">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+          <input class="form-control bg-light border-0" placeholder="Search jobs, titles, companies" />
+        </div>
+      </div>
       <div class="ms-auto d-flex align-items-center gap-3">
         <a class="text-decoration-none nav-link-lite" href="/index.html">Home</a>
-        <a class="text-decoration-none nav-link-lite" href="/jobs.html">Jobs</a>
-        <a class="text-decoration-none nav-link-lite" href="/revamp.html">Revamp CV</a>
-        <a class="text-decoration-none nav-link-lite fw-bold text-success" href="/cover_letter.html">Cover Letter</a>
-        <a class="text-decoration-none nav-link-lite" href="/pricing.html">Pricing</a>
-        <a class="text-decoration-none nav-link-lite" href="/dashboard.html">Dashboard</a>
-        <a class="text-decoration-none nav-link-lite" href="/login.html">Login</a>
-        <a class="text-decoration-none nav-link-lite" href="/signup.html">Sign up</a>
+<a class="text-decoration-none nav-link-lite" href="/jobs.html">Jobs</a>
+<a class="text-decoration-none nav-link-lite" href="/revamp.html">Revamp CV</a>
+<a class="text-decoration-none fw-bold text-success" href="/cover_letter.html">Cover Letter</a>
+<a class="text-decoration-none nav-link-lite" href="/pricing.html">Pricing</a>
+<a class="text-decoration-none nav-link-lite" href="/dashboard.html">Dashboard</a>
+<a class="text-decoration-none nav-link-lite" href="/login.html">Login</a>
+<a class="text-decoration-none nav-link-lite" href="/signup.html">Sign up</a>
       </div>
     </div>
   </nav>
 
-
-<div class="container-xxl my-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <div class="card p-3">
-        <h5 class="mb-3">Generate a cover letter</h5>
-        <form id="clForm" class="vstack gap-2">
-          <input class="form-control" name="role" placeholder="Role (e.g., Data Analyst)" />
-          <input class="form-control" name="company" placeholder="Company" />
-          <textarea class="form-control" name="fit" rows="4" placeholder="Key achievements / fit"></textarea>
-          <button class="btn btn-success rounded-pill mt-2">Generate</button>
-        </form>
-        <div class="mt-3">
-          <h6>Result</h6>
-          <pre id="clOut" class="small bg-light p-2 rounded" style="white-space:pre-wrap;"></pre>
-        </div>
-      </div>
+  
+<div class="container-xxl my-5" style="max-width:900px">
+  <div class="card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="icon-circle"><i class="bi bi-journal-text"></i></div>
+      <div><h4 class="mb-0">Generate a cover letter</h4><small class="text-muted">Tailored to the job spec</small></div>
     </div>
+    <form id="coverForm">
+      <div class="mb-3"><label class="form-label">Job specification</label><textarea name="job_spec" class="form-control" rows="6" placeholder="Paste the job description here…" required></textarea></div>
+      <div class="mb-3"><label class="form-label">Your highlights</label><textarea name="highlights" class="form-control" rows="4" placeholder="Key achievements/skills to emphasize"></textarea></div>
+      <button class="btn btn-brand rounded-pill" type="submit">Generate</button>
+    </form>
+    <hr/>
+    <h6>Result</h6>
+    <pre id="coverResult" class="p-3 bg-light rounded" style="white-space:pre-wrap">—</pre>
   </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const form = document.getElementById('coverForm');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const payload = Object.fromEntries(new FormData(form).entries());
+    const btn = form.querySelector('button[type="submit"]'); btn.disabled=true;
+    try{
+      const res = await api('/cover_letter', { method:'POST', body: payload });
+      document.getElementById('coverResult').textContent = res.letter || res.text || JSON.stringify(res,null,2);
+    }catch(err){ alert(err.message||'Failed'); }
+    finally{ btn.disabled=false; }
+  });
+});
+</script>
 
 
   <footer class="border-top py-4 mt-5">
     <div class="container-xxl d-flex flex-wrap align-items-center justify-content-between gap-3">
-      <div class="small text-muted">&copy; <span id="year">2025</span> Makwande Careers All rights reserved</div>
+      <div class="small text-muted">© <span id="year"></span> Makwande Careers • All rights reserved</div>
       <div class="d-flex gap-3 small">
         <a href="/index.html">Home</a>
         <a href="/jobs.html">Jobs</a>
@@ -63,168 +82,7 @@
     </div>
   </footer>
 
-  <script>
-    window.apiFetch = async function (path, opts={}) {
-      const base = "";
-      const token = localStorage.getItem("AUTH_TOKEN");
-      const headers = Object.assign({}, (opts.headers||{}));
-      if (token) headers["Authorization"] = "Bearer " + token;
-      const finalOpts = Object.assign({ credentials: "include" }, opts, { headers });
-      const res = await fetch(base + path, finalOpts);
-      const text = await res.text();
-      let data = null; try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-      if (!res.ok) throw new Error((data && (data.detail||data.message)) || res.statusText || "Request failed");
-      return data;
-      
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/main.js"></script>
-  <script defer src="/assets/js/pages.js?v=1"></script></body>
-</script>
-  <script src="/assets/js/main.js"></script>
-  <script>document.getElementById('year').textContent = new Date().getFullYear(); injectNav();</script>
-  <script defer src="/assets/js/pages.js?v=1"></script></body>
-<script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
-<script type="module">
-
-  await fetchAPI('/apply_job', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ job_id:'123' })
-  });
-
-  const fd = new FormData(document.querySelector('#revampForm'));
-  await fetchAPI('/revamp', { method:'POST', body: fd }); // no Content-Type header
-</script>
-<script>
-  // 1-line global API helper (works on all pages)
-  window.fetchAPI = (p,o={}) => fetch('/api'+p,{credentials:'include',...o});
-
-  // Invisible dynamic nav (executes, shows no raw code)
-  document.addEventListener('DOMContentLoaded', function () {
-    const c = document.querySelector('nav.nav-wrap .ms-auto');
-    if (!c) return;
-
-    // Build links with DOM (no template text visible)
-    const links = [
-      ['Home','/index.html'], ['Jobs','/jobs.html'], ['Revamp CV','/revamp.html'],
-      ['Cover Letter','/cover_letter.html'], ['Pricing','/pricing.html'], ['Dashboard','/dashboard.html']
-    ];
-    c.innerHTML = '';
-    links.forEach(([t,h]) => {
-      const a = document.createElement('a');
-      a.className = 'text-decoration-none nav-link-lite';
-      a.href = h;
-      a.textContent = t;
-      c.appendChild(a);
-    });
-
-    // Optional More dropdown (visible menu, but no raw code text)
-    const wrap = document.createElement('div');
-    wrap.className = 'dropdown';
-    wrap.innerHTML = `
-      <a class="btn btn-soft dropdown-toggle rounded-pill" href="#" role="button" data-bs-toggle="dropdown">More</a>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><h6 class="dropdown-header">More</h6></li>
-        <li><a class="dropdown-item" href="/recruiter.html">Recruiter</a></li>
-        <li><a class="dropdown-item" href="/recruiter-dashboard.html">Recruiter Dashboard</a></li>
-        <li><a class="dropdown-item" href="/employer.html">Employers</a></li>
-        <li><a class="dropdown-item" href="/employer-dashboard.html">Employer Dashboard</a></li>
-        <li><a class="dropdown-item" href="/post-job.html">Post Job</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/bursaries.html">Bursaries</a></li>
-        <li><a class="dropdown-item" href="/bursary-apply.html">Bursary Apply</a></li>
-        <li><a class="dropdown-item" href="/admin-bursaries.html">Admin Bursaries</a></li>
-        <li><a class="dropdown-item" href="/learners.html">Learners</a></li>
-        <li><a class="dropdown-item" href="/universities.html">Universities</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/investors.html">Investors</a></li>
-        <li><a class="dropdown-item" href="/partnerships.html">Partnerships</a></li>
-        <li><a class="dropdown-item" href="/brand-collaborations.html">Brand Collaborations</a></li>
-        <li><a class="dropdown-item" href="/marketing.html">Marketing</a></li>
-        <li><a class="dropdown-item" href="/components.html">Components</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/sitemap.html">Sitemap</a></li>
-      </ul>`;
-    c.appendChild(wrap);
-  });
-</script>
-<script>
-  // Change this once and all pages use it
-  window.APP_CONFIG = {
-    // Use local dev if not set
-    API_BASE: localStorage.getItem("API_BASE") || "http://127.0.0.1:8000"
-  };
-
-  // Optional: set token after login
-  // localStorage.setItem("AUTH_TOKEN", "<jwt>");
-</script>
-<script>
-  window.apiFetch = async function (path, { method = "GET", headers = {}, body = null, isJson = true } = {}) {
-    const base = window.APP_CONFIG.API_BASE.replace(/\/+$/, "");
-    const token = localStorage.getItem("AUTH_TOKEN");
-    const auth = token ? { "Authorization": "Bearer " + token } : {};
-    const opts = { method, headers: { ...auth, ...headers } };
-
-    if (isJson && body && !(body instanceof FormData)) {
-      opts.headers["Content-Type"] = "application/json";
-      opts.body = JSON.stringify(body);
-    } else if (body) {
-      opts.body = body; // e.g., FormData
-    }
-
-    const res = await fetch(`${base}${path}`, opts);
-    let data = null;
-    const text = await res.text();
-    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-    if (!res.ok) {
-      const msg = (data && (data.detail || data.message)) || res.statusText || "Request failed";
-      throw new Error(msg);
-    }
-    return data;
-  };
-</script>
-<form id="coverForm">
-  <textarea id="jobDesc" placeholder="Paste job description…" required></textarea>
-  <textarea id="cvText" placeholder="Paste revamped CV (or leave blank to use last revamp)"></textarea>
-  <button type="submit">Generate Cover Letter</button>
-</form>
-
-<pre id="coverResult" style="white-space:pre-wrap"></pre>
-<button id="downloadCover" hidden>Download .txt
-
-</button>
-<script>
-  const cForm = document.getElementById("coverForm");
-  const cOut  = document.getElementById("coverResult");
-  const cDl   = document.getElementById("downloadCover");
-
-  cForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    cOut.textContent = "Generating…";
-
-    const payload = {
-      job_description: document.getElementById("jobDesc").value,
-      cv_text: document.getElementById("cvText").value || null
->>>>>>> d15497a (Merge. (#8))
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-document.getElementById('clForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const fd = new FormData(e.currentTarget);
-  const body = { role: fd.get('role')||'', company: fd.get('company')||'', highlights: fd.get('fit')||'' };
-  const out = document.getElementById('clOut');
-  out.textContent = "Working...";
-  try{
-    const data = await apiFetch('/api/cover_letter', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-    out.textContent = (data && (data.text||data.letter||JSON.stringify(data,null,2))) || "No content.";
-  }catch(err){
-    out.textContent = "Error: " + err.message;
-  }
-});
-</script>
-
 </body>
 </html>

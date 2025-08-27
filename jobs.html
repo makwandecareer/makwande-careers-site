@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+<<<<<<< HEAD
+  <title>Jobs Makwande Careers</title>
+=======
   <title>Jobs · Makwande Careers</title>
+>>>>>>> origin/main
   <meta name="description" content="Makwande Careers AutoApply platform for SADC." />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
@@ -76,12 +80,41 @@
 
           <div id="jobsList" class="d-grid gap-2">
             <div class="d-flex justify-content-between">
+<<<<<<< HEAD
+              <div><div class="fw-semibold"></div><small class="text-muted">Please wait</small></div>
+            </div>
+          </div>
+        </div>
+        <nav id="pager" class="mt-2">
+          <ul class="pagination pagination-sm justify-content-center">
+            <li class="page-item"><a class="page-link" href="#" data-act="prev">Prev</a></li>
+            <li class="page-item disabled"><span class="page-link" id="pageInfo">1 / 1</span></li>
+            <li class="page-item"><a class="page-link" href="#" data-act="next">Next</a></li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+    <section class="col-12 col-lg-5">
+      <div class="card p-3" id="jobDetail">
+        <div class="d-flex justify-content-between align-items-start">
+          <div><h4 class="mb-0">Role</h4><small class="text-muted">Company Location</small></div>
+          <div class="d-flex gap-2"><button id="saveBtn" class="btn btn-outline-success rounded-pill">Save</button><button id="applyBtn" class="btn btn-brand rounded-pill">Apply</button></div>
+        </div>
+        <hr />
+        <h6>About the job</h6><p id="desc"></p>
+        <h6>Requirements</h6><ul id="reqs"><li></li></ul>
+      </div>
+    </section>
+  </div>
+</div>
+=======
               <div>
                 <div class="fw-semibold">Loading...</div>
                 <small class="text-muted">Please wait</small>
               </div>
             </div>
           </div>
+>>>>>>> origin/main
 
           <div class="d-grid mt-3">
             <button id="jobsMore" class="btn btn-outline-secondary d-none">Load more</button>
@@ -94,7 +127,11 @@
   <!-- FOOTER -->
   <footer class="border-top py-4 mt-5">
     <div class="container-xxl d-flex flex-wrap align-items-center justify-content-between gap-3">
+<<<<<<< HEAD
+      <div class="small text-muted">Â© <span id="year"></span> Makwande Careers All rights reserved</div>
+=======
       <div class="small text-muted">&copy; <span id="year"></span> Makwande Careers · All rights reserved</div>
+>>>>>>> origin/main
       <div class="d-flex gap-3 small">
         <a href="/index.html">Home</a>
         <a href="/jobs.html">Jobs</a>
@@ -104,9 +141,21 @@
     </div>
   </footer>
 
+<<<<<<< HEAD
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script defer src="/assets/js/pages.js?v=1"></script></body>
+</script>
+  <script src="/assets/js/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear(); injectNav();</script>
+  <script defer src="/assets/js/pages.js?v=1"></script></body>
+<script>window.fetchAPI=(p,o={})=>fetch('/api'+p,{credentials:'include',...o});</script>
+<script type="module">
+=======
   <!-- SCRIPTS (load once) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
   <script src="/assets/js/main.js" defer></script>
+>>>>>>> origin/main
 
   <!-- Page script -->
   <script>
@@ -124,6 +173,83 @@
     const y = document.getElementById('year');
     if (y) y.textContent = new Date().getFullYear();
 
+<<<<<<< HEAD
+    // Build links with DOM (no template text visible)
+    const links = [
+      ['Home','/index.html'], ['Jobs','/jobs.html'], ['Revamp CV','/revamp.html'],
+      ['Cover Letter','/cover_letter.html'], ['Pricing','/pricing.html'], ['Dashboard','/dashboard.html']
+    ];
+    c.innerHTML = '';
+    links.forEach(([t,h]) => {
+      const a = document.createElement('a');
+      a.className = 'text-decoration-none nav-link-lite';
+      a.href = h;
+      a.textContent = t;
+      c.appendChild(a);
+    });
+
+    // Optional More dropdown (visible menu, but no raw code text)
+    const wrap = document.createElement('div');
+    wrap.className = 'dropdown';
+    wrap.innerHTML = `
+      <a class="btn btn-soft dropdown-toggle rounded-pill" href="#" role="button" data-bs-toggle="dropdown">More</a>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><h6 class="dropdown-header">More</h6></li>
+        <li><a class="dropdown-item" href="/recruiter.html">Recruiter</a></li>
+        <li><a class="dropdown-item" href="/recruiter-dashboard.html">Recruiter Dashboard</a></li>
+        <li><a class="dropdown-item" href="/employer.html">Employers</a></li>
+        <li><a class="dropdown-item" href="/employer-dashboard.html">Employer Dashboard</a></li>
+        <li><a class="dropdown-item" href="/post-job.html">Post Job</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="/bursaries.html">Bursaries</a></li>
+        <li><a class="dropdown-item" href="/bursary-apply.html">Bursary Apply</a></li>
+        <li><a class="dropdown-item" href="/admin-bursaries.html">Admin Bursaries</a></li>
+        <li><a class="dropdown-item" href="/learners.html">Learners</a></li>
+        <li><a class="dropdown-item" href="/universities.html">Universities</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="/investors.html">Investors</a></li>
+        <li><a class="dropdown-item" href="/partnerships.html">Partnerships</a></li>
+        <li><a class="dropdown-item" href="/brand-collaborations.html">Brand Collaborations</a></li>
+        <li><a class="dropdown-item" href="/marketing.html">Marketing</a></li>
+        <li><a class="dropdown-item" href="/components.html">Components</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="/sitemap.html">Sitemap</a></li>
+      </ul>`;
+    c.appendChild(wrap);
+  });
+</script>
+<section class="container-xxl my-4">
+  <div class="row g-3 align-items-center mb-3">
+    <div class="col-md-6"><input id="jobSearch" class="form-control" placeholder="Search roles, companies" /></div>
+    <div class="col-md-3"><select id="jobLocation" class="form-select"><option value="">All locations</option></select></div>
+    <div class="col-md-3"><select id="jobType" class="form-select"><option value="">Any type</option><option>Full-time</option><option>Contract</option><option>Internship</option></select></div>
+  </div>
+  <div id="jobsList"></div>
+  <div class="d-grid mt-3"><button id="jobsMore" class="btn btn-outline-secondary d-none">Load more</button></div>
+</section>
+<script>
+  // Change this once and all pages use it
+  window.APP_CONFIG = {
+    // Use local dev if not set
+    API_BASE: localStorage.getItem("API_BASE") || "http://127.0.0.1:8000"
+  };
+
+  // Optional: set token after login
+  // localStorage.setItem("AUTH_TOKEN", "<jwt>");
+</script>
+<script>
+  window.apiFetch = async function (path, { method = "GET", headers = {}, body = null, isJson = true } = {}) {
+    const base = window.APP_CONFIG.API_BASE.replace(/\/+$/, "");
+    const token = localStorage.getItem("AUTH_TOKEN");
+    const auth = token ? { "Authorization": "Bearer " + token } : {};
+    const opts = { method, headers: { ...auth, ...headers } };
+
+    if (isJson && body && !(body instanceof FormData)) {
+      opts.headers["Content-Type"] = "application/json";
+      opts.body = JSON.stringify(body);
+    } else if (body) {
+      opts.body = body; // e.g., FormData
+=======
     // tiny helper: always call through the same-origin proxy -> /api/*
     async function api(path, opts = {}) {
       const res = await fetch('/api' + path, opts);
@@ -132,6 +258,7 @@
       if (!res.ok) throw new Error((data && (data.detail || data.message)) || res.statusText);
       return data;
 fix/ui-cleanup
+>>>>>>> origin/main
     }
 
     function renderJobs(jobs) {

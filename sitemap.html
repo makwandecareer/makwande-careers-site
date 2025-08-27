@@ -50,6 +50,23 @@
     </div>
   </footer>
 
+=======
+﻿</head>
+<meta charset="UTF-8">
+
+<li><a href="/candidate-profile.html">Profile (private)</a></li>
+<li><a href="/public-profile.html">Public Profile (read-only)</a></li>
+<script>
+    // Change this once and all pages use it
+    window.APP_CONFIG = {
+      // Use local dev if not set
+      API_BASE: localStorage.getItem("API_BASE") || "http://127.0.0.1:8000"
+    };
+  
+    // Optional: set token after login
+    // localStorage.setItem("AUTH_TOKEN", "<jwt>");
+  </script>
+>>>>>>> d15497a (Merge. (#8))
   <script>
     window.apiFetch = async function (path, opts={}) {
       const base = "";

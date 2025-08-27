@@ -213,18 +213,7 @@
     }
     return data;
   };
-</script>
-<input id="q" placeholder="Search (e.g., data analyst)">
-<select id="location"><option value="">All locations</option></select>
-<select id="company"><option value="">All companies</option></select>
-<select id="score"><option value="">Any match</option>
-  <option value="60">≥60%</option><option value="70">≥70%</option><option value="80">≥80%</option>
-</select>
-<button id="searchBtn">Search</button>
 
-<div id="jobsList">
-
-</div>
 <script>
   const el = (id) => document.getElementById(id);
   const list = el("jobsList");

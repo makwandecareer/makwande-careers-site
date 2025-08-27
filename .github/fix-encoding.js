@@ -4,7 +4,7 @@ var ForReading = 1, ForWriting = 2;
 var adTypeText = 2, adSaveCreateOverWrite = 2;
 
 var replacements = {
-  "â€¦":"…", "Â©":"©", "Â®":"®",
+  ":"…", "Â©":"©", "Â®":"®",
   "â€“":"–", "â€”":"—",
   "â€˜":"‘", "â€™":"’",
   "â€œ":"“", "â€":"”",

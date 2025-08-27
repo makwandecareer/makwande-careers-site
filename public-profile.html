@@ -97,7 +97,7 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Headline</label>
-            <input id="headlineInput" class="form-control" placeholder="e.g., Data Analyst â€¢ SQL â€¢ Power BI" />
+            <input id="headlineInput" class="form-control" placeholder="e.g., Data Analyst SQL Power BI" />
           </div>
           <div class="mb-3">
             <label class="form-label">Location (SADC)</label>
@@ -159,7 +159,7 @@
             <h5 class="mb-0">About</h5>
             <div class="small text-muted" id="aboutSavedHint" style="opacity:.65">Auto-saves</div>
           </div>
-          <textarea id="aboutInput" class="form-control mt-2" rows="5" placeholder="Write a short summary about your background, strengths and goalsâ€¦"></textarea>
+          <textarea id="aboutInput" class="form-control mt-2" rows="5" placeholder="Write a short summary about your background, strengths and goals"></textarea>
         </div>
 
         <div class="card-soft p-3 mb-3">
@@ -263,7 +263,7 @@
       el.role='status'; el.innerHTML=`<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
       document.body.appendChild(el); const t=new bootstrap.Toast(el,{delay:1800}); t.show(); el.addEventListener('hidden.bs.toast',()=>el.remove());
     }
-    const busy=(btn,on=true)=>{ if(!btn) return; if(on){ btn.dataset.label=btn.innerHTML; btn.disabled=true; btn.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Savingâ€¦'; } else { btn.disabled=false; btn.innerHTML=btn.dataset.label||btn.innerHTML; } };
+    const busy=(btn,on=true)=>{ if(!btn) return; if(on){ btn.dataset.label=btn.innerHTML; btn.disabled=true; btn.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Saving'; } else { btn.disabled=false; btn.innerHTML=btn.dataset.label||btn.innerHTML; } };
     function setSkeleton(on=true){ [nameText,headlineText,locationText,aboutInput].forEach(n=>{ if(!n) return; on?n.classList.add('skel'):n.classList.remove('skel'); }); }
     function updateStats(){
       $('#statSkills').textContent=(profile.skills||[]).length; $('#statExperience').textContent=(profile.experience||[]).length; $('#statEducation').textContent=(profile.education||[]).length;
@@ -312,7 +312,7 @@
           <div class="flex-grow-1">
             <div class="fw-semibold">${escapeHtml(it.title||it.degree||'')} ${it.company?`Â· <span class="text-muted">${escapeHtml(it.company)}</span>`:''}</div>
             <div class="small text-muted">${[it.school,it.location].filter(Boolean).join(' Â· ')}</div>
-            <div class="small text-muted">${fmtMonth(it.start)} â€“ ${it.end?fmtMonth(it.end):'Present'}</div>
+            <div class="small text-muted">${fmtMonth(it.start)} ${it.end?fmtMonth(it.end):'Present'}</div>
             ${it.description||it.notes?`<div class="small mt-1">${escapeHtml(it.description||it.notes||'')}</div>`:''}
           </div>
         </div>`).join('');
@@ -347,7 +347,7 @@
 
     // About autosave
     const saveAbout=debounce(async()=>{
-      aboutSavedHint.textContent='Savingâ€¦';
+      aboutSavedHint.textContent='Saving';
       await savePatch({about:aboutInput.value});
       profile.about=aboutInput.value; aboutSavedHint.textContent='Saved'; setTimeout(()=>aboutSavedHint.textContent='Auto-saves',1200);
     },700);

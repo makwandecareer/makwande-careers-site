@@ -1,3 +1,9 @@
 trust_safety_popia_pack.zip
 trust_safety_popia_pack/
 *.backup.html
+/js/config.js
+/js/main.js
+/js/pages.js
+/assets/js/config.js
+/assets/js/main.js
+/assets/js/pages.js

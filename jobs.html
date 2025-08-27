@@ -230,6 +230,8 @@
   const list = el("jobsList");
 
   async function loadJobs() {
+    - list.innerHTML = "Loading…";
++ list.innerHTML = "Loading...";
     list.innerHTML = "Loading…";
     const params = new URLSearchParams();
     if (el("q").value) params.set("q", el("q").value);

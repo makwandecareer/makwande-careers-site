@@ -30,6 +30,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const el = e.target.closest('[data-api-base]');
     if (el) {
       const next = prompt('Set API base URL', window.API_BASE);
+      - alert('API base saved. Reloading…'); location.reload();
++ alert('API base saved. Reloading...'); location.reload();
+
       if (next) { setApiBase(next); alert('API base saved. Reloading…'); location.reload(); }
     }
   });

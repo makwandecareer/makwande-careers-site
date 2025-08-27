@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>[Job Title] — Makwande Careers</title>
+  <meta name="description" content="[One-sentence summary of the role for SEO.]" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="canonical" href="https://autoapplyapp-mobile.onrender.com/jobs/detail/[role-slug].html" />
+  <style>
+    :root { --max: 900px; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif; line-height: 1.6; color:#111; }
+    a { color: inherit; text-decoration: none; }
+    .nav-wrap { background:#fff; border-bottom:1px solid #e5e7eb; }
+    .nav { display:flex; align-items:center; justify-content:space-between; gap:12px; max-width: var(--max); margin:0 auto; padding:10px 16px; }
+    .logo { display:flex; align-items:center; gap:8px; font-weight:700; }
+    .logo img { width:28px; height:28px; }
+    #menu-toggle { display:none; }
+    .menu-icon { display:none; font-size:24px; cursor:pointer; }
+    .links { display:flex; gap:16px; flex-wrap:wrap; }
+    .links a { color:#333; }
+    .links a:hover { color:#0ea5e9; }
+    @media (max-width:768px){
+      .menu-icon { display:block; }
+      .links { position:absolute; left:0; right:0; top:56px; background:#fff; border-top:1px solid #e5e7eb; display:none; flex-direction:column; padding:8px 16px; }
+      #menu-toggle:checked + label + .links { display:flex; }
+    }
+    main { max-width: var(--max); margin: 0 auto; padding: 16px; }
+    .muted { color:#6b7280; }
+    .card { border:1px solid #e5e7eb; border-radius:12px; padding:16px; background:#fff; }
+    .btn { display:inline-block; padding:10px 14px; border-radius:10px; background:#0ea5e9; color:#fff; }
+    .btn-outline { background:#fff; color:#0ea5e9; border:1px solid #0ea5e9; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; }
+    footer { max-width: var(--max); margin: 24px auto; padding: 16px; }
+    .footer-links { display:flex; gap:16px; flex-wrap:wrap; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV (same pattern as index) -->
+  <div class="nav-wrap">
+    <div class="nav">
+      <a class="logo" href="/"><img src="/assets/img/logo.png" alt="Makwande Careers logo"><span>Makwande Careers</span></a>
+      <input type="checkbox" id="menu-toggle" />
+      <label for="menu-toggle" class="menu-icon">&#9776;</label>
+      <nav class="links">
+        <a href="/">Home</a>
+        <a href="/jobs/"><strong>Jobs</strong></a>
+        <a href="/revamp.html">Revamp CV</a>
+        <a href="/cover_letter.html">Cover Letter</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/login.html">Login</a>
+        <a href="/signup.html">Sign up</a>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <p><a href="/jobs/" style="text-decoration:underline;">← All Jobs</a></p>
+
+    <header class="card">
+      <h1 style="margin:0 0 6px 0">[Job Title]</h1>
+      <p class="muted">[Location]</p>
+      <p class="muted"><strong>Posted:</strong> YYYY-MM-DD<span> • <strong>Closing:</strong> YYYY-MM-DD</span></p>
+      <div class="actions" style="margin-top:8px;">
+        <a class="btn" href="[Application Link URL]">Apply Now</a>
+        <a class="btn btn-outline" href="/jobs/">Back to Jobs</a>
+      </div>
+    </header>
+
+    <section class="card" style="margin-top:16px;">
+      <h2>Job Description</h2>
+      <p>[Full job description. Keep paragraphs short for readability on mobile.]</p>
+
+      <h2>Requirements</h2>
+      <ul>
+        <li>[Requirement 1]</li>
+        <li>[Requirement 2]</li>
+        <li>[Requirement 3]</li>
+      </ul>
+
+      <h2>How to Apply</h2>
+      <p>Use the “Apply Now” button above to submit your application on the employer site.</p>
+    </section>
+  </main>
+
+  <footer class="card">
+    <div class="muted">© 2025 Makwande Careers • All rights reserved</div>
+    <div class="footer-links" style="margin-top:8px">
+      <a href="/">Home</a>
+      <a href="/jobs/">Jobs</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -131,7 +131,6 @@
       let data; try { data = text ? JSON.parse(text) : null; } catch { data = text; }
       if (!res.ok) throw new Error((data && (data.detail || data.message)) || res.statusText);
       return data;
-fix/ui-cleanup
     }
 
     function renderJobs(jobs) {
@@ -163,82 +162,6 @@ fix/ui-cleanup
             ${j.posted ? ' · Posted: ' + j.posted : ''}
             ${j.closing ? ' · Closes: ' + j.closing : ''}
           </div>
-
-    }
-
-    function renderJobs(jobs) {
-      if (!jobs || !jobs.length) {
-        jobsList.innerHTML = '<div class="text-muted">No jobs found.</div>';
-        countEl.textContent = '0';
-        return;
-      }
-      countEl.textContent = jobs.length;
-
-      // populate location filter once from results
-      if (locSel.options.length === 1) {
-        const set = new Set();
-        jobs.forEach(j => j.location && set.add(j.location));
-        [...set].sort().forEach(v => locSel.add(new Option(v, v)));
-      }
-
-      jobsList.innerHTML = jobs.map(j => `
-        <div class="card p-3">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <div class="fw-semibold">${j.title || ''}</div>
-              <small class="text-muted">${j.company || ''} ${j.location ? '· ' + j.location : ''}</small>
-            </div>
-            <a class="btn btn-sm btn-brand rounded-pill" href="${j.apply_url || '#'}" target="_blank" rel="noopener">Apply</a>
-          </div>
-          <div class="mt-2 small text-muted">
-            Match: ${j.match_score ?? 'N/A'}%
-            ${j.posted ? ' · Posted: ' + j.posted : ''}
-            ${j.closing ? ' · Closes: ' + j.closing : ''}
-
-    const res = await fetch(`${base}${path}`, opts);
-    let data = null;
-    const text = await res.text();
-    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-    if (!res.ok) {
-      const msg = (data && (data.detail || data.message)) || res.statusText || "Request failed";
-      throw new Error(msg);
-    }
-    return data;
-  };
-
-<script>
-  const el = (id) => document.getElementById(id);
-  const list = el("jobsList");
-
-  async function loadJobs() {
-    - list.innerHTML = "Loading…";
-+ list.innerHTML = "Loading...";
-    list.innerHTML = "Loading…";
-    const params = new URLSearchParams();
-    if (el("q").value) params.set("q", el("q").value);
-    if (el("location").value) params.set("location", el("location").value);
-    if (el("company").value) params.set("company", el("company").value);
-    if (el("score").value) params.set("min_score", el("score").value);
-
-    try {
-      // Expected response: { jobs: [{id,title,company,location,match_score,apply_url,posted,closing}] }
-      const data = await apiFetch(`/api/jobs?${params.toString()}`);
-      const jobs = data.jobs || data || [];
-      if (!jobs.length) { list.innerHTML = "No jobs found."; return; }
-
-      // Populate filters once from the result set
-      const locSet = new Set(), compSet = new Set();
-      jobs.forEach(j => { if (j.location) locSet.add(j.location); if (j.company) compSet.add(j.company); });
-      if (el("location").options.length === 1) [...locSet].sort().forEach(v => el("location").append(new Option(v, v)));
-      if (el("company").options.length === 1)  [...compSet].sort().forEach(v => el("company").append(new Option(v, v)));
-
-      list.innerHTML = jobs.map(j => `
-        <div class="card">
-          <h3>${j.title}</h3>
-          <p><b>${j.company || ""}</b> — ${j.location || ""}</p>
-          <p>Match: ${j.match_score ?? "N/A"}% • Posted: ${j.posted || "?"} • Closes: ${j.closing || "?"}</p>
-          <a href="${j.apply_url}" target="_blank" rel="noopener">Apply</a>
-
         </div>
       `).join('');
     }
